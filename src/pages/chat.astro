@@ -1,0 +1,976 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Airwalk Chat | Talk to Strangers — Free Voice & Text Chat" description="Start chatting with random strangers instantly. Voice or text, your choice. Free gender & country filters, games, friends system.">
+	<!-- Header -->
+	<header class="bg-canvas/80 backdrop-blur-xl border-b border-hairline h-14 flex items-center justify-between px-4 md:px-6 sticky top-0 z-40">
+		<a href="/" class="flex items-center space-x-2 text-ink">
+			<svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+			<span class="font-sans font-extrabold text-lg tracking-tight uppercase">Airwalk</span>
+		</a>
+		<div class="flex items-center space-x-3">
+			<button id="friends-toggle" class="relative w-9 h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors" title="Friends">
+				👥
+				<span id="friend-badge" class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
+			</button>
+			<button id="history-toggle" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors" title="Call History">📋</button>
+			<button id="theme-toggle" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors" aria-label="Toggle theme">
+				<svg class="w-4 h-4 text-yellow-saturated hidden dark-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+				<svg class="w-4 h-4 text-slate light-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+			</button>
+			<span class="text-xs font-mono text-slate bg-surface px-2 py-1 rounded-md hidden sm:block" id="online-indicator">🟢 Online</span>
+		</div>
+	</header>
+
+	<main class="flex-grow flex flex-col bg-gradient-to-br from-surface via-canvas to-surface relative">
+		<!-- Alert Banner -->
+		<div id="alert-banner" class="hidden bg-primary-deep text-on-primary py-2 px-6 text-center text-sm font-semibold flex items-center justify-center space-x-2 z-50">
+			<span id="alert-message"></span>
+			<button class="bg-black/20 hover:bg-black/35 px-2 py-0.5 rounded text-xs" onclick="document.getElementById('alert-banner').classList.add('hidden')">✕</button>
+		</div>
+
+		<!-- Friends Panel (Side Drawer) -->
+		<div id="friends-panel" class="hidden fixed inset-y-0 right-0 w-full sm:w-80 bg-canvas border-l border-hairline shadow-2xl z-50 flex flex-col">
+			<div class="p-4 border-b border-hairline flex items-center justify-between">
+				<h3 class="font-bold text-ink">Friends</h3>
+				<button onclick="document.getElementById('friends-panel').classList.add('hidden')" class="text-slate hover:text-ink text-xl">✕</button>
+			</div>
+			<div id="friends-list" class="flex-grow overflow-y-auto p-4 space-y-2">
+				<p class="text-sm text-steel text-center py-8">No friends yet. Add people you connect with!</p>
+			</div>
+		</div>
+
+		<!-- History Panel (Side Drawer) -->
+		<div id="history-panel" class="hidden fixed inset-y-0 right-0 w-full sm:w-80 bg-canvas border-l border-hairline shadow-2xl z-50 flex flex-col">
+			<div class="p-4 border-b border-hairline flex items-center justify-between">
+				<h3 class="font-bold text-ink">Call History</h3>
+				<button onclick="document.getElementById('history-panel').classList.add('hidden')" class="text-slate hover:text-ink text-xl">✕</button>
+			</div>
+			<div id="history-list" class="flex-grow overflow-y-auto p-4 space-y-2">
+				<p class="text-sm text-steel text-center py-8">No call history yet.</p>
+			</div>
+		</div>
+
+		<!-- SCREENS CONTAINER -->
+		<div class="flex-grow flex items-center justify-center p-3 md:p-8">
+
+			<!-- SCREEN 1: SETUP -->
+			<div id="setup-screen" class="w-full max-w-[520px] bg-canvas border border-hairline rounded-2xl p-6 md:p-8 shadow-2xl space-y-5 relative overflow-hidden">
+				<!-- Decorative gradient blob -->
+				<div class="absolute -top-20 -right-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+				<div class="absolute -bottom-16 -left-16 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+
+				<!-- Your anonymous identity -->
+				<div class="relative flex items-center space-x-3 bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/10 rounded-xl p-3">
+					<div id="my-avatar" class="w-11 h-11 bg-primary/15 text-primary flex items-center justify-center rounded-full text-xl shadow-sm">🦊</div>
+					<div>
+						<p class="font-bold text-sm text-ink" id="my-handle">CoolFox429</p>
+						<p class="text-[10px] text-steel">Your anonymous identity</p>
+					</div>
+					<button onclick="generateHandle()" class="ml-auto text-xs text-primary font-semibold hover:underline bg-primary/10 px-2.5 py-1 rounded-full">↻ New</button>
+				</div>
+
+				<div class="text-center space-y-1 relative">
+					<h1 class="text-2xl md:text-3xl font-extrabold text-ink">Start a Conversation</h1>
+					<p class="text-sm text-slate">Voice or text. All filters free. No signup needed.</p>
+				</div>
+
+				<!-- Profile Info (Optional) -->
+				<div class="space-y-2 relative">
+					<p class="text-[11px] text-steel font-medium uppercase tracking-wider">Optional — helps match you better</p>
+					<div class="grid grid-cols-3 gap-2">
+						<div>
+							<input type="text" id="user-name" placeholder="Name" maxlength="20" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
+						</div>
+						<div>
+							<input type="number" id="user-age" placeholder="Age" min="13" max="99" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
+						</div>
+						<div>
+							<select id="user-gender" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline p-2 h-10 focus:ring-2 focus:ring-primary focus:outline-none">
+								<option value="Male">♂ Male</option>
+								<option value="Female">♀ Female</option>
+								<option value="Other">⚧ Other</option>
+							</select>
+						</div>
+					</div>
+				</div>
+
+				<!-- Chat Mode Selection -->
+				<div class="grid grid-cols-2 gap-3 relative">
+					<button id="mode-voice" class="bg-primary text-on-primary border-2 border-primary rounded-xl p-3.5 text-center font-bold text-sm transition-all shadow-md hover:shadow-lg" onclick="setChatMode('voice')">
+						🎙️ Voice Chat
+					</button>
+					<button id="mode-text" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3.5 text-center font-bold text-sm transition-all hover:border-primary hover:shadow-md" onclick="setChatMode('text')">
+						💬 Text Only
+					</button>
+				</div>
+
+				<!-- Filters -->
+				<div class="space-y-3">
+					<div class="grid grid-cols-2 gap-3">
+						<div class="space-y-1">
+							<label class="block text-xs font-semibold text-slate uppercase tracking-wider">Language</label>
+							<div class="relative">
+								<input type="text" id="language-search" placeholder="Search language..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" autocomplete="off" />
+								<input type="hidden" id="language-filter" value="English" />
+								<div id="language-dropdown" class="hidden absolute z-20 w-full mt-1 bg-canvas border border-hairline rounded-lg shadow-lg max-h-48 overflow-y-auto"></div>
+							</div>
+						</div>
+						<div class="space-y-1">
+							<label class="block text-xs font-semibold text-slate uppercase tracking-wider">Country</label>
+							<div class="relative">
+								<input type="text" id="country-search" placeholder="Search country..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" autocomplete="off" />
+								<input type="hidden" id="country-filter" value="Worldwide" />
+								<div id="country-dropdown" class="hidden absolute z-20 w-full mt-1 bg-canvas border border-hairline rounded-lg shadow-lg max-h-48 overflow-y-auto"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Interests -->
+					<div class="space-y-1">
+						<label class="block text-xs font-semibold text-slate uppercase tracking-wider">Interests</label>
+						<input type="text" id="interest-input" placeholder="gaming, music, coding..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" />
+						<div class="flex flex-wrap gap-1.5 pt-1">
+							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Gaming')">+ Gaming</button>
+							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Music')">+ Music</button>
+							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Anime')">+ Anime</button>
+							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Movies')">+ Movies</button>
+							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Tech')">+ Tech</button>
+							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Sports')">+ Sports</button>
+						</div>
+					</div>
+				</div>
+
+				<button id="start-match-btn" class="w-full bg-gradient-to-r from-primary to-primary-deep hover:from-primary-deep hover:to-primary text-on-primary font-bold text-base py-4 rounded-xl transition-all shadow-lg hover:shadow-xl relative overflow-hidden group">
+					<span class="relative z-10">🚀 Start Matching</span>
+					<div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
+				</button>
+				<p class="text-center text-[11px] text-steel">🔒 Anonymous • No signup • Free forever</p>
+			</div>
+
+			<!-- SCREEN 2: SEARCHING -->
+			<div id="matching-screen" class="hidden w-full max-w-[460px] bg-canvas border border-hairline rounded-xl p-8 shadow-lg flex flex-col items-center text-center space-y-8 min-h-[380px]">
+				<div class="space-y-2">
+					<h2 class="text-2xl font-bold text-ink">Finding someone...</h2>
+					<p class="text-sm text-slate" id="search-mode-label">Voice Chat</p>
+				</div>
+				<div class="relative w-32 h-32 flex items-center justify-center">
+					<div class="absolute inset-0 bg-primary/10 rounded-full animate-radar"></div>
+					<div class="absolute inset-4 bg-primary/20 rounded-full animate-radar" style="animation-delay:0.6s"></div>
+					<div class="relative w-14 h-14 bg-primary rounded-full flex items-center justify-center text-on-primary text-xl shadow-lg animate-pulse" id="search-icon">🎙️</div>
+				</div>
+				<div id="search-details" class="bg-surface rounded-lg border border-hairline p-3 w-full text-xs text-slate text-left"></div>
+				<button id="cancel-match-btn" class="bg-surface border border-hairline hover:bg-cream text-ink text-sm font-semibold py-2.5 px-6 rounded-lg transition-colors">Cancel</button>
+			</div>
+
+			<!-- SCREEN 3: ACTIVE CALL/CHAT -->
+			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 max-h-[90vh] md:max-h-none md:min-h-[540px]">
+
+				<!-- Left Panel: Voice/Info -->
+				<div class="md:col-span-7 p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto">
+					<div class="space-y-4">
+						<!-- Status Bar -->
+						<div class="flex items-center justify-between">
+							<span class="inline-flex items-center space-x-1.5 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-xs font-semibold">
+								<span class="w-2 h-2 bg-accent rounded-full animate-ping"></span>
+								<span id="call-status-label">Live Call</span>
+							</span>
+							<span id="call-timer" class="text-sm font-mono text-slate font-semibold">00:00</span>
+						</div>
+
+						<!-- Partner Info Card -->
+						<div class="bg-canvas border border-hairline rounded-xl p-4 flex items-center space-x-4 shadow-sm hover:shadow-md transition-shadow">
+							<div id="partner-avatar" class="w-11 h-11 bg-primary/10 text-primary flex items-center justify-center rounded-full text-lg font-bold">🐻</div>
+							<div class="space-y-1 flex-grow">
+								<div class="flex items-center justify-between">
+									<h4 id="partner-handle" class="font-bold text-base text-ink">Stranger</h4>
+									<span id="partner-country" class="text-xs bg-surface text-slate px-2 py-0.5 rounded-full">🌍 --</span>
+								</div>
+								<div class="flex items-center space-x-2 text-xs text-steel">
+									<span id="partner-lang">--</span>
+								</div>
+								<div id="partner-tags" class="flex flex-wrap gap-1 pt-1"></div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Equalizer (Voice mode only) -->
+					<div id="eq-section" class="my-6 flex items-center justify-center h-24 space-x-1">
+						<div class="w-1.5 h-12 bg-primary rounded-full animate-pulse eq-bar"></div>
+						<div class="w-1.5 h-18 bg-primary/70 rounded-full animate-pulse-slow eq-bar"></div>
+						<div class="w-1.5 h-22 bg-primary rounded-full animate-pulse eq-bar"></div>
+						<div class="w-1.5 h-14 bg-primary/50 rounded-full animate-pulse-slow eq-bar"></div>
+						<div class="w-1.5 h-8 bg-primary rounded-full animate-pulse eq-bar"></div>
+						<div class="w-1.5 h-16 bg-primary/70 rounded-full animate-pulse-slow eq-bar"></div>
+						<div class="w-1.5 h-20 bg-primary rounded-full animate-pulse eq-bar"></div>
+						<div class="w-1.5 h-10 bg-primary/50 rounded-full animate-pulse eq-bar"></div>
+					</div>
+
+					<!-- Text-only mode message -->
+					<div id="text-mode-info" class="hidden my-6 text-center text-sm text-slate py-8">
+						<p class="text-3xl mb-2">💬</p>
+						<p>Text-only mode — use the chat panel →</p>
+					</div>
+
+					<!-- Controls -->
+					<div class="flex flex-wrap items-center justify-center md:justify-between gap-2 pt-4 border-t border-hairline">
+						<div class="flex items-center space-x-2">
+							<button id="mute-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink px-3 py-2 rounded-lg text-sm font-medium transition-colors">🎙️ Mute</button>
+							<input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8" class="w-16 accent-primary hidden sm:block" />
+						</div>
+						<div class="flex items-center flex-wrap justify-center gap-2">
+							<button id="add-friend-btn" class="text-xs bg-accent/10 hover:bg-accent hover:text-on-primary text-accent border border-accent/20 px-2.5 py-2 rounded-lg font-medium transition-colors">➕ Friend</button>
+							<button id="block-btn" class="text-xs hover:bg-red-50 text-red-500 border border-red-200 px-2.5 py-2 rounded-lg font-medium transition-colors">🚫</button>
+							<button id="report-btn" class="text-xs hover:bg-red-50 text-red-500 border border-red-200 px-2.5 py-2 rounded-lg font-medium transition-colors">⚠️</button>
+							<button id="skip-btn" class="bg-primary hover:bg-primary-deep text-on-primary px-5 py-2 rounded-lg font-bold transition-all shadow-sm disabled:bg-muted disabled:text-steel disabled:cursor-not-allowed">
+								<span id="skip-btn-label">Skip (5s)</span>
+							</button>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right Panel: Chat + Games -->
+				<div class="md:col-span-5 flex flex-col h-[400px] md:h-auto border-t md:border-t-0 border-hairline">
+					<!-- Tabs -->
+					<div class="bg-canvas border-b border-hairline flex">
+						<button id="tab-chat-btn" class="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none" onclick="switchTab('chat')">💬 Chat</button>
+						<button id="tab-games-btn" class="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none relative" onclick="switchTab('games')">
+							🎮 Games
+							<span id="game-dot" class="hidden absolute top-2 right-[28%] w-2 h-2 bg-accent rounded-full animate-ping"></span>
+						</button>
+					</div>
+
+					<!-- Chat Panel -->
+					<div id="panel-chat" class="flex-grow flex flex-col overflow-hidden">
+						<div id="chat-messages" class="flex-grow p-4 space-y-3 overflow-y-auto text-sm min-h-[280px]">
+							<div class="text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg">Connected! Say hello 👋</div>
+						</div>
+						<div id="typing-indicator" class="hidden px-4 py-1 text-xs text-steel italic">Stranger is typing...</div>
+						<div class="p-3 bg-surface border-t border-hairline flex items-center space-x-2">
+							<button id="image-btn" class="w-9 h-9 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream text-sm transition-colors" title="Send Image">📷</button>
+							<input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow bg-canvas text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" />
+							<button id="send-btn" class="bg-primary hover:bg-primary-deep text-on-primary px-4 h-10 rounded-lg font-semibold text-sm transition-colors">Send</button>
+						</div>
+						<input type="file" id="image-input" accept="image/*" class="hidden" />
+					</div>
+
+					<!-- Games Panel -->
+					<div id="panel-games" class="hidden flex-grow flex flex-col overflow-y-auto p-4 space-y-3">
+						<div id="game-selector" class="space-y-2">
+							<h3 class="text-sm font-bold text-ink">Choose a Game</h3>
+							<div class="grid grid-cols-1 gap-2">
+								<button class="group bg-surface hover:bg-primary-light border border-hairline hover:border-primary/30 p-3 rounded-xl flex items-center space-x-3 transition-all" onclick="startGame('tictactoe')">
+									<span class="text-xl">❌</span>
+									<div class="flex-grow text-left"><p class="font-bold text-sm text-ink">Tic-Tac-Toe</p><p class="text-[10px] text-steel">Classic 3×3 grid</p></div>
+								</button>
+								<button class="group bg-surface hover:bg-primary-light border border-hairline hover:border-primary/30 p-3 rounded-xl flex items-center space-x-3 transition-all" onclick="startGame('rps')">
+									<span class="text-xl">✊</span>
+									<div class="flex-grow text-left"><p class="font-bold text-sm text-ink">Rock Paper Scissors</p><p class="text-[10px] text-steel">Best of 3 rounds</p></div>
+								</button>
+								<button class="group bg-surface hover:bg-primary-light border border-hairline hover:border-primary/30 p-3 rounded-xl flex items-center space-x-3 transition-all" onclick="startGame('connect4')">
+									<span class="text-xl">🔴</span>
+									<div class="flex-grow text-left"><p class="font-bold text-sm text-ink">Connect Four</p><p class="text-[10px] text-steel">Drop 4 in a row</p></div>
+								</button>
+								<button class="group bg-surface hover:bg-primary-light border border-hairline hover:border-primary/30 p-3 rounded-xl flex items-center space-x-3 transition-all" onclick="startGame('wordle')">
+									<span class="text-xl">🟩</span>
+									<div class="flex-grow text-left"><p class="font-bold text-sm text-ink">Wordle</p><p class="text-[10px] text-steel">Guess the 5-letter word</p></div>
+								</button>
+								<button class="group bg-surface hover:bg-primary-light border border-hairline hover:border-primary/30 p-3 rounded-xl flex items-center space-x-3 transition-all" onclick="startGame('ludo')">
+									<span class="text-xl">🎲</span>
+									<div class="flex-grow text-left"><p class="font-bold text-sm text-ink">Ludo Race</p><p class="text-[10px] text-steel">Race to the finish</p></div>
+								</button>
+							</div>
+						</div>
+
+						<!-- Active Game Area -->
+						<div id="game-area" class="hidden space-y-3">
+							<div class="flex items-center justify-between">
+								<button class="text-xs text-primary font-medium" onclick="exitGame()">← Back</button>
+								<span id="game-title" class="font-bold text-sm text-ink"></span>
+								<button class="text-xs text-primary font-medium" onclick="resetGame()">Reset</button>
+							</div>
+							<div id="game-status" class="bg-primary-light text-primary text-center text-xs font-semibold py-2 rounded-lg border border-primary/20">Loading...</div>
+							<div id="game-board"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<audio id="remote-audio" autoplay class="hidden"></audio>
+	</main>
+	<div class="h-1.5 w-full sunset-stripe"></div>
+</Layout>
+
+<script is:inline>
+// ==========================================
+// THEME TOGGLE
+// ==========================================
+const themeToggle = document.getElementById('theme-toggle');
+function updateThemeIcons() {
+	const d = document.documentElement.classList.contains('dark');
+	document.querySelectorAll('.dark-icon').forEach(el => el.style.display = d ? 'block' : 'none');
+	document.querySelectorAll('.light-icon').forEach(el => el.style.display = d ? 'none' : 'block');
+}
+updateThemeIcons();
+themeToggle.addEventListener('click', () => {
+	document.documentElement.classList.toggle('dark');
+	localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+	updateThemeIcons();
+});
+
+// ==========================================
+// SEARCHABLE LANGUAGE & COUNTRY DROPDOWNS
+// ==========================================
+const languages = ['English','Spanish','French','German','Hindi','Portuguese','Arabic','Japanese','Korean','Chinese','Russian','Italian','Dutch','Turkish','Polish','Swedish','Thai','Vietnamese','Indonesian','Malay','Bengali','Tamil','Telugu','Urdu','Persian','Hebrew','Greek','Czech','Romanian','Hungarian','Danish','Norwegian','Finnish','Ukrainian','Tagalog','Swahili','Amharic','Burmese','Khmer','Lao','Nepali','Sinhala','Pashto','Yoruba','Zulu','Afrikaans','Catalan','Serbian','Croatian','Bulgarian','Slovak','Slovenian','Lithuanian','Latvian','Estonian','Icelandic','Maltese','Albanian','Macedonian','Georgian','Armenian','Azerbaijani','Kazakh','Uzbek','Mongolian','Tibetan'];
+
+const countries = ['Worldwide','Afghanistan','Albania','Algeria','Andorra','Angola','Argentina','Armenia','Australia','Austria','Azerbaijan','Bahamas','Bahrain','Bangladesh','Barbados','Belarus','Belgium','Belize','Benin','Bhutan','Bolivia','Bosnia','Botswana','Brazil','Brunei','Bulgaria','Burkina Faso','Burundi','Cambodia','Cameroon','Canada','Chad','Chile','China','Colombia','Congo','Costa Rica','Croatia','Cuba','Cyprus','Czech Republic','Denmark','Dominican Republic','Ecuador','Egypt','El Salvador','Estonia','Ethiopia','Fiji','Finland','France','Gabon','Georgia','Germany','Ghana','Greece','Guatemala','Guinea','Haiti','Honduras','Hungary','Iceland','India','Indonesia','Iran','Iraq','Ireland','Israel','Italy','Jamaica','Japan','Jordan','Kazakhstan','Kenya','Kuwait','Kyrgyzstan','Laos','Latvia','Lebanon','Libya','Lithuania','Luxembourg','Madagascar','Malawi','Malaysia','Maldives','Mali','Malta','Mexico','Moldova','Monaco','Mongolia','Montenegro','Morocco','Mozambique','Myanmar','Namibia','Nepal','Netherlands','New Zealand','Nicaragua','Niger','Nigeria','North Korea','North Macedonia','Norway','Oman','Pakistan','Palestine','Panama','Papua New Guinea','Paraguay','Peru','Philippines','Poland','Portugal','Qatar','Romania','Russia','Rwanda','Saudi Arabia','Senegal','Serbia','Sierra Leone','Singapore','Slovakia','Slovenia','Somalia','South Africa','South Korea','Spain','Sri Lanka','Sudan','Sweden','Switzerland','Syria','Taiwan','Tajikistan','Tanzania','Thailand','Togo','Trinidad and Tobago','Tunisia','Turkey','Turkmenistan','Uganda','Ukraine','United Arab Emirates','United Kingdom','United States','Uruguay','Uzbekistan','Venezuela','Vietnam','Yemen','Zambia','Zimbabwe'];
+
+function setupSearchDropdown(inputId, hidddenId, dropdownId, items) {
+	const input = document.getElementById(inputId);
+	const hidden = document.getElementById(hidddenId);
+	const dropdown = document.getElementById(dropdownId);
+
+	input.value = hidden.value;
+
+	function render(filter) {
+		const filtered = items.filter(i => i.toLowerCase().includes(filter.toLowerCase()));
+		if (!filtered.length) { dropdown.classList.add('hidden'); return; }
+		dropdown.innerHTML = filtered.slice(0, 30).map(i => `<div class="px-3 py-2 text-sm text-ink hover:bg-primary-light hover:text-primary cursor-pointer transition-colors" data-val="${i}">${i}</div>`).join('');
+		dropdown.classList.remove('hidden');
+		dropdown.querySelectorAll('[data-val]').forEach(el => {
+			el.addEventListener('mousedown', (e) => {
+				e.preventDefault();
+				input.value = el.dataset.val;
+				hidden.value = el.dataset.val;
+				dropdown.classList.add('hidden');
+			});
+		});
+	}
+
+	input.addEventListener('focus', () => render(input.value));
+	input.addEventListener('input', () => render(input.value));
+	input.addEventListener('blur', () => { setTimeout(() => dropdown.classList.add('hidden'), 150); });
+}
+
+setupSearchDropdown('language-search', 'language-filter', 'language-dropdown', languages);
+setupSearchDropdown('country-search', 'country-filter', 'country-dropdown', countries);
+
+// ==========================================
+// ANONYMOUS HANDLES & AVATARS
+// ==========================================
+const animals = ['🦊','🐻','🐼','🦁','🐯','🦄','🐺','🦉','🐙','🦎','🐬','🦖','🐸','🦋','🐝'];
+const adjectives = ['Cool','Swift','Brave','Clever','Lucky','Happy','Mystic','Silent','Wild','Noble','Cosmic','Neon'];
+const nouns = ['Fox','Bear','Wolf','Eagle','Tiger','Panda','Shark','Phoenix','Dragon','Owl','Cat','Rabbit'];
+
+function generateHandle() {
+	const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+	const noun = nouns[Math.floor(Math.random() * nouns.length)];
+	const num = Math.floor(Math.random() * 900) + 100;
+	const avatar = animals[Math.floor(Math.random() * animals.length)];
+	const handle = `${adj}${noun}${num}`;
+	document.getElementById('my-handle').textContent = handle;
+	document.getElementById('my-avatar').textContent = avatar;
+	localStorage.setItem('airwalk_handle', handle);
+	localStorage.setItem('airwalk_avatar', avatar);
+	return { handle, avatar };
+}
+
+// Load or generate handle
+if (!localStorage.getItem('airwalk_handle')) generateHandle();
+else {
+	document.getElementById('my-handle').textContent = localStorage.getItem('airwalk_handle');
+	document.getElementById('my-avatar').textContent = localStorage.getItem('airwalk_avatar') || '🦊';
+}
+
+// ==========================================
+// STATE
+// ==========================================
+let chatMode = 'voice'; // 'voice' | 'text'
+let localStream = null;
+let ws = null;
+let pc = null;
+let myClientId = 'p_' + Math.random().toString(36).substr(2, 9);
+let matchedPeerId = null;
+let activeRole = null;
+let isBotCall = false;
+let isMuted = false;
+let callTimerInterval = null;
+let skipInterval = null;
+let typingTimer = null;
+let botTimeout = null;
+let botSeq = 0;
+let friends = JSON.parse(localStorage.getItem('airwalk_friends') || '[]');
+let callHistory = JSON.parse(localStorage.getItem('airwalk_history') || '[]');
+
+// Game state
+let currentGame = null;
+let gameActive = false;
+let gameTurn = null;
+let tttBoard = Array(9).fill('');
+let rpsRound = 0, rpsScore = { me: 0, them: 0 };
+let c4Board = Array(6).fill(null).map(() => Array(7).fill(''));
+let wordleWord = '', wordleGuesses = [];
+let ludoPos = { me: 0, them: 0 };
+
+const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+
+// DOM refs
+const setupScreen = document.getElementById('setup-screen');
+const matchingScreen = document.getElementById('matching-screen');
+const callScreen = document.getElementById('call-screen');
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const eqBars = document.querySelectorAll('.eq-bar');
+
+// ==========================================
+// CHAT MODE
+// ==========================================
+window.setChatMode = function(mode) {
+	chatMode = mode;
+	document.getElementById('mode-voice').className = mode === 'voice'
+		? 'bg-primary text-on-primary border-2 border-primary rounded-lg p-3 text-center font-bold text-sm transition-all'
+		: 'bg-surface text-ink border-2 border-hairline rounded-lg p-3 text-center font-bold text-sm transition-all hover:border-primary';
+	document.getElementById('mode-text').className = mode === 'text'
+		? 'bg-primary text-on-primary border-2 border-primary rounded-lg p-3 text-center font-bold text-sm transition-all'
+		: 'bg-surface text-ink border-2 border-hairline rounded-lg p-3 text-center font-bold text-sm transition-all hover:border-primary';
+};
+
+// ==========================================
+// FRIENDS & HISTORY
+// ==========================================
+document.getElementById('friends-toggle').addEventListener('click', () => {
+	document.getElementById('history-panel').classList.add('hidden');
+	document.getElementById('friends-panel').classList.toggle('hidden');
+	renderFriends();
+});
+document.getElementById('history-toggle').addEventListener('click', () => {
+	document.getElementById('friends-panel').classList.add('hidden');
+	document.getElementById('history-panel').classList.toggle('hidden');
+	renderHistory();
+});
+
+function renderFriends() {
+	const list = document.getElementById('friends-list');
+	if (!friends.length) { list.innerHTML = '<p class="text-sm text-steel text-center py-8">No friends yet.</p>'; return; }
+	list.innerHTML = friends.map(f => `
+		<div class="flex items-center space-x-3 p-2 bg-surface border border-hairline rounded-lg">
+			<span class="text-lg">${f.avatar}</span>
+			<div class="flex-grow"><p class="font-bold text-sm text-ink">${f.handle}</p><p class="text-[10px] text-steel">${f.country} • ${f.lang}</p></div>
+		</div>
+	`).join('');
+}
+
+function renderHistory() {
+	const list = document.getElementById('history-list');
+	if (!callHistory.length) { list.innerHTML = '<p class="text-sm text-steel text-center py-8">No history yet.</p>'; return; }
+	list.innerHTML = callHistory.slice(-20).reverse().map(h => `
+		<div class="flex items-center space-x-3 p-2 bg-surface border border-hairline rounded-lg">
+			<span class="text-lg">${h.avatar}</span>
+			<div class="flex-grow"><p class="font-bold text-sm text-ink">${h.handle}</p><p class="text-[10px] text-steel">${h.duration} • ${h.date}</p></div>
+		</div>
+	`).join('');
+}
+
+function addFriend() {
+	if (!matchedPeerId) return;
+	const handle = document.getElementById('partner-handle').textContent;
+	const avatar = document.getElementById('partner-avatar').textContent;
+	const country = document.getElementById('partner-country').textContent;
+	const lang = document.getElementById('partner-lang').textContent;
+	if (friends.find(f => f.handle === handle)) { addSystemMsg('Already in friends list!'); return; }
+	friends.push({ handle, avatar, country, lang, added: new Date().toISOString() });
+	localStorage.setItem('airwalk_friends', JSON.stringify(friends));
+	addSystemMsg(`${handle} added to friends! 🤝`);
+}
+
+function saveHistory(duration) {
+	const handle = document.getElementById('partner-handle').textContent;
+	const avatar = document.getElementById('partner-avatar').textContent;
+	callHistory.push({ handle, avatar, duration, date: new Date().toLocaleString() });
+	localStorage.setItem('airwalk_history', JSON.stringify(callHistory.slice(-50)));
+}
+
+document.getElementById('add-friend-btn').addEventListener('click', addFriend);
+
+// ==========================================
+// INTEREST TAGS
+// ==========================================
+window.addTag = function(tag) {
+	const input = document.getElementById('interest-input');
+	const val = input.value.trim();
+	if (val) { const tags = val.split(',').map(t => t.trim()); if (!tags.includes(tag)) input.value = val + ', ' + tag; }
+	else input.value = tag;
+};
+
+// ==========================================
+// IMAGE SHARING
+// ==========================================
+document.getElementById('image-btn').addEventListener('click', () => document.getElementById('image-input').click());
+document.getElementById('image-input').addEventListener('change', function(e) {
+	const file = e.target.files[0];
+	if (!file) return;
+	if (file.size > 5 * 1024 * 1024) { alert('Max 5MB'); return; }
+	const reader = new FileReader();
+	reader.onload = function(ev) {
+		const imgHtml = `<img src="${ev.target.result}" class="max-w-[200px] rounded-lg border border-hairline" alt="Shared image"/>`;
+		addMyChatMsg(imgHtml, true);
+		if (ws?.readyState === WebSocket.OPEN && matchedPeerId) {
+			ws.send(JSON.stringify({ type: 'chat_message', data: { targetPeerId: matchedPeerId, text: `[IMG]${ev.target.result}[/IMG]` } }));
+		}
+	};
+	reader.readAsDataURL(file);
+	this.value = '';
+});
+
+// ==========================================
+// CORE SIGNALING
+// ==========================================
+async function initAudio() {
+	if (chatMode === 'text') return true;
+	try { if (localStream) return true; localStream = await navigator.mediaDevices.getUserMedia({ audio: true }); return true; }
+	catch(e) { showAlert('Microphone required for voice chat.'); return false; }
+}
+
+function showAlert(msg) { document.getElementById('alert-message').textContent = msg; document.getElementById('alert-banner').classList.remove('hidden'); }
+
+document.getElementById('start-match-btn').addEventListener('click', async () => {
+	const ok = await initAudio();
+	if (!ok) return;
+	setupScreen.classList.add('hidden');
+	matchingScreen.classList.remove('hidden');
+	document.getElementById('search-mode-label').textContent = chatMode === 'voice' ? 'Voice Chat' : 'Text Only';
+	document.getElementById('search-icon').textContent = chatMode === 'voice' ? '🎙️' : '💬';
+	const lang = document.getElementById('language-filter').value;
+	const country = document.getElementById('country-filter').value;
+	const tags = document.getElementById('interest-input').value;
+	document.getElementById('search-details').innerHTML = `<strong>Filters:</strong> ${lang} • ${country}${tags ? ' • ' + tags : ''}`;
+	connectWS();
+});
+
+document.getElementById('cancel-match-btn').addEventListener('click', () => {
+	if (ws?.readyState === WebSocket.OPEN) ws.close();
+	cleanup();
+	matchingScreen.classList.add('hidden');
+	setupScreen.classList.remove('hidden');
+});
+
+function connectWS() {
+	if (ws?.readyState === WebSocket.OPEN) { sendJoin(); return; }
+	const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+	ws = new WebSocket(`${proto}//${location.hostname}:3001`);
+	ws.onopen = () => { document.getElementById('online-indicator').textContent = '🟢 Online'; sendJoin(); };
+	ws.onmessage = async (e) => {
+		const msg = JSON.parse(e.data);
+		switch(msg.type) {
+			case 'matched': onMatched(msg.data); break;
+			case 'offer': await onOffer(msg.data); break;
+			case 'answer': if(pc) await pc.setRemoteDescription(new RTCSessionDescription(msg.data)); break;
+			case 'candidate': if(pc) await pc.addIceCandidate(new RTCIceCandidate(msg.data)); break;
+			case 'chat_message': onRemoteMsg(msg.data.text); break;
+			case 'typing': msg.data.isTyping ? document.getElementById('typing-indicator').classList.remove('hidden') : document.getElementById('typing-indicator').classList.add('hidden'); break;
+			case 'game_action': onGameAction(msg.data); break;
+			case 'skipped': case 'disconnected': addSystemMsg('Partner left. Searching...'); reMatch(); break;
+		}
+	};
+	ws.onclose = () => { document.getElementById('online-indicator').textContent = '🔴 Offline'; };
+}
+
+function sendJoin() {
+	const lang = document.getElementById('language-filter').value;
+	const country = document.getElementById('country-filter').value;
+	const tags = document.getElementById('interest-input').value.split(',').map(t=>t.trim()).filter(Boolean);
+	const handle = localStorage.getItem('airwalk_handle');
+	const avatar = localStorage.getItem('airwalk_avatar');
+	const name = document.getElementById('user-name').value.trim() || handle;
+	const age = parseInt(document.getElementById('user-age').value) || 18;
+	const gender = document.getElementById('user-gender').value;
+	localStorage.setItem('airwalk_name', name);
+	localStorage.setItem('airwalk_age', age);
+	localStorage.setItem('airwalk_gender', gender);
+	localStorage.setItem('airwalk_language', lang);
+	localStorage.setItem('airwalk_country', country);
+	localStorage.setItem('airwalk_interests', document.getElementById('interest-input').value);
+	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle, avatar, chatMode, name, age, gender } }));
+}
+
+function onMatched(data) {
+	matchedPeerId = data.peerId;
+	activeRole = data.role;
+	isBotCall = !!data.isBot;
+	const pi = data.peerInfo;
+
+	document.getElementById('partner-handle').textContent = pi.name || pi.handle || 'Stranger';
+	document.getElementById('partner-avatar').textContent = pi.avatar || '🐻';
+	document.getElementById('partner-country').textContent = `🌍 ${pi.country}`;
+	const genderIcon = pi.gender === 'Female' ? '♀' : pi.gender === 'Male' ? '♂' : '⚧';
+	document.getElementById('partner-lang').textContent = `${genderIcon} ${pi.gender || '--'} • ${pi.age || '--'}yo • ${pi.language}`;
+	document.getElementById('partner-tags').innerHTML = (pi.tags||[]).map(t => `<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">#${t}</span>`).join('');
+
+	// Show/hide voice UI
+	if (chatMode === 'voice') {
+		document.getElementById('eq-section').classList.remove('hidden');
+		document.getElementById('text-mode-info').classList.add('hidden');
+		document.getElementById('mute-btn').classList.remove('hidden');
+		document.getElementById('call-status-label').textContent = 'Live Call';
+	} else {
+		document.getElementById('eq-section').classList.add('hidden');
+		document.getElementById('text-mode-info').classList.remove('hidden');
+		document.getElementById('mute-btn').classList.add('hidden');
+		document.getElementById('call-status-label').textContent = 'Text Chat';
+	}
+
+	chatMessages.innerHTML = '<div class="text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg">Connected! Say hello 👋</div>';
+	switchTab('chat');
+	exitGame();
+	matchingScreen.classList.add('hidden');
+	callScreen.classList.remove('hidden');
+	startTimer();
+	startSkipCooldown();
+	if (chatMode === 'voice') startEq();
+	if (isBotCall) startBot();
+	else if (chatMode === 'voice') startWebRTC();
+}
+
+// WebRTC
+async function startWebRTC() {
+	pc = new RTCPeerConnection(iceConfig);
+	pc.onicecandidate = e => { if(e.candidate && ws?.readyState===1) ws.send(JSON.stringify({type:'candidate',targetPeerId:matchedPeerId,data:e.candidate})); };
+	pc.ontrack = e => { document.getElementById('remote-audio').srcObject = e.streams[0]; };
+	if(localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+	if(activeRole==='initiator') { const o = await pc.createOffer(); await pc.setLocalDescription(o); ws.send(JSON.stringify({type:'offer',targetPeerId:matchedPeerId,data:o})); }
+}
+async function onOffer(offer) {
+	if(isBotCall) return;
+	pc = new RTCPeerConnection(iceConfig);
+	pc.onicecandidate = e => { if(e.candidate && ws?.readyState===1) ws.send(JSON.stringify({type:'candidate',targetPeerId:matchedPeerId,data:e.candidate})); };
+	pc.ontrack = e => { document.getElementById('remote-audio').srcObject = e.streams[0]; };
+	if(localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+	await pc.setRemoteDescription(new RTCSessionDescription(offer));
+	const a = await pc.createAnswer(); await pc.setLocalDescription(a);
+	ws.send(JSON.stringify({type:'answer',targetPeerId:matchedPeerId,data:a}));
+}
+
+// Timer & EQ
+let callStart = 0;
+function startTimer() { callStart = Date.now(); callTimerInterval = setInterval(() => { const s=Math.floor((Date.now()-callStart)/1000); document.getElementById('call-timer').textContent=`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }, 1000); }
+function stopTimer() { if(callTimerInterval){clearInterval(callTimerInterval);callTimerInterval=null;} document.getElementById('call-timer').textContent='00:00'; }
+let eqInt = null;
+function startEq() { eqInt = setInterval(()=>{eqBars.forEach(b=>{b.style.height=`${Math.random()*80+10}px`;});},150); }
+function stopEq() { if(eqInt){clearInterval(eqInt);eqInt=null;} eqBars.forEach(b=>{b.style.height='12px';}); }
+function startSkipCooldown() {
+	const btn = document.getElementById('skip-btn'); const lbl = document.getElementById('skip-btn-label');
+	btn.disabled=true; let c=5; lbl.textContent=`Skip (${c}s)`;
+	skipInterval = setInterval(()=>{ c--; if(c>0) lbl.textContent=`Skip (${c}s)`; else{clearInterval(skipInterval);btn.disabled=false;lbl.textContent='Skip';} },1000);
+}
+
+function getCallDuration() { return document.getElementById('call-timer').textContent; }
+function cleanup() { stopTimer(); stopEq(); if(pc){pc.close();pc=null;} document.getElementById('remote-audio').srcObject=null; if(botTimeout)clearTimeout(botTimeout); matchedPeerId=null;activeRole=null;isBotCall=false;botSeq=0;exitGame(); }
+function reMatch() { const dur = getCallDuration(); if(dur!=='00:00') saveHistory(dur); cleanup(); callScreen.classList.add('hidden'); matchingScreen.classList.remove('hidden'); sendJoin(); }
+
+// Controls
+document.getElementById('skip-btn').addEventListener('click', () => { if(ws?.readyState===1) ws.send(JSON.stringify({type:'skip'})); addSystemMsg('Skipped. Searching...'); reMatch(); });
+document.getElementById('mute-btn').addEventListener('click', () => {
+	if(!localStream) return; isMuted=!isMuted;
+	localStream.getAudioTracks().forEach(t=>{t.enabled=!isMuted;});
+	document.getElementById('mute-btn').textContent = isMuted ? '🔇 Unmute' : '🎙️ Mute';
+});
+document.getElementById('volume-slider').addEventListener('input', e => { document.getElementById('remote-audio').volume = e.target.value; });
+document.getElementById('report-btn').addEventListener('click', () => { if(confirm('Report user?')){if(ws?.readyState===1)ws.send(JSON.stringify({type:'skip'}));addSystemMsg('Reported.');reMatch();} });
+document.getElementById('block-btn').addEventListener('click', () => { if(confirm('Block this user?')){if(ws?.readyState===1)ws.send(JSON.stringify({type:'skip'}));addSystemMsg('Blocked. You won\'t match them again.');reMatch();} });
+
+// ==========================================
+// CHAT MESSAGES
+// ==========================================
+function sendChat() {
+	const text = chatInput.value.trim(); if(!text) return;
+	addMyChatMsg(escapeHTML(text));
+	chatInput.value = '';
+	if(isBotCall) { if(botTimeout)clearTimeout(botTimeout); botReply(1500); }
+	else if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text}}));
+}
+document.getElementById('send-btn').addEventListener('click', sendChat);
+chatInput.addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
+chatInput.addEventListener('input', () => {
+	if(!matchedPeerId||isBotCall) return;
+	if(ws?.readyState===1) ws.send(JSON.stringify({type:'typing',data:{targetPeerId:matchedPeerId,isTyping:true}}));
+	if(typingTimer) clearTimeout(typingTimer);
+	typingTimer = setTimeout(()=>{if(ws?.readyState===1&&matchedPeerId)ws.send(JSON.stringify({type:'typing',data:{targetPeerId:matchedPeerId,isTyping:false}}));},2000);
+});
+
+function onRemoteMsg(text) {
+	if(text.startsWith('[IMG]') && text.endsWith('[/IMG]')) {
+		const src = text.slice(5, -6);
+		addRemoteChatMsg(`<img src="${src}" class="max-w-[200px] rounded-lg border border-hairline" alt="Image"/>`, true);
+	} else {
+		addRemoteChatMsg(escapeHTML(text));
+	}
+}
+
+function addMyChatMsg(content, isHtml=false) {
+	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5';
+	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+	d.innerHTML = `<div class="bg-primary text-on-primary py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm">${content}</div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function addRemoteChatMsg(content, isHtml=false) {
+	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5';
+	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+	const handle = document.getElementById('partner-handle').textContent;
+	d.innerHTML = `<div class="bg-surface border border-hairline text-ink py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm">${content}</div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function addSystemMsg(text) {
+	const d = document.createElement('div'); d.className = 'text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg';
+	d.textContent = text; chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+function escapeHTML(s) { return s.replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]||c)); }
+
+// ==========================================
+// BOT
+// ==========================================
+function startBot() { botSeq=0; botReply(2500); }
+function botReply(delay) {
+	botTimeout = setTimeout(()=>{
+		document.getElementById('typing-indicator').classList.remove('hidden');
+		botTimeout = setTimeout(()=>{
+			document.getElementById('typing-indicator').classList.add('hidden');
+			botSeq++;
+			const msgs = ["Hey! How's it going? 👋","What brings you to Airwalk today?","I love that everything here is free — no coins needed!","Try out the games tab! We can play while chatting.","Feel free to skip when you want. It unlocks after 5 seconds."];
+			addRemoteChatMsg(escapeHTML(msgs[Math.min(botSeq-1, msgs.length-1)]));
+			if(botSeq<5) botReply(5000+Math.random()*3000);
+		}, 1200);
+	}, delay);
+}
+
+// ==========================================
+// TABS
+// ==========================================
+window.switchTab = function(tab) {
+	const tc = document.getElementById('tab-chat-btn'), tg = document.getElementById('tab-games-btn');
+	if(tab==='chat') {
+		tc.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none";
+		tg.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none relative";
+		document.getElementById('panel-chat').classList.remove('hidden'); document.getElementById('panel-games').classList.add('hidden');
+	} else {
+		tg.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none relative";
+		tc.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none";
+		document.getElementById('panel-games').classList.remove('hidden'); document.getElementById('panel-chat').classList.add('hidden');
+		document.getElementById('game-dot').classList.add('hidden');
+	}
+};
+
+// ==========================================
+// GAMES ENGINE
+// ==========================================
+window.startGame = function(type) { mountGame(type, true); };
+window.exitGame = function() { currentGame=null;gameActive=false; document.getElementById('game-selector').classList.remove('hidden'); document.getElementById('game-area').classList.add('hidden'); };
+window.resetGame = function() { if(currentGame) mountGame(currentGame, true); };
+
+function setStatus(s) { document.getElementById('game-status').textContent = s; }
+
+function mountGame(type, invite=false) {
+	currentGame = type; gameActive = true;
+	document.getElementById('game-selector').classList.add('hidden');
+	document.getElementById('game-area').classList.remove('hidden');
+	const board = document.getElementById('game-board');
+
+	if(type==='tictactoe') {
+		document.getElementById('game-title').textContent = '❌ Tic-Tac-Toe';
+		gameTurn = activeRole==='initiator' ? 'me' : 'them';
+		tttBoard = Array(9).fill('');
+		board.innerHTML = `<div class="grid grid-cols-3 gap-2 w-60 mx-auto">${Array(9).fill('').map((_,i)=>`<button class="ttt-cell bg-surface hover:bg-cream border border-hairline rounded-xl h-[76px] text-3xl font-bold transition-all" data-i="${i}"></button>`).join('')}</div>`;
+		board.querySelectorAll('.ttt-cell').forEach(c => c.addEventListener('click', () => tttMove(+c.dataset.i)));
+		setStatus(gameTurn==='me'?'Your turn (X)':"Stranger's turn (O)");
+	} else if(type==='rps') {
+		document.getElementById('game-title').textContent = '✊ Rock Paper Scissors';
+		rpsRound=0; rpsScore={me:0,them:0};
+		board.innerHTML = `<div class="text-center space-y-4"><p class="text-sm text-slate">Best of 3 — Pick your move:</p><div class="flex justify-center gap-3"><button class="rps-btn text-4xl p-3 bg-surface border border-hairline rounded-xl hover:bg-cream transition-all" data-m="rock">✊</button><button class="rps-btn text-4xl p-3 bg-surface border border-hairline rounded-xl hover:bg-cream transition-all" data-m="paper">✋</button><button class="rps-btn text-4xl p-3 bg-surface border border-hairline rounded-xl hover:bg-cream transition-all" data-m="scissors">✌️</button></div><p id="rps-result" class="text-sm font-bold text-ink"></p><p id="rps-scores" class="text-xs text-steel">You: 0 | Them: 0</p></div>`;
+		board.querySelectorAll('.rps-btn').forEach(b => b.addEventListener('click', () => rpsMove(b.dataset.m)));
+		setStatus('Pick your move!');
+	} else if(type==='connect4') {
+		document.getElementById('game-title').textContent = '🔴 Connect Four';
+		gameTurn = activeRole==='initiator' ? 'me' : 'them';
+		c4Board = Array(6).fill(null).map(()=>Array(7).fill(''));
+		renderC4();
+		setStatus(gameTurn==='me'?'Your turn (🔴)':"Stranger's turn (🟡)");
+	} else if(type==='wordle') {
+		document.getElementById('game-title').textContent = '🟩 Wordle';
+		const words = ['BRAVE','CRANE','FLAME','GLOBE','HOUSE','LIGHT','MUSIC','OCEAN','PLANT','SMILE','STONE','TIGER','WORLD'];
+		wordleWord = words[Math.floor(Math.random()*words.length)];
+		wordleGuesses = [];
+		board.innerHTML = `<div class="space-y-3"><div id="wordle-grid" class="space-y-1"></div><div class="flex justify-center gap-2"><input id="wordle-input" type="text" maxlength="5" class="w-32 bg-surface border border-hairline rounded-lg px-3 h-9 text-sm uppercase font-bold text-center focus:ring-2 focus:ring-primary focus:outline-none" placeholder="5 letters"/><button id="wordle-submit" class="bg-primary text-on-primary px-4 h-9 rounded-lg font-bold text-sm">Guess</button></div></div>`;
+		document.getElementById('wordle-submit').addEventListener('click', wordleGuess);
+		document.getElementById('wordle-input').addEventListener('keydown', e => { if(e.key==='Enter') wordleGuess(); });
+		setStatus('Guess the 5-letter word!');
+	} else if(type==='ludo') {
+		document.getElementById('game-title').textContent = '🎲 Ludo Race';
+		gameTurn = activeRole==='initiator' ? 'me' : 'them';
+		ludoPos = {me:0,them:0};
+		board.innerHTML = `<div class="space-y-4"><div class="bg-surface rounded-xl border border-hairline p-4 space-y-3"><div class="flex justify-between text-xs font-bold"><span class="text-primary">🔴 You: <span id="ludo-me">0</span>/16</span><span class="text-blue-500">🔵 Them: <span id="ludo-them">0</span>/16</span></div><div class="h-10 bg-canvas rounded-lg border border-hairline relative"><div class="absolute right-3 top-0 bottom-0 flex items-center text-[9px] font-bold text-accent">🏁</div><div id="ludo-t-me" class="absolute w-6 h-6 bg-primary text-on-primary rounded-full flex items-center justify-center text-[10px] font-bold shadow transition-all duration-500" style="left:2%;top:15%">Y</div><div id="ludo-t-them" class="absolute w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow transition-all duration-500" style="left:2%;top:45%">T</div></div></div><div class="flex justify-center gap-3"><button id="ludo-roll" class="bg-primary hover:bg-primary-deep text-on-primary font-bold text-sm px-6 py-2.5 rounded-lg shadow transition-all">🎲 Roll</button><div class="bg-surface border border-hairline px-4 py-2.5 rounded-lg"><span class="text-xs text-steel">Roll: </span><span id="ludo-dice" class="text-lg font-bold text-ink">--</span></div></div></div>`;
+		document.getElementById('ludo-roll').addEventListener('click', ludoRoll);
+		document.getElementById('ludo-roll').disabled = gameTurn!=='me';
+		setStatus(gameTurn==='me'?'Roll the dice!':'Stranger rolling...');
+	}
+
+	if(invite && ws?.readyState===1 && matchedPeerId) {
+		ws.send(JSON.stringify({type:'game_action',data:{targetPeerId:matchedPeerId,gameType:type,action:'invite',payload:{}}}));
+	}
+}
+
+// --- TIC TAC TOE ---
+function tttMove(i) {
+	if(!gameActive||gameTurn!=='me'||tttBoard[i]) return;
+	tttBoard[i] = 'X';
+	renderTTT();
+	sendGameAction('tictactoe','move',{i});
+	const w = tttCheck();
+	if(w) { gameActive=false; setStatus(w==='draw'?'Draw!':'You win! 🎉'); }
+	else { gameTurn='them'; setStatus("Stranger's turn"); if(isBotCall) botGameMove(); }
+}
+function renderTTT() {
+	document.querySelectorAll('.ttt-cell').forEach((c,idx) => {
+		c.textContent = tttBoard[idx];
+		c.style.color = tttBoard[idx]==='X'?'var(--color-primary)':tttBoard[idx]==='O'?'#e74c3c':'';
+	});
+}
+function tttCheck() {
+	const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+	for(const[a,b,c]of w) if(tttBoard[a]&&tttBoard[a]===tttBoard[b]&&tttBoard[a]===tttBoard[c]) return tttBoard[a];
+	return tttBoard.includes('')?null:'draw';
+}
+
+// --- ROCK PAPER SCISSORS ---
+function rpsMove(move) {
+	if(!gameActive) return;
+	const botMove = ['rock','paper','scissors'][Math.floor(Math.random()*3)];
+	const result = rpsResult(move, botMove);
+	rpsRound++;
+	if(result==='win') rpsScore.me++;
+	else if(result==='lose') rpsScore.them++;
+	const icons = {rock:'✊',paper:'✋',scissors:'✌️'};
+	document.getElementById('rps-result').textContent = `${icons[move]} vs ${icons[botMove]} — ${result==='win'?'You win!':result==='lose'?'They win!':'Tie!'}`;
+	document.getElementById('rps-scores').textContent = `You: ${rpsScore.me} | Them: ${rpsScore.them}`;
+	if(rpsScore.me>=2) { gameActive=false; setStatus('You won the match! 🎉'); }
+	else if(rpsScore.them>=2) { gameActive=false; setStatus('Stranger won!'); }
+	else setStatus(`Round ${rpsRound+1} — Pick!`);
+	sendGameAction('rps','move',{move, botMove, result});
+}
+function rpsResult(a,b) { if(a===b) return 'draw'; if((a==='rock'&&b==='scissors')||(a==='paper'&&b==='rock')||(a==='scissors'&&b==='paper')) return 'win'; return 'lose'; }
+
+// --- CONNECT FOUR ---
+function renderC4() {
+	const board = document.getElementById('game-board');
+	board.innerHTML = `<div class="flex justify-center"><div class="bg-primary/10 border border-primary/20 rounded-xl p-2 inline-block"><div class="grid grid-cols-7 gap-1" id="c4-grid">${c4Board.flat().map((_,idx)=>{const r=Math.floor(idx/7),c=idx%7;const v=c4Board[r][c];return `<div class="w-8 h-8 rounded-full border border-hairline ${v==='R'?'bg-red-500':v==='Y'?'bg-yellow-400':'bg-canvas'} cursor-pointer transition-colors" data-col="${c}"></div>`;}).join('')}</div></div></div>`;
+	board.querySelectorAll('[data-col]').forEach(el => el.addEventListener('click', () => c4Drop(+el.dataset.col)));
+}
+function c4Drop(col) {
+	if(!gameActive||gameTurn!=='me') return;
+	for(let r=5;r>=0;r--) { if(!c4Board[r][col]) { c4Board[r][col]='R'; break; } else if(r===0) return; }
+	renderC4();
+	sendGameAction('connect4','move',{col});
+	if(c4Check('R')) { gameActive=false; setStatus('You win! 🎉'); }
+	else { gameTurn='them'; setStatus("Stranger's turn (🟡)"); if(isBotCall) botGameMove(); }
+}
+function c4Check(sym) {
+	for(let r=0;r<6;r++) for(let c=0;c<7;c++) {
+		if(c+3<7&&c4Board[r][c]===sym&&c4Board[r][c+1]===sym&&c4Board[r][c+2]===sym&&c4Board[r][c+3]===sym) return true;
+		if(r+3<6&&c4Board[r][c]===sym&&c4Board[r+1][c]===sym&&c4Board[r+2][c]===sym&&c4Board[r+3][c]===sym) return true;
+		if(r+3<6&&c+3<7&&c4Board[r][c]===sym&&c4Board[r+1][c+1]===sym&&c4Board[r+2][c+2]===sym&&c4Board[r+3][c+3]===sym) return true;
+		if(r-3>=0&&c+3<7&&c4Board[r][c]===sym&&c4Board[r-1][c+1]===sym&&c4Board[r-2][c+2]===sym&&c4Board[r-3][c+3]===sym) return true;
+	}
+	return false;
+}
+
+// --- WORDLE ---
+function wordleGuess() {
+	const input = document.getElementById('wordle-input');
+	const guess = input.value.toUpperCase().trim();
+	if(guess.length!==5) return;
+	input.value = '';
+	wordleGuesses.push(guess);
+	const grid = document.getElementById('wordle-grid');
+	const row = document.createElement('div'); row.className = 'flex justify-center gap-1';
+	for(let i=0;i<5;i++) {
+		const letter = guess[i];
+		let bg = 'bg-stone'; // gray
+		if(letter===wordleWord[i]) bg = 'bg-green-500 text-white';
+		else if(wordleWord.includes(letter)) bg = 'bg-yellow-400 text-ink';
+		else bg = 'bg-muted text-ink';
+		row.innerHTML += `<div class="w-9 h-9 ${bg} rounded font-bold text-sm flex items-center justify-center border border-hairline">${letter}</div>`;
+	}
+	grid.appendChild(row);
+	if(guess===wordleWord) { gameActive=false; setStatus('Correct! 🎉 The word was ' + wordleWord); }
+	else if(wordleGuesses.length>=6) { gameActive=false; setStatus('Game over! Word was: ' + wordleWord); }
+	else setStatus(`Guess ${wordleGuesses.length+1}/6`);
+	sendGameAction('wordle','guess',{guess});
+}
+
+// --- LUDO ---
+function ludoRoll() {
+	if(!gameActive||gameTurn!=='me') return;
+	const roll = Math.floor(Math.random()*6)+1;
+	document.getElementById('ludo-dice').textContent = roll;
+	ludoPos.me = Math.min(16, ludoPos.me + roll);
+	document.getElementById('ludo-me').textContent = ludoPos.me;
+	document.getElementById('ludo-t-me').style.left = `${Math.min(88,(ludoPos.me/16)*88)}%`;
+	sendGameAction('ludo','roll',{roll,pos:ludoPos.me});
+	if(ludoPos.me>=16) { gameActive=false; setStatus('You won! 🏆'); document.getElementById('ludo-roll').disabled=true; }
+	else { gameTurn='them'; setStatus('Stranger rolling...'); document.getElementById('ludo-roll').disabled=true; if(isBotCall) botGameMove(); }
+}
+
+// --- GAME COMMS ---
+function sendGameAction(type, action, payload) {
+	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'game_action',data:{targetPeerId:matchedPeerId,gameType:type,action,payload}}));
+}
+
+function onGameAction(data) {
+	const {gameType, action, payload} = data;
+	if(document.getElementById('panel-games').classList.contains('hidden')) { document.getElementById('game-dot').classList.remove('hidden'); addSystemMsg('🎮 Stranger started a game!'); }
+	if(currentGame!==gameType) mountGame(gameType, false);
+
+	if(gameType==='tictactoe'&&action==='move') {
+		tttBoard[payload.i]='O'; renderTTT();
+		const w=tttCheck(); if(w){gameActive=false;setStatus(w==='draw'?'Draw!':'Stranger wins!');} else{gameTurn='me';setStatus('Your turn');}
+	} else if(gameType==='connect4'&&action==='move') {
+		for(let r=5;r>=0;r--) { if(!c4Board[r][payload.col]){c4Board[r][payload.col]='Y';break;} }
+		renderC4(); if(c4Check('Y')){gameActive=false;setStatus('Stranger wins!');} else{gameTurn='me';setStatus('Your turn (🔴)');}
+	} else if(gameType==='ludo'&&action==='roll') {
+		ludoPos.them=payload.pos; document.getElementById('ludo-them').textContent=ludoPos.them;
+		document.getElementById('ludo-t-them').style.left=`${Math.min(88,(ludoPos.them/16)*88)}%`;
+		document.getElementById('ludo-dice').textContent=payload.roll;
+		if(ludoPos.them>=16){gameActive=false;setStatus('Stranger won!');} else{gameTurn='me';setStatus('Roll the dice!');document.getElementById('ludo-roll').disabled=false;}
+	}
+}
+
+// Bot game moves
+function botGameMove() {
+	if(!isBotCall||!gameActive||gameTurn!=='them') return;
+	setStatus('Stranger thinking...');
+	setTimeout(()=>{
+		if(!gameActive||gameTurn!=='them') return;
+		if(currentGame==='tictactoe') {
+			const avail=tttBoard.map((v,i)=>v===''?i:-1).filter(i=>i!==-1);
+			if(avail.length) { const i=avail[Math.floor(Math.random()*avail.length)]; tttBoard[i]='O'; renderTTT(); const w=tttCheck(); if(w){gameActive=false;setStatus(w==='draw'?'Draw!':'Stranger wins!');}else{gameTurn='me';setStatus('Your turn');} }
+		} else if(currentGame==='connect4') {
+			const cols=[];for(let c=0;c<7;c++){if(!c4Board[0][c])cols.push(c);}
+			if(cols.length){const col=cols[Math.floor(Math.random()*cols.length)];for(let r=5;r>=0;r--){if(!c4Board[r][col]){c4Board[r][col]='Y';break;}}renderC4();if(c4Check('Y')){gameActive=false;setStatus('Stranger wins!');}else{gameTurn='me';setStatus('Your turn (🔴)');}}
+		} else if(currentGame==='ludo') {
+			const roll=Math.floor(Math.random()*6)+1;ludoPos.them=Math.min(16,ludoPos.them+roll);
+			document.getElementById('ludo-them').textContent=ludoPos.them;document.getElementById('ludo-t-them').style.left=`${Math.min(88,(ludoPos.them/16)*88)}%`;document.getElementById('ludo-dice').textContent=roll;
+			if(ludoPos.them>=16){gameActive=false;setStatus('Stranger won!');}else{gameTurn='me';setStatus('Roll the dice!');document.getElementById('ludo-roll').disabled=false;}
+		}
+	}, 1000+Math.random()*800);
+}
+
+// Load saved preferences
+window.addEventListener('load', () => {
+	if(localStorage.getItem('airwalk_language')) { document.getElementById('language-filter').value = localStorage.getItem('airwalk_language'); document.getElementById('language-search').value = localStorage.getItem('airwalk_language'); }
+	if(localStorage.getItem('airwalk_country')) { document.getElementById('country-filter').value = localStorage.getItem('airwalk_country'); document.getElementById('country-search').value = localStorage.getItem('airwalk_country'); }
+	if(localStorage.getItem('airwalk_interests')) document.getElementById('interest-input').value = localStorage.getItem('airwalk_interests');
+	if(localStorage.getItem('airwalk_name')) document.getElementById('user-name').value = localStorage.getItem('airwalk_name');
+	if(localStorage.getItem('airwalk_age')) document.getElementById('user-age').value = localStorage.getItem('airwalk_age');
+	if(localStorage.getItem('airwalk_gender')) document.getElementById('user-gender').value = localStorage.getItem('airwalk_gender');
+});
+</script>

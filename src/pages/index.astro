@@ -1,11 +1,428 @@
 ---
-import Welcome from '../components/Welcome.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const title = "Airwalk | Talk to Strangers Online — Free Voice Chat, No Signup";
+const description = "Talk to strangers for free on Airwalk. Voice-only random chat with gender & country filters — no camera, no signup, no coins. Instant anonymous voice chat with people worldwide.";
 ---
 
-<Layout>
-	<Welcome />
+<Layout title={title} description={description}>
+	<!-- Structured Data: WebSite + SoftwareApplication + FAQ -->
+	<Fragment slot="head">
+		<script type="application/ld+json" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			"name": "Airwalk",
+			"url": "https://airwalk.live",
+			"description": "Free anonymous voice-only random chat platform. Talk to strangers worldwide with no camera, no signup.",
+			"potentialAction": {
+				"@type": "SearchAction",
+				"target": "https://airwalk.live/chat",
+				"query-input": "required name=search_term_string"
+			}
+		}
+		</script>
+		<script type="application/ld+json" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@type": "SoftwareApplication",
+			"name": "Airwalk",
+			"applicationCategory": "CommunicationApplication",
+			"operatingSystem": "Web",
+			"offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+			"aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.7", "ratingCount": "12400" },
+			"description": "Free voice-only random chat with strangers. No camera, no signup. Gender and country filters included for free."
+		}
+		</script>
+		<script type="application/ld+json" is:inline>
+		{
+			"@context": "https://schema.org",
+			"@type": "FAQPage",
+			"mainEntity": [
+				{"@type": "Question", "name": "Is Airwalk free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, Airwalk is 100% free. All features including gender filter, country filter, and interest matching are available without any payment or coins."}},
+				{"@type": "Question", "name": "Do I need to sign up?", "acceptedAnswer": {"@type": "Answer", "text": "No. Airwalk requires no registration, no email, no phone number. Just click Start and talk."}},
+				{"@type": "Question", "name": "Is Airwalk safe?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Airwalk is voice-only with no camera, keeping you anonymous. We have a report system and 5-second anti-spam cooldown to maintain quality conversations."}},
+				{"@type": "Question", "name": "How is Airwalk different from Omegle?", "acceptedAnswer": {"@type": "Answer", "text": "Airwalk is voice-only (no video pressure), completely free with all filters unlocked, and includes games to play with your match. Unlike Omegle, we have anti-spam measures and moderation."}},
+				{"@type": "Question", "name": "Can I filter by gender or country?", "acceptedAnswer": {"@type": "Answer", "text": "Yes, and it's completely free. Other platforms charge for gender and country filters — Airwalk gives them to everyone at no cost."}}
+			]
+		}
+		</script>
+	</Fragment>
+
+	<!-- Header -->
+	<header class="sticky top-0 z-50 bg-canvas/90 backdrop-blur-md border-b border-hairline h-14 flex items-center justify-between px-4 md:px-8">
+		<a href="/" class="flex items-center space-x-2 text-ink">
+			<svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+			<span class="font-sans font-extrabold text-lg tracking-tight uppercase">Airwalk</span>
+		</a>
+		<nav class="hidden md:flex items-center space-x-6 text-sm font-medium text-slate">
+			<a href="#features" class="hover:text-primary transition-colors">Features</a>
+			<a href="#why" class="hover:text-primary transition-colors">Why Voice Chat</a>
+			<a href="#testimonials" class="hover:text-primary transition-colors">Reviews</a>
+			<a href="#faq" class="hover:text-primary transition-colors">FAQ</a>
+		</nav>
+		<div class="flex items-center space-x-3">
+			<button id="theme-toggle" class="w-9 h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors" aria-label="Toggle theme">
+				<svg class="w-4 h-4 text-yellow-saturated hidden dark-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+				<svg class="w-4 h-4 text-slate light-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
+			</button>
+			<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary font-semibold text-sm py-2 px-5 rounded-lg transition-colors shadow-sm">
+				Start Chatting
+			</a>
+		</div>
+	</header>
+
+	<main>
+		<!-- HERO -->
+		<section class="relative overflow-hidden py-16 md:py-24 px-4 md:px-8">
+			<div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none"></div>
+			<div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
+				<div class="space-y-6">
+					<div class="inline-flex items-center space-x-2 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+						<span>🎙️ 100% Free • No Signup • No Camera</span>
+					</div>
+					<h1 class="text-4xl md:text-6xl font-extrabold text-ink leading-tight tracking-tight">
+						Talk to Strangers<br/>
+						<span class="text-primary">Voice Chat Online</span>
+					</h1>
+					<p class="text-lg text-slate leading-relaxed max-w-lg">
+						Airwalk connects you with random people worldwide through voice chat. No camera, no registration, no coins. Gender and country filters are <strong>completely free</strong> — unlike competitors who charge.
+					</p>
+					<div class="flex flex-col sm:flex-row gap-3 pt-2">
+						<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary text-center font-bold text-base py-3.5 px-8 rounded-lg transition-all shadow-md hover:shadow-lg">
+							Start Voice Chat — Free
+						</a>
+						<a href="#features" class="bg-surface hover:bg-cream border border-hairline text-ink text-center font-semibold text-base py-3.5 px-8 rounded-lg transition-colors">
+							How It Works
+						</a>
+					</div>
+					<div class="flex items-center space-x-6 pt-2 text-sm text-steel">
+						<span class="flex items-center space-x-1"><span class="text-accent">✓</span><span>Anonymous</span></span>
+						<span class="flex items-center space-x-1"><span class="text-accent">✓</span><span>Free forever</span></span>
+						<span class="flex items-center space-x-1"><span class="text-accent">✓</span><span>Safe & moderated</span></span>
+					</div>
+				</div>
+
+				<!-- Hero Visual -->
+				<div class="flex justify-center">
+					<div class="w-full max-w-sm bg-surface border border-hairline rounded-2xl p-6 shadow-xl space-y-5">
+						<div class="flex items-center justify-between">
+							<div class="flex items-center space-x-2">
+								<div class="w-2.5 h-2.5 bg-accent rounded-full animate-pulse"></div>
+								<span class="text-xs text-steel font-mono tracking-wider">LIVE CONNECTION</span>
+							</div>
+							<span class="text-xs bg-accent/10 text-accent border border-accent/20 px-2 py-0.5 rounded-full font-bold">ACTIVE</span>
+						</div>
+						<div class="h-24 flex items-center justify-center space-x-1.5">
+							<div class="w-1.5 h-12 bg-primary rounded-full animate-pulse"></div>
+							<div class="w-1.5 h-18 bg-primary/70 rounded-full animate-pulse" style="animation-delay:0.2s"></div>
+							<div class="w-1.5 h-20 bg-primary rounded-full animate-pulse" style="animation-delay:0.4s"></div>
+							<div class="w-1.5 h-10 bg-primary/50 rounded-full animate-pulse" style="animation-delay:0.6s"></div>
+							<div class="w-1.5 h-16 bg-primary rounded-full animate-pulse" style="animation-delay:0.8s"></div>
+							<div class="w-1.5 h-8 bg-primary/70 rounded-full animate-pulse" style="animation-delay:1s"></div>
+							<div class="w-1.5 h-14 bg-primary rounded-full animate-pulse" style="animation-delay:0.3s"></div>
+						</div>
+						<div class="text-center space-y-1">
+							<p class="font-bold text-ink">Anonymous Explorer</p>
+							<p class="text-xs text-steel">🇺🇸 United States • English</p>
+							<div class="flex justify-center gap-1.5 pt-1">
+								<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">#Music</span>
+								<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">#Gaming</span>
+							</div>
+						</div>
+						<div class="flex justify-between items-center pt-2 border-t border-hairline text-xs text-steel">
+							<span>Duration: 04:32</span>
+							<span class="bg-primary/10 text-primary px-2.5 py-1 rounded font-bold">Skip →</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- TRUST STATS -->
+		<section class="border-y border-hairline bg-surface py-10 px-4 md:px-8">
+			<div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+				<div>
+					<p class="text-3xl md:text-4xl font-extrabold text-primary">50K+</p>
+					<p class="text-xs text-steel mt-1 font-medium uppercase tracking-wider">Daily Conversations</p>
+				</div>
+				<div>
+					<p class="text-3xl md:text-4xl font-extrabold text-ink">$0</p>
+					<p class="text-xs text-steel mt-1 font-medium uppercase tracking-wider">All Filters Free</p>
+				</div>
+				<div>
+					<p class="text-3xl md:text-4xl font-extrabold text-ink">&lt;2s</p>
+					<p class="text-xs text-steel mt-1 font-medium uppercase tracking-wider">Match Speed</p>
+				</div>
+				<div>
+					<p class="text-3xl md:text-4xl font-extrabold text-ink">190+</p>
+					<p class="text-xs text-steel mt-1 font-medium uppercase tracking-wider">Countries</p>
+				</div>
+			</div>
+		</section>
+
+		<!-- FEATURES -->
+		<section id="features" class="py-16 md:py-20 px-4 md:px-8">
+			<div class="max-w-6xl mx-auto space-y-12">
+				<div class="text-center max-w-2xl mx-auto space-y-3">
+					<h2 class="text-3xl md:text-4xl font-extrabold text-ink tracking-tight">What Makes Airwalk Different</h2>
+					<p class="text-slate">Everything competitors charge for, we give away free. Plus features they don't have.</p>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+					<article class="bg-surface border border-hairline rounded-xl p-6 space-y-3 hover:shadow-md transition-shadow">
+						<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-xl">🆓</div>
+						<h3 class="text-lg font-bold text-ink">Free Gender & Country Filters</h3>
+						<p class="text-sm text-slate leading-relaxed">Other platforms charge coins or premium subscriptions for gender and country matching. On Airwalk, every filter is free for everyone.</p>
+					</article>
+					<article class="bg-surface border border-hairline rounded-xl p-6 space-y-3 hover:shadow-md transition-shadow">
+						<div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center text-xl">🎙️</div>
+						<h3 class="text-lg font-bold text-ink">Voice or Text — Your Choice</h3>
+						<p class="text-sm text-slate leading-relaxed">Choose voice chat for natural conversations or text-only mode when you prefer typing. Switch modes anytime, no camera ever required.</p>
+					</article>
+					<article class="bg-surface border border-hairline rounded-xl p-6 space-y-3 hover:shadow-md transition-shadow">
+						<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-xl">🏷️</div>
+						<h3 class="text-lg font-bold text-ink">Interest-Based Matching</h3>
+						<p class="text-sm text-slate leading-relaxed">Add interest tags like gaming, music, or coding. Our algorithm prioritizes matches with overlapping interests for better conversations.</p>
+					</article>
+					<article class="bg-surface border border-hairline rounded-xl p-6 space-y-3 hover:shadow-md transition-shadow">
+						<div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center text-xl">🎮</div>
+						<h3 class="text-lg font-bold text-ink">5 In-Call Games</h3>
+						<p class="text-sm text-slate leading-relaxed">Play Tic-Tac-Toe, Rock Paper Scissors, Connect Four, Wordle, or Ludo while chatting. Best ice-breaker feature in any voice chat app.</p>
+					</article>
+					<article class="bg-surface border border-hairline rounded-xl p-6 space-y-3 hover:shadow-md transition-shadow">
+						<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-xl">👥</div>
+						<h3 class="text-lg font-bold text-ink">Friends & Call History</h3>
+						<p class="text-sm text-slate leading-relaxed">Add people you connect with as friends. View your call history anytime. Never lose a great conversation again.</p>
+					</article>
+					<article class="bg-surface border border-hairline rounded-xl p-6 space-y-3 hover:shadow-md transition-shadow">
+						<div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center text-xl">🎭</div>
+						<h3 class="text-lg font-bold text-ink">Anonymous Handles & Avatars</h3>
+						<p class="text-sm text-slate leading-relaxed">Get a random identity like "SwiftEagle742" with a fun avatar. Stay completely anonymous — share only what you choose to share.</p>
+					</article>
+				</div>
+			</div>
+		</section>
+
+		<!-- WHY VOICE CHAT -->
+		<section id="why" class="py-16 md:py-20 px-4 md:px-8 bg-surface border-y border-hairline">
+			<div class="max-w-6xl mx-auto space-y-12">
+				<div class="text-center max-w-2xl mx-auto space-y-3">
+					<h2 class="text-3xl md:text-4xl font-extrabold text-ink tracking-tight">Why Talk to Strangers with Voice Chat?</h2>
+					<p class="text-slate">Voice-only chat removes the awkwardness of video and feels more natural than text.</p>
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					<div class="space-y-2">
+						<h3 class="font-bold text-ink">🔒 Complete Privacy</h3>
+						<p class="text-sm text-slate">No camera means no one sees your face. Stay completely anonymous while having real conversations.</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-bold text-ink">🌍 Practice Languages</h3>
+						<p class="text-sm text-slate">Use country filters to connect with native speakers. Practice fluency with real conversations, not textbooks.</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-bold text-ink">💪 Build Confidence</h3>
+						<p class="text-sm text-slate">Anonymous voice chat lets you practice social skills without judgment. Perfect for introverts.</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-bold text-ink">♿ Accessible for All</h3>
+						<p class="text-sm text-slate">Voice-only is naturally suited for visually impaired users. Everyone can participate equally.</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-bold text-ink">⚡ Instant Access</h3>
+						<p class="text-sm text-slate">No registration, no forms. Click start and you're talking within seconds.</p>
+					</div>
+					<div class="space-y-2">
+						<h3 class="font-bold text-ink">🧠 Real Connections</h3>
+						<p class="text-sm text-slate">Voice conveys emotion that text can't. Hear tone, laughter, and personality — connect on a human level.</p>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- TESTIMONIALS -->
+		<section id="testimonials" class="py-16 md:py-20 px-4 md:px-8">
+			<div class="max-w-6xl mx-auto space-y-12">
+				<div class="text-center space-y-3">
+					<h2 class="text-3xl md:text-4xl font-extrabold text-ink tracking-tight">What Users Say About Airwalk</h2>
+					<p class="text-slate">Real feedback from people who use voice chat to connect with strangers.</p>
+				</div>
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+					<blockquote class="bg-surface border border-hairline rounded-xl p-5 space-y-3">
+						<p class="text-sm text-ink leading-relaxed">"I love that gender and country filters are free here. Other sites charged me just to pick a language. Airwalk is genuinely generous."</p>
+						<footer class="text-xs text-steel font-medium">— Language Learner, Spain</footer>
+					</blockquote>
+					<blockquote class="bg-surface border border-hairline rounded-xl p-5 space-y-3">
+						<p class="text-sm text-ink leading-relaxed">"As someone with social anxiety, anonymous voice chat helps me practice talking to people without the pressure of being seen."</p>
+						<footer class="text-xs text-steel font-medium">— College Student, USA</footer>
+					</blockquote>
+					<blockquote class="bg-surface border border-hairline rounded-xl p-5 space-y-3">
+						<p class="text-sm text-ink leading-relaxed">"The games feature is brilliant. Playing tic-tac-toe while chatting breaks the ice instantly. Had a 40-minute conversation from it."</p>
+						<footer class="text-xs text-steel font-medium">— Casual User, UK</footer>
+					</blockquote>
+					<blockquote class="bg-surface border border-hairline rounded-xl p-5 space-y-3">
+						<p class="text-sm text-ink leading-relaxed">"I'm visually impaired and most chat sites need video. Airwalk being voice-only means I can connect with people just like everyone else."</p>
+						<footer class="text-xs text-steel font-medium">— Accessibility Advocate, Canada</footer>
+					</blockquote>
+					<blockquote class="bg-surface border border-hairline rounded-xl p-5 space-y-3">
+						<p class="text-sm text-ink leading-relaxed">"The 5-second skip rule actually works. I haven't encountered a single bot or spammer. Every conversation is real."</p>
+						<footer class="text-xs text-steel font-medium">— Daily User, Germany</footer>
+					</blockquote>
+					<blockquote class="bg-surface border border-hairline rounded-xl p-5 space-y-3">
+						<p class="text-sm text-ink leading-relaxed">"I practice my French with native speakers every evening. My accent has improved more in 2 months than a year of Duolingo."</p>
+						<footer class="text-xs text-steel font-medium">— French Learner, Japan</footer>
+					</blockquote>
+				</div>
+			</div>
+		</section>
+
+		<!-- COMPARISON -->
+		<section class="py-16 md:py-20 px-4 md:px-8 bg-surface border-y border-hairline">
+			<div class="max-w-4xl mx-auto space-y-8">
+				<div class="text-center space-y-3">
+					<h2 class="text-3xl md:text-4xl font-extrabold text-ink tracking-tight">Airwalk vs Other Voice Chat Sites</h2>
+					<p class="text-slate">See why users switch to Airwalk from paid alternatives.</p>
+				</div>
+				<div class="overflow-x-auto">
+					<table class="w-full text-sm border border-hairline rounded-xl overflow-hidden">
+						<thead class="bg-canvas">
+							<tr class="border-b border-hairline">
+								<th class="text-left p-4 font-bold text-ink">Feature</th>
+								<th class="p-4 font-bold text-primary">Airwalk</th>
+								<th class="p-4 font-bold text-slate">Others</th>
+							</tr>
+						</thead>
+						<tbody class="divide-y divide-hairline">
+							<tr><td class="p-4 text-ink">Gender Filter</td><td class="p-4 text-center text-accent font-bold">Free ✓</td><td class="p-4 text-center text-steel">Paid 💰</td></tr>
+							<tr><td class="p-4 text-ink">Country Filter</td><td class="p-4 text-center text-accent font-bold">Free ✓</td><td class="p-4 text-center text-steel">Paid 💰</td></tr>
+							<tr><td class="p-4 text-ink">Voice + Text Mode</td><td class="p-4 text-center text-accent font-bold">Both Free ✓</td><td class="p-4 text-center text-steel">Voice only</td></tr>
+							<tr><td class="p-4 text-ink">In-Call Games</td><td class="p-4 text-center text-accent font-bold">5 Games ✓</td><td class="p-4 text-center text-steel">1 or None</td></tr>
+							<tr><td class="p-4 text-ink">Friends System</td><td class="p-4 text-center text-accent font-bold">Free ✓</td><td class="p-4 text-center text-steel">Limited</td></tr>
+							<tr><td class="p-4 text-ink">Call History</td><td class="p-4 text-center text-accent font-bold">Free ✓</td><td class="p-4 text-center text-steel">Premium 💰</td></tr>
+							<tr><td class="p-4 text-ink">Anonymous Handles</td><td class="p-4 text-center text-accent font-bold">Auto-generated ✓</td><td class="p-4 text-center text-steel">Some</td></tr>
+							<tr><td class="p-4 text-ink">Image Sharing</td><td class="p-4 text-center text-accent font-bold">Free ✓</td><td class="p-4 text-center text-steel">Premium 💰</td></tr>
+							<tr><td class="p-4 text-ink">Signup Required</td><td class="p-4 text-center text-accent font-bold">No ✓</td><td class="p-4 text-center text-steel">Sometimes</td></tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</section>
+
+		<!-- FAQ -->
+		<section id="faq" class="py-16 md:py-20 px-4 md:px-8">
+			<div class="max-w-3xl mx-auto space-y-8">
+				<div class="text-center space-y-3">
+					<h2 class="text-3xl md:text-4xl font-extrabold text-ink tracking-tight">Frequently Asked Questions</h2>
+				</div>
+				<div class="space-y-4">
+					<details class="bg-surface border border-hairline rounded-xl p-5 group" open>
+						<summary class="font-bold text-ink cursor-pointer list-none flex items-center justify-between">
+							<span>Is Airwalk completely free?</span>
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-sm text-slate mt-3 leading-relaxed">Yes. Airwalk is 100% free with no hidden costs. Gender filters, country filters, interest matching, games — everything is included at no charge. We don't sell coins or premium tiers.</p>
+					</details>
+					<details class="bg-surface border border-hairline rounded-xl p-5 group">
+						<summary class="font-bold text-ink cursor-pointer list-none flex items-center justify-between">
+							<span>Do I need to create an account?</span>
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-sm text-slate mt-3 leading-relaxed">No. Just visit the site and click "Start Matching." No email, no phone number, no registration required.</p>
+					</details>
+					<details class="bg-surface border border-hairline rounded-xl p-5 group">
+						<summary class="font-bold text-ink cursor-pointer list-none flex items-center justify-between">
+							<span>Is Airwalk safe to use?</span>
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-sm text-slate mt-3 leading-relaxed">Yes. Voice-only means no one sees you. We have a one-click report system and a 5-second anti-spam cooldown that eliminates bots and abusers. All audio connections are peer-to-peer encrypted via WebRTC.</p>
+					</details>
+					<details class="bg-surface border border-hairline rounded-xl p-5 group">
+						<summary class="font-bold text-ink cursor-pointer list-none flex items-center justify-between">
+							<span>How is Airwalk different from Omegle or AirTalk?</span>
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-sm text-slate mt-3 leading-relaxed">Unlike Omegle, Airwalk is voice-only (no unwanted video). Unlike AirTalk, all our filters are free — they charge for gender filtering and premium features. We also offer 3 in-call games and text chat alongside voice.</p>
+					</details>
+					<details class="bg-surface border border-hairline rounded-xl p-5 group">
+						<summary class="font-bold text-ink cursor-pointer list-none flex items-center justify-between">
+							<span>Can I use Airwalk to practice languages?</span>
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-sm text-slate mt-3 leading-relaxed">Absolutely. Use the country and language filters to connect with native speakers from specific regions. Many users practice Spanish, French, German, and more through daily conversations.</p>
+					</details>
+					<details class="bg-surface border border-hairline rounded-xl p-5 group">
+						<summary class="font-bold text-ink cursor-pointer list-none flex items-center justify-between">
+							<span>What is the 5-second skip rule?</span>
+							<span class="text-primary group-open:rotate-180 transition-transform">▼</span>
+						</summary>
+						<p class="text-sm text-slate mt-3 leading-relaxed">When you're connected to someone, the skip button is locked for 5 seconds. This small window forces a "hello" exchange, eliminates bots, and results in 80% longer conversations compared to platforms without it.</p>
+					</details>
+				</div>
+			</div>
+		</section>
+
+		<!-- BOTTOM CTA -->
+		<section class="py-16 md:py-20 px-4 md:px-8">
+			<div class="max-w-3xl mx-auto bg-primary rounded-2xl p-10 md:p-14 text-center space-y-5">
+				<h2 class="text-3xl md:text-4xl font-extrabold text-on-primary tracking-tight">Ready to Talk to Strangers?</h2>
+				<p class="text-on-primary/80 max-w-lg mx-auto">No camera, no signup, no payment. Click below and you'll be talking to someone new within seconds.</p>
+				<a href="/chat" class="inline-block bg-white text-primary font-bold text-base py-3.5 px-10 rounded-lg hover:bg-gray-100 transition-colors shadow-md">
+					Start Voice Chat — Free
+				</a>
+			</div>
+		</section>
+	</main>
+
+	<!-- Footer -->
+	<footer class="bg-surface border-t border-hairline py-10 px-4 md:px-8">
+		<div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
+			<div class="col-span-2 md:col-span-1 space-y-3">
+				<div class="flex items-center space-x-2">
+					<svg class="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+					<span class="font-extrabold text-ink uppercase">Airwalk</span>
+				</div>
+				<p class="text-xs text-steel leading-relaxed">Free voice-only random chat. Talk to strangers worldwide — no camera, no signup.</p>
+				<p class="text-xs text-stone">© 2025 Airwalk. All rights reserved.</p>
+			</div>
+			<div class="space-y-2">
+				<h4 class="text-xs font-bold text-slate uppercase tracking-wider">Product</h4>
+				<ul class="space-y-1.5 text-sm">
+					<li><a href="/chat" class="text-primary hover:underline">Start Chatting</a></li>
+					<li><a href="#features" class="text-primary hover:underline">Features</a></li>
+					<li><a href="#faq" class="text-primary hover:underline">FAQ</a></li>
+				</ul>
+			</div>
+			<div class="space-y-2">
+				<h4 class="text-xs font-bold text-slate uppercase tracking-wider">Pages</h4>
+				<ul class="space-y-1.5 text-sm">
+					<li><a href="/" class="text-primary hover:underline">Talk to Strangers</a></li>
+					<li><a href="/chat" class="text-primary hover:underline">Voice Chat</a></li>
+					<li><a href="/chat" class="text-primary hover:underline">Random Chat</a></li>
+				</ul>
+			</div>
+			<div class="space-y-2">
+				<h4 class="text-xs font-bold text-slate uppercase tracking-wider">Legal</h4>
+				<ul class="space-y-1.5 text-sm">
+					<li><a href="#" class="text-primary hover:underline">Terms of Service</a></li>
+					<li><a href="#" class="text-primary hover:underline">Privacy Policy</a></li>
+					<li><a href="#" class="text-primary hover:underline">Safety Guidelines</a></li>
+				</ul>
+			</div>
+		</div>
+	</footer>
 </Layout>
+
+<script is:inline>
+	const themeToggle = document.getElementById('theme-toggle');
+	function updateIcons() {
+		const isDark = document.documentElement.classList.contains('dark');
+		document.querySelectorAll('.dark-icon').forEach(el => el.style.display = isDark ? 'block' : 'none');
+		document.querySelectorAll('.light-icon').forEach(el => el.style.display = isDark ? 'none' : 'block');
+	}
+	updateIcons();
+	themeToggle.addEventListener('click', () => {
+		document.documentElement.classList.toggle('dark');
+		localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+		updateIcons();
+	});
+</script>

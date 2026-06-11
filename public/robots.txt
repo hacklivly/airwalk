@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /chat
+
+Sitemap: https://airwalk.live/sitemap-index.xml

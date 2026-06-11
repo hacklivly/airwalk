@@ -1,0 +1,143 @@
+@import "tailwindcss";
+@source "../**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}";
+
+@theme {
+  /* Facebook-inspired Trust Colors - Light Mode defaults */
+  --color-primary: #1877f2;
+  --color-primary-deep: #1565c0;
+  --color-primary-light: #e7f3ff;
+  --color-on-primary: #ffffff;
+  --color-accent: #42b72a;
+  --color-accent-deep: #36a420;
+
+  /* Warm neutrals */
+  --color-cream: #f0f2f5;
+  --color-cream-light: #f7f8fa;
+  --color-cream-deeper: #e4e6eb;
+  --color-beige-deep: #dadde1;
+
+  /* Text */
+  --color-ink: #1c1e21;
+  --color-ink-tint: #3a3b3c;
+  --color-charcoal: #242526;
+  --color-slate: #606770;
+  --color-steel: #8a8d91;
+  --color-stone: #b0b3b8;
+  --color-muted: #e4e6eb;
+  --color-hairline: #e4e6eb;
+  --color-hairline-soft: #f0f2f5;
+  --color-hairline-strong: #ccd0d5;
+
+  /* Surfaces */
+  --color-canvas: #ffffff;
+  --color-surface: #f0f2f5;
+  --color-surface-cream: #f0f2f5;
+  --color-surface-cream-soft: #f7f8fa;
+  --color-surface-code: #1c1e21;
+  --color-footer-cream: #f0f2f5;
+  --color-on-dark: #ffffff;
+  --color-on-dark-muted: #b0b3b8;
+  --color-on-cream: #1c1e21;
+
+  /* Game colors */
+  --color-sunshine-300: #ffd06a;
+  --color-sunshine-500: #ffb83e;
+  --color-sunshine-700: #ffa110;
+  --color-sunshine-800: #ff8105;
+  --color-sunshine-900: #ff8a00;
+  --color-yellow-saturated: #ffd900;
+
+  /* Typography */
+  --font-display: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Border Radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-xxl: 20px;
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-canvas);
+  color: var(--color-ink);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark theme overrides */
+.dark {
+  --color-primary: #2d88ff;
+  --color-primary-deep: #1877f2;
+  --color-primary-light: #263951;
+  --color-on-primary: #ffffff;
+  --color-accent: #42b72a;
+
+  --color-cream: #3a3b3c;
+  --color-cream-light: #303132;
+  --color-cream-deeper: #4e4f50;
+  --color-beige-deep: #4e4f50;
+
+  --color-ink: #e4e6eb;
+  --color-ink-tint: #b0b3b8;
+  --color-charcoal: #e4e6eb;
+  --color-slate: #b0b3b8;
+  --color-steel: #8a8d91;
+  --color-stone: #606770;
+  --color-muted: #3a3b3c;
+  --color-hairline: #3e4042;
+  --color-hairline-soft: #3a3b3c;
+  --color-hairline-strong: #4e4f50;
+
+  --color-canvas: #18191a;
+  --color-surface: #242526;
+  --color-surface-cream: #242526;
+  --color-surface-cream-soft: #303132;
+  --color-surface-code: #242526;
+  --color-footer-cream: #242526;
+  --color-on-dark: #e4e6eb;
+  --color-on-dark-muted: #8a8d91;
+  --color-on-cream: #e4e6eb;
+}
+
+/* Custom utilities */
+@utility sunset-stripe {
+  background: linear-gradient(
+    90deg,
+    #1877f2 0%,
+    #2d88ff 30%,
+    #42b72a 60%,
+    #1877f2 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 4s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
+}
+
+@utility animate-pulse-slow {
+  animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@utility animate-radar {
+  animation: radar 2s infinite ease-out;
+}
+
+@keyframes radar {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
