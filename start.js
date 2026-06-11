@@ -8,8 +8,8 @@ const signaling = spawn('node', ['signaling.js'], {
   shell: true 
 });
 
-// Spawn Astro dev server
-const astro = spawn('npx', ['astro', 'dev'], { 
+// Spawn Astro dev server (--host exposes to local network)
+const astro = spawn('npx', ['astro', 'dev', '--host'], { 
   stdio: 'inherit', 
   shell: true 
 });

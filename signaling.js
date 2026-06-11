@@ -84,12 +84,14 @@ function tryMatchmaking() {
 
       // Check Match Filters
       
-      // 1. Language must match exactly
-      if (peerA.info.language !== peerB.info.language) continue;
+      // 1. Language must match exactly (soft: skip if only 2 in pool)
+      if (waitingPool.length > 2 && peerA.info.language !== peerB.info.language) continue;
 
-      // 2. Country matches (either worldwide or same country)
-      const countryCompat = (peerA.info.country === 'Worldwide' || peerB.info.country === 'Worldwide' || peerA.info.country === peerB.info.country);
-      if (!countryCompat) continue;
+      // 2. Country matches (soft filter - only enforced with 3+ in pool)
+      if (waitingPool.length > 2) {
+        const countryCompat = (peerA.info.country === 'Worldwide' || peerB.info.country === 'Worldwide' || peerA.info.country === peerB.info.country);
+        if (!countryCompat) continue;
+      }
 
       // Calculate score: interest tags + age proximity bonus
       const commonTags = peerA.info.tags.filter(t => peerB.info.tags.includes(t));
