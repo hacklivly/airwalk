@@ -1,0 +1,117 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Privacy Policy | Airwalk — Free Voice Chat" description="Airwalk's privacy policy explains how we protect your data. Voice-only, no camera, no personal data stored. Based in India.">
+	<header class="bg-canvas/80 backdrop-blur-xl border-b border-hairline h-14 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+		<a href="/" class="flex items-center space-x-2 text-ink">
+			<svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+			<span class="font-extrabold text-lg uppercase">Airwalk</span>
+		</a>
+		<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary font-semibold text-sm py-2 px-5 rounded-lg transition-colors">Start Chatting</a>
+	</header>
+
+	<main class="max-w-3xl mx-auto px-4 md:px-8 py-12 space-y-8">
+		<h1 class="text-3xl md:text-4xl font-extrabold text-ink">Privacy Policy</h1>
+		<p class="text-sm text-steel">Last updated: June 12, 2025</p>
+
+		<div class="prose prose-slate max-w-none space-y-6 text-slate text-[15px] leading-relaxed">
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">1. Introduction</h2>
+				<p>Airwalk ("we", "us", or "our") operates the website airwalk.pages.dev (the "Service"). This Privacy Policy explains how we collect, use, and protect information when you use our voice and text chat platform. We are based in Uttar Pradesh, India, and comply with the Information Technology Act, 2000 and the Digital Personal Data Protection Act, 2023 (DPDPA).</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">2. Information We Collect</h2>
+				<p><strong>Information you provide voluntarily:</strong></p>
+				<ul class="list-disc pl-6 space-y-1">
+					<li>Name (optional, not verified)</li>
+					<li>Age (optional, for matching purposes only)</li>
+					<li>Gender (optional, for display only)</li>
+					<li>Language and country preferences</li>
+					<li>Interest tags</li>
+				</ul>
+				<p><strong>Information collected automatically:</strong></p>
+				<ul class="list-disc pl-6 space-y-1">
+					<li>Browser type and version</li>
+					<li>Device type (mobile/desktop)</li>
+					<li>Anonymous session identifiers (randomly generated, not linked to identity)</li>
+				</ul>
+				<p><strong>Information we do NOT collect:</strong></p>
+				<ul class="list-disc pl-6 space-y-1">
+					<li>Email addresses</li>
+					<li>Phone numbers</li>
+					<li>Real names or identity documents</li>
+					<li>IP addresses (not stored)</li>
+					<li>Voice recordings (audio is peer-to-peer, never passes through our servers)</li>
+					<li>Video or camera data (we have no video feature)</li>
+				</ul>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">3. How We Use Information</h2>
+				<ul class="list-disc pl-6 space-y-1">
+					<li>To match you with suitable conversation partners based on your preferences</li>
+					<li>To provide the chat and gaming features</li>
+					<li>To improve our matchmaking algorithms</li>
+					<li>To prevent abuse and enforce community guidelines</li>
+				</ul>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">4. Data Storage & Security</h2>
+				<p>All user preferences (name, age, interests) are stored locally in your browser's localStorage. We do not maintain user accounts or databases of personal information. Voice and text communications are transmitted peer-to-peer using WebRTC encryption and are not recorded or stored on our servers.</p>
+				<p>Our signaling server temporarily holds connection metadata only for the duration of an active session and discards it immediately upon disconnection.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">5. Third-Party Services</h2>
+				<p>We use the following third-party services:</p>
+				<ul class="list-disc pl-6 space-y-1">
+					<li><strong>Cloudflare:</strong> For hosting and CDN delivery</li>
+					<li><strong>Google Fonts:</strong> For typography (subject to Google's privacy policy)</li>
+					<li><strong>STUN servers (Google):</strong> For WebRTC connection establishment only (no data stored)</li>
+				</ul>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">6. Children's Privacy</h2>
+				<p>Airwalk is not intended for users under the age of 13. We do not knowingly collect personal data from children under 13. If you are a parent and believe your child has used our service, please contact us and we will take appropriate action.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">7. Your Rights (Under DPDPA 2023)</h2>
+				<p>As a user in India, you have the right to:</p>
+				<ul class="list-disc pl-6 space-y-1">
+					<li>Access information about what data we process</li>
+					<li>Request correction of inaccurate data</li>
+					<li>Request erasure of your data</li>
+					<li>Withdraw consent at any time</li>
+					<li>Nominate a person to exercise rights on your behalf</li>
+					<li>File a grievance with the Data Protection Board of India</li>
+				</ul>
+				<p>Since we store no personal data on our servers, most of these rights are automatically satisfied. Your localStorage data can be cleared by clearing your browser data.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">8. Cookies</h2>
+				<p>We use localStorage (not cookies) to save your preferences (theme, language, country settings). No tracking cookies are used. No third-party advertising cookies are present on our site.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">9. Changes to This Policy</h2>
+				<p>We may update this Privacy Policy from time to time. Changes will be posted on this page with an updated "Last updated" date. Continued use of the Service after changes constitutes acceptance.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-xl font-bold text-ink">10. Contact Us</h2>
+				<p>If you have questions about this Privacy Policy or wish to exercise your data rights, contact us at:</p>
+				<p><strong>Airwalk</strong><br/>Uttar Pradesh, India<br/>Email: contact@airwalk.live</p>
+			</section>
+		</div>
+	</main>
+
+	<footer class="border-t border-hairline py-8 px-4 text-center text-xs text-steel">
+		<p>© 2025 Airwalk. All rights reserved. <a href="/" class="text-primary hover:underline">Home</a> · <a href="/terms" class="text-primary hover:underline">Terms</a> · <a href="/contact" class="text-primary hover:underline">Contact</a></p>
+	</footer>
+</Layout>

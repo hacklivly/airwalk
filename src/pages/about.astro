@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About Us | Airwalk — Free Anonymous Voice Chat" description="Learn about Airwalk — the free voice-only random chat platform. Our mission, values, and what makes us different from competitors.">
+	<header class="bg-canvas/80 backdrop-blur-xl border-b border-hairline h-14 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+		<a href="/" class="flex items-center space-x-2 text-ink">
+			<svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+			<span class="font-extrabold text-lg uppercase">Airwalk</span>
+		</a>
+		<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary font-semibold text-sm py-2 px-5 rounded-lg transition-colors">Start Chatting</a>
+	</header>
+
+	<main class="max-w-3xl mx-auto px-4 md:px-8 py-12 space-y-10">
+		<div class="text-center space-y-4">
+			<h1 class="text-3xl md:text-4xl font-extrabold text-ink">About Airwalk</h1>
+			<p class="text-lg text-slate max-w-2xl mx-auto">We're building the best free voice chat platform on the internet — where genuine conversations happen without barriers.</p>
+		</div>
+
+		<div class="space-y-8">
+			<section class="space-y-3">
+				<h2 class="text-2xl font-bold text-ink">Our Mission</h2>
+				<p class="text-slate leading-relaxed">Airwalk exists to connect people through the power of voice. We believe that real human connection shouldn't be locked behind paywalls, camera requirements, or complex signup forms. Our mission is simple: make it effortless for anyone, anywhere in the world, to have a meaningful conversation with a stranger.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-2xl font-bold text-ink">Why We Built Airwalk</h2>
+				<p class="text-slate leading-relaxed">We noticed a problem with existing random chat platforms: they either require video (uncomfortable for many), charge money for basic features like gender/country filters, or are filled with bots and spam. Airwalk fixes all of these:</p>
+				<ul class="list-disc pl-6 text-slate space-y-2">
+					<li><strong>Voice-only</strong> — No camera pressure, no appearance anxiety</li>
+					<li><strong>100% free</strong> — Gender filters, country filters, interest matching, games — all free</li>
+					<li><strong>Anti-spam</strong> — Our 5-second skip cooldown eliminates bots</li>
+					<li><strong>No registration</strong> — Start chatting in seconds, not minutes</li>
+					<li><strong>Games included</strong> — 5 in-call games to break the ice</li>
+				</ul>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-2xl font-bold text-ink">Our Values</h2>
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div class="bg-surface border border-hairline rounded-xl p-5 space-y-2">
+						<h3 class="font-bold text-ink">🔒 Privacy First</h3>
+						<p class="text-sm text-slate">We don't collect personal data. No accounts, no tracking, no selling your information.</p>
+					</div>
+					<div class="bg-surface border border-hairline rounded-xl p-5 space-y-2">
+						<h3 class="font-bold text-ink">🆓 Free Forever</h3>
+						<p class="text-sm text-slate">We will never charge for core features. Every filter and every game is free for everyone.</p>
+					</div>
+					<div class="bg-surface border border-hairline rounded-xl p-5 space-y-2">
+						<h3 class="font-bold text-ink">🌍 Inclusive</h3>
+						<p class="text-sm text-slate">Built for everyone — all genders, all countries, all languages, including accessibility for visually impaired users.</p>
+					</div>
+					<div class="bg-surface border border-hairline rounded-xl p-5 space-y-2">
+						<h3 class="font-bold text-ink">🛡️ Safe</h3>
+						<p class="text-sm text-slate">Report and block tools, anti-spam systems, and community guidelines keep conversations safe.</p>
+					</div>
+				</div>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-2xl font-bold text-ink">Our Team</h2>
+				<p class="text-slate leading-relaxed">Airwalk is built by a small, passionate team based in Uttar Pradesh, India. We're a group of developers and designers who believe the internet needs more authentic human connection — not more algorithms, not more advertising, just real people talking to real people.</p>
+			</section>
+
+			<section class="space-y-3">
+				<h2 class="text-2xl font-bold text-ink">Technology</h2>
+				<p class="text-slate leading-relaxed">Airwalk uses WebRTC for peer-to-peer audio — meaning your voice goes directly from your browser to your partner's browser. It never passes through our servers. We use modern web technologies (Astro, Tailwind CSS) and deploy on Cloudflare's global edge network for instant page loads worldwide.</p>
+			</section>
+		</div>
+
+		<div class="bg-primary-light border border-primary/20 rounded-xl p-6 text-center space-y-3">
+			<h3 class="font-bold text-ink">Ready to talk?</h3>
+			<p class="text-sm text-slate">Join thousands of people having real conversations every day.</p>
+			<a href="/chat" class="inline-block bg-primary hover:bg-primary-deep text-on-primary font-bold text-sm py-2.5 px-6 rounded-lg transition-colors">Start Chatting — Free</a>
+		</div>
+	</main>
+
+	<footer class="border-t border-hairline py-8 px-4 text-center text-xs text-steel">
+		<p>© 2025 Airwalk. All rights reserved. <a href="/" class="text-primary hover:underline">Home</a> · <a href="/privacy" class="text-primary hover:underline">Privacy</a> · <a href="/terms" class="text-primary hover:underline">Terms</a> · <a href="/contact" class="text-primary hover:underline">Contact</a></p>
+	</footer>
+</Layout>

@@ -1,0 +1,71 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Contact Us | Airwalk — Free Voice Chat" description="Get in touch with the Airwalk team. Report issues, suggest features, or ask questions about our free voice chat platform.">
+	<header class="bg-canvas/80 backdrop-blur-xl border-b border-hairline h-14 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+		<a href="/" class="flex items-center space-x-2 text-ink">
+			<svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+			<span class="font-extrabold text-lg uppercase">Airwalk</span>
+		</a>
+		<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary font-semibold text-sm py-2 px-5 rounded-lg transition-colors">Start Chatting</a>
+	</header>
+
+	<main class="max-w-3xl mx-auto px-4 md:px-8 py-12 space-y-8">
+		<div class="text-center space-y-3">
+			<h1 class="text-3xl md:text-4xl font-extrabold text-ink">Contact Us</h1>
+			<p class="text-slate max-w-lg mx-auto">Have questions, feedback, or need help? We'd love to hear from you. Reach out through any of the methods below.</p>
+		</div>
+
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+			<div class="bg-surface border border-hairline rounded-xl p-6 space-y-3">
+				<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-xl">📧</div>
+				<h3 class="font-bold text-ink">Email</h3>
+				<p class="text-sm text-slate">For general inquiries, partnerships, or support:</p>
+				<a href="mailto:contact@airwalk.live" class="text-primary font-semibold hover:underline">contact@airwalk.live</a>
+			</div>
+
+			<div class="bg-surface border border-hairline rounded-xl p-6 space-y-3">
+				<div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center text-xl">🐛</div>
+				<h3 class="font-bold text-ink">Bug Reports</h3>
+				<p class="text-sm text-slate">Found a technical issue? Report it to:</p>
+				<a href="mailto:bugs@airwalk.live" class="text-primary font-semibold hover:underline">bugs@airwalk.live</a>
+			</div>
+
+			<div class="bg-surface border border-hairline rounded-xl p-6 space-y-3">
+				<div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center text-xl">⚠️</div>
+				<h3 class="font-bold text-ink">Report Abuse</h3>
+				<p class="text-sm text-slate">Report harassment, spam, or inappropriate behavior:</p>
+				<a href="mailto:abuse@airwalk.live" class="text-primary font-semibold hover:underline">abuse@airwalk.live</a>
+			</div>
+
+			<div class="bg-surface border border-hairline rounded-xl p-6 space-y-3">
+				<div class="w-10 h-10 bg-accent/10 rounded-lg flex items-center justify-center text-xl">💡</div>
+				<h3 class="font-bold text-ink">Feature Requests</h3>
+				<p class="text-sm text-slate">Have an idea to make Airwalk better?</p>
+				<a href="mailto:ideas@airwalk.live" class="text-primary font-semibold hover:underline">ideas@airwalk.live</a>
+			</div>
+		</div>
+
+		<div class="bg-surface border border-hairline rounded-xl p-6 md:p-8 space-y-4">
+			<h2 class="text-xl font-bold text-ink">Our Location</h2>
+			<p class="text-slate">Airwalk is operated from India.</p>
+			<div class="text-sm text-slate space-y-1">
+				<p><strong>Airwalk</strong></p>
+				<p>Uttar Pradesh, India</p>
+				<p>Email: contact@airwalk.live</p>
+			</div>
+			<p class="text-sm text-slate">We typically respond within 24-48 hours.</p>
+		</div>
+
+		<div class="bg-primary-light border border-primary/20 rounded-xl p-6 text-center space-y-3">
+			<h3 class="font-bold text-ink">Prefer to just start chatting?</h3>
+			<p class="text-sm text-slate">No registration needed. Jump straight into a conversation.</p>
+			<a href="/chat" class="inline-block bg-primary hover:bg-primary-deep text-on-primary font-bold text-sm py-2.5 px-6 rounded-lg transition-colors">Start Voice Chat — Free</a>
+		</div>
+	</main>
+
+	<footer class="border-t border-hairline py-8 px-4 text-center text-xs text-steel">
+		<p>© 2025 Airwalk. All rights reserved. <a href="/" class="text-primary hover:underline">Home</a> · <a href="/privacy" class="text-primary hover:underline">Privacy</a> · <a href="/terms" class="text-primary hover:underline">Terms</a></p>
+	</footer>
+</Layout>
