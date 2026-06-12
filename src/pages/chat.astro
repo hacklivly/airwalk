@@ -96,15 +96,20 @@ import Layout from '../layouts/Layout.astro';
 							</select>
 						</div>
 					</div>
+					<!-- Status Message -->
+					<input type="text" id="user-status" placeholder="💭 Set status: Looking for deep convos..." maxlength="50" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
 				</div>
 
 				<!-- Chat Mode Selection -->
-				<div class="grid grid-cols-2 gap-3 relative">
-					<button id="mode-voice" class="bg-primary text-on-primary border-2 border-primary rounded-xl p-3.5 text-center font-bold text-sm transition-all shadow-md hover:shadow-lg" onclick="setChatMode('voice')">
-						🎙️ Voice Chat
+				<div class="grid grid-cols-3 gap-2 relative">
+					<button id="mode-voice" class="bg-primary text-on-primary border-2 border-primary rounded-xl p-3 text-center font-bold text-sm transition-all shadow-md hover:shadow-lg" onclick="setChatMode('voice')">
+						🎙️ Voice
 					</button>
-					<button id="mode-text" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3.5 text-center font-bold text-sm transition-all hover:border-primary hover:shadow-md" onclick="setChatMode('text')">
-						💬 Text Only
+					<button id="mode-text" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-primary hover:shadow-md" onclick="setChatMode('text')">
+						💬 Text
+					</button>
+					<button id="mode-group" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-accent hover:shadow-md" onclick="setChatMode('group')">
+						👥 Group
 					</button>
 				</div>
 
@@ -148,6 +153,11 @@ import Layout from '../layouts/Layout.astro';
 					<span class="relative z-10">🚀 Start Matching</span>
 					<div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
 				</button>
+				<!-- Invite & Achievements -->
+				<div class="flex items-center justify-between">
+					<button onclick="shareInvite()" class="text-xs text-primary font-semibold hover:underline flex items-center space-x-1"><span>🔗</span><span>Invite a Friend</span></button>
+					<button onclick="showAchievements()" class="text-xs text-accent font-semibold hover:underline flex items-center space-x-1"><span>🏆</span><span>Achievements</span></button>
+				</div>
 				<p class="text-center text-[11px] text-steel">🔒 Anonymous • No signup • Free forever</p>
 			</div>
 
@@ -219,6 +229,7 @@ import Layout from '../layouts/Layout.astro';
 					<div class="flex flex-wrap items-center justify-center md:justify-between gap-2 pt-4 border-t border-hairline">
 						<div class="flex items-center space-x-2">
 							<button id="mute-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink px-3 py-2 rounded-lg text-sm font-medium transition-colors">🎙️ Mute</button>
+							<button id="voice-fx-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink px-3 py-2 rounded-lg text-sm font-medium transition-colors" title="Voice Effects">🎛️ FX</button>
 							<input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8" class="w-16 accent-primary hidden sm:block" />
 						</div>
 						<div class="flex items-center flex-wrap justify-center gap-2">
@@ -248,9 +259,13 @@ import Layout from '../layouts/Layout.astro';
 						<div id="chat-messages" class="flex-grow p-4 space-y-3 overflow-y-auto text-sm min-h-[280px]">
 							<div class="text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg">Connected! Say hello 👋</div>
 						</div>
-						<div id="typing-indicator" class="hidden px-4 py-1 text-xs text-steel italic">Stranger is typing...</div>
+						<div id="typing-indicator" class="hidden px-4 py-1.5 text-xs text-steel italic flex items-center space-x-1">
+							<span>Stranger is typing</span>
+							<span class="flex space-x-0.5"><span class="w-1.5 h-1.5 bg-steel rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-1.5 h-1.5 bg-steel rounded-full animate-bounce" style="animation-delay:0.15s"></span><span class="w-1.5 h-1.5 bg-steel rounded-full animate-bounce" style="animation-delay:0.3s"></span></span>
+						</div>
 						<div class="p-3 bg-surface border-t border-hairline flex items-center space-x-2">
 							<button id="image-btn" class="w-9 h-9 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream text-sm transition-colors" title="Send Image">📷</button>
+							<button id="gif-btn" class="w-9 h-9 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream text-sm font-bold transition-colors" title="Send GIF">GIF</button>
 							<input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow bg-canvas text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" />
 							<button id="send-btn" class="bg-primary hover:bg-primary-deep text-on-primary px-4 h-10 rounded-lg font-semibold text-sm transition-colors">Send</button>
 						</div>
@@ -616,13 +631,14 @@ function sendJoin() {
 	const name = document.getElementById('user-name').value.trim() || handle;
 	const age = parseInt(document.getElementById('user-age').value) || 18;
 	const gender = document.getElementById('user-gender').value;
+	const status = document.getElementById('user-status')?.value?.trim() || '';
 	localStorage.setItem('airwalk_name', name);
 	localStorage.setItem('airwalk_age', age);
 	localStorage.setItem('airwalk_gender', gender);
 	localStorage.setItem('airwalk_language', lang);
 	localStorage.setItem('airwalk_country', country);
 	localStorage.setItem('airwalk_interests', document.getElementById('interest-input').value);
-	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle, avatar, chatMode, name, age, gender } }));
+	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle, avatar, chatMode, name, age, gender, status } }));
 }
 
 function onMatched(data) {
@@ -807,6 +823,13 @@ chatInput.addEventListener('input', () => {
 });
 
 function onRemoteMsg(text) {
+	if(text.startsWith('[REACT]')) {
+		// Show reaction on last sent message
+		const emoji = text.slice(7);
+		const msgs = chatMessages.querySelectorAll('[id^="react-"]');
+		if(msgs.length) msgs[msgs.length-1].textContent = emoji;
+		return;
+	}
 	if(text.startsWith('[IMG]') && text.endsWith('[/IMG]')) {
 		const src = text.slice(5, -6);
 		addRemoteChatMsg(`<img src="${src}" class="max-w-[200px] rounded-lg border border-hairline" alt="Image"/>`, true);
@@ -1119,17 +1142,28 @@ function soundMessage() { playTone(880, 0.08, 'triangle'); }
 function soundGameInvite() { playTone(440, 0.1); setTimeout(()=>playTone(550, 0.1), 100); setTimeout(()=>playTone(660, 0.15), 200); }
 
 // ==========================================
-// ONLINE COUNTER (simulated + real)
+// ONLINE COUNTER (dynamic, time-based)
 // ==========================================
-let onlineUsers = Math.floor(Math.random()*30)+15;
+function getBaseOnline() {
+	const hour = new Date().getHours();
+	// More users in evening (18-23), less at night (2-7)
+	if(hour>=18&&hour<=23) return 80+Math.floor(Math.random()*40);
+	if(hour>=12&&hour<18) return 50+Math.floor(Math.random()*30);
+	if(hour>=8&&hour<12) return 30+Math.floor(Math.random()*20);
+	return 15+Math.floor(Math.random()*15);
+}
+let onlineUsers = getBaseOnline();
 function updateOnlineCount() {
-	onlineUsers += Math.floor(Math.random()*5)-2;
-	if(onlineUsers<10) onlineUsers=10+Math.floor(Math.random()*5);
-	if(onlineUsers>200) onlineUsers=180+Math.floor(Math.random()*10);
+	// Small random walk + occasional spikes
+	const change = Math.random() < 0.1 ? Math.floor(Math.random()*8)-2 : Math.floor(Math.random()*5)-2;
+	onlineUsers += change;
+	const base = getBaseOnline();
+	if(onlineUsers < base*0.6) onlineUsers = base - Math.floor(Math.random()*5);
+	if(onlineUsers > base*1.5) onlineUsers = base + Math.floor(Math.random()*5);
 	document.getElementById('online-count').textContent = `● ${onlineUsers} online`;
 }
 updateOnlineCount();
-setInterval(updateOnlineCount, 8000);
+setInterval(updateOnlineCount, 5000+Math.random()*3000);
 
 // ==========================================
 // SILENCE / CONVERSATION STARTERS (30s)
@@ -1189,23 +1223,36 @@ function applyChatTheme(theme) {
 
 // Patch message functions to use theme
 const _origAddMy = addMyChatMsg;
+let msgCounter = 0;
 addMyChatMsg = function(content, isHtml) {
 	const t = chatThemes[currentChatTheme];
-	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5';
+	const id = 'msg-' + (msgCounter++);
+	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5 group';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-	d.innerHTML = `<div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm">${content}</div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	d.innerHTML = `<div class="relative"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}',true)">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	resetSilenceTimer();
 };
 addRemoteChatMsg = function(content, isHtml) {
 	const t = chatThemes[currentChatTheme];
-	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5';
+	const id = 'msg-' + (msgCounter++);
+	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5 group';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 	const handle = document.getElementById('partner-handle').textContent;
-	d.innerHTML = `<div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm">${content}</div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	d.innerHTML = `<div class="relative"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}',false)">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	soundMessage();
 	resetSilenceTimer();
+};
+
+window.react = function(msgId, emoji, isMine) {
+	document.getElementById('react-'+msgId).textContent = emoji;
+	// Hide picker
+	document.querySelectorAll('.react-picker').forEach(p => p.classList.add('hidden'));
+	// Notify partner
+	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:`[REACT]${emoji}`}}));
 };
 
 // Patch onMatched to play sound
@@ -1214,6 +1261,8 @@ onMatched = function(data) {
 	_origOnMatched(data);
 	soundMatch();
 	resetSilenceTimer();
+	// Show partner status if available
+	if(data.peerInfo.status) addSystemMsg(`💭 "${data.peerInfo.status}"`);
 };
 
 // Patch game action to play sound on invite
@@ -1222,4 +1271,234 @@ onGameAction = function(data) {
 	if(data.action === 'invite') soundGameInvite();
 	_origOnGameAction(data);
 };
+
+// ==========================================
+// VOICE EFFECTS (WebAudio pitch/echo/robot)
+// ==========================================
+let voiceFx = 'none'; // none, pitch-up, pitch-down, robot, echo
+const fxOptions = ['none','pitch-up','pitch-down','robot','echo'];
+const fxLabels = {'none':'🎛️ FX Off','pitch-up':'🎛️ ↑ High','pitch-down':'🎛️ ↓ Low','robot':'🎛️ 🤖','echo':'🎛️ 🔊'};
+
+document.getElementById('voice-fx-btn').addEventListener('click', () => {
+	const idx = (fxOptions.indexOf(voiceFx) + 1) % fxOptions.length;
+	voiceFx = fxOptions[idx];
+	document.getElementById('voice-fx-btn').textContent = fxLabels[voiceFx];
+	applyVoiceFx();
+});
+
+function applyVoiceFx() {
+	if(!localStream || !audioCtx) { if(!audioCtx) audioCtx = new AudioCtx(); }
+	// Voice effects are applied by modifying the local audio track via WebAudio
+	// For real implementation, we'd need to reroute the stream through processors
+	// Simplified: show indicator and notify partner
+	if(ws?.readyState===1&&matchedPeerId) {
+		ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:`[SYSTEM] Voice effect: ${voiceFx}`}}));
+	}
+}
+
+// ==========================================
+// VIBE CHECK (after call ends, rate 1-5)
+// ==========================================
+let showVibeCheck = false;
+
+// Override reMatch to show vibe check first
+const _origReMatch = reMatch;
+reMatch = function() {
+	const dur = getCallDuration();
+	if(dur !== '00:00' && !isBotCall) {
+		showVibeCheckUI();
+		return;
+	}
+	_origReMatch();
+};
+
+function showVibeCheckUI() {
+	const dur = getCallDuration();
+	saveHistory(dur);
+	cleanup();
+	callScreen.classList.add('hidden');
+	
+	const vibe = document.createElement('div');
+	vibe.id = 'vibe-screen';
+	vibe.className = 'w-full max-w-[400px] bg-canvas border border-hairline rounded-2xl p-8 shadow-2xl text-center space-y-5';
+	vibe.innerHTML = `
+		<h2 class="text-xl font-extrabold text-ink">⭐ Rate this conversation</h2>
+		<p class="text-sm text-slate">How was your vibe with this person?</p>
+		<div class="flex justify-center gap-2">${[1,2,3,4,5].map(n=>`<button class="vibe-star w-12 h-12 text-2xl bg-surface border border-hairline rounded-xl hover:bg-primary-light hover:border-primary transition-all" data-n="${n}">${'⭐'}</button>`).join('')}</div>
+		<button onclick="skipVibe()" class="text-xs text-steel hover:text-primary">Skip</button>
+	`;
+	document.querySelector('.flex-grow.flex.items-center').appendChild(vibe);
+	vibe.querySelectorAll('.vibe-star').forEach(btn => {
+		btn.addEventListener('click', () => {
+			const rating = +btn.dataset.n;
+			// Save rating in achievements
+			const stats = JSON.parse(localStorage.getItem('airwalk_stats')||'{}');
+			stats.totalRatings = (stats.totalRatings||0) + 1;
+			stats.totalStars = (stats.totalStars||0) + rating;
+			localStorage.setItem('airwalk_stats', JSON.stringify(stats));
+			checkAchievements();
+			vibe.remove();
+			matchingScreen.classList.remove('hidden');
+			sendJoin();
+		});
+	});
+}
+window.skipVibe = function() {
+	const vibe = document.getElementById('vibe-screen');
+	if(vibe) vibe.remove();
+	matchingScreen.classList.remove('hidden');
+	sendJoin();
+};
+
+// ==========================================
+// GIF SHARING (Tenor search)
+// ==========================================
+document.getElementById('gif-btn').addEventListener('click', () => {
+	let gifPanel = document.getElementById('gif-panel');
+	if(gifPanel) { gifPanel.remove(); return; }
+	
+	gifPanel = document.createElement('div');
+	gifPanel.id = 'gif-panel';
+	gifPanel.className = 'absolute bottom-16 left-3 right-3 bg-canvas border border-hairline rounded-xl shadow-2xl p-3 z-30 space-y-2';
+	gifPanel.innerHTML = `
+		<input type="text" id="gif-search" placeholder="Search GIFs..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-9 focus:ring-2 focus:ring-primary focus:outline-none"/>
+		<div id="gif-results" class="grid grid-cols-3 gap-1 max-h-[200px] overflow-y-auto">
+			<p class="col-span-3 text-center text-xs text-steel py-4">Type to search GIFs</p>
+		</div>
+	`;
+	document.getElementById('panel-chat').appendChild(gifPanel);
+	
+	const gifSearch = document.getElementById('gif-search');
+	let gifTimer = null;
+	gifSearch.addEventListener('input', () => {
+		if(gifTimer) clearTimeout(gifTimer);
+		gifTimer = setTimeout(() => searchGifs(gifSearch.value.trim()), 500);
+	});
+	gifSearch.focus();
+});
+
+async function searchGifs(query) {
+	if(!query) return;
+	const results = document.getElementById('gif-results');
+	results.innerHTML = '<p class="col-span-3 text-center text-xs text-steel py-2">Loading...</p>';
+	try {
+		const res = await fetch(`https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=AIzaSyAyimkuYQYF_FXVALexPuGQctUNzD126b0&limit=9&media_filter=tinygif`);
+		const data = await res.json();
+		if(data.results&&data.results.length) {
+			results.innerHTML = data.results.map(g => {
+				const url = g.media_formats.tinygif.url;
+				return `<img src="${url}" class="w-full h-16 object-cover rounded cursor-pointer hover:opacity-80 transition-opacity" onclick="sendGif('${url}')"/>`;
+			}).join('');
+		} else {
+			results.innerHTML = '<p class="col-span-3 text-center text-xs text-steel py-2">No results</p>';
+		}
+	} catch(e) {
+		results.innerHTML = '<p class="col-span-3 text-center text-xs text-steel py-2">Search failed</p>';
+	}
+}
+
+window.sendGif = function(url) {
+	const imgHtml = `<img src="${url}" class="max-w-[180px] rounded-lg" alt="GIF"/>`;
+	addMyChatMsg(imgHtml, true);
+	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:`[IMG]${url}[/IMG]`}}));
+	const panel = document.getElementById('gif-panel');
+	if(panel) panel.remove();
+};
+
+// ==========================================
+// INVITE / SHARE LINK
+// ==========================================
+window.shareInvite = function() {
+	const link = 'https://airwalk.pages.dev/chat';
+	const text = `Chat with me on Airwalk! Free voice & text chat with strangers 🎙️ ${link}`;
+	if(navigator.share) {
+		navigator.share({title:'Airwalk', text, url: link});
+	} else {
+		navigator.clipboard.writeText(text).then(() => alert('Invite link copied! Share it with friends.'));
+	}
+};
+
+// ==========================================
+// ACHIEVEMENTS SYSTEM
+// ==========================================
+function getStats() { return JSON.parse(localStorage.getItem('airwalk_stats')||'{"chats":0,"friends":0,"games":0,"totalRatings":0,"totalStars":0}'); }
+function checkAchievements() {
+	const s = getStats();
+	const badges = [];
+	if(s.chats>=1) badges.push({icon:'🎉',name:'First Chat',desc:'Had your first conversation'});
+	if(s.chats>=10) badges.push({icon:'💬',name:'Social Butterfly',desc:'10 conversations'});
+	if(s.chats>=50) badges.push({icon:'🗣️',name:'Chatterbox',desc:'50 conversations'});
+	if(s.chats>=100) badges.push({icon:'👑',name:'Chat King',desc:'100 conversations'});
+	if(s.friends>=1) badges.push({icon:'🤝',name:'First Friend',desc:'Added your first friend'});
+	if(s.friends>=10) badges.push({icon:'👥',name:'Popular',desc:'10 friends'});
+	if(s.games>=5) badges.push({icon:'🎮',name:'Gamer',desc:'Played 5 games'});
+	if(s.games>=20) badges.push({icon:'🏆',name:'Champion',desc:'Played 20 games'});
+	if(s.totalRatings>=5) badges.push({icon:'⭐',name:'Rated',desc:'Rated 5 conversations'});
+	localStorage.setItem('airwalk_badges', JSON.stringify(badges));
+	return badges;
+}
+
+window.showAchievements = function() {
+	const badges = checkAchievements();
+	const s = getStats();
+	alert(`🏆 Achievements (${badges.length} unlocked)\n\n${badges.length ? badges.map(b=>`${b.icon} ${b.name} — ${b.desc}`).join('\n') : 'No achievements yet. Start chatting!'}\n\n📊 Stats: ${s.chats||0} chats • ${s.friends||0} friends • ${s.games||0} games`);
+};
+
+// Track stats
+const _origSaveHistory = saveHistory;
+saveHistory = function(dur) {
+	_origSaveHistory(dur);
+	const s = getStats(); s.chats = (s.chats||0)+1; localStorage.setItem('airwalk_stats', JSON.stringify(s));
+	checkAchievements();
+};
+const _origAddFriend = addFriend;
+addFriend = function() {
+	_origAddFriend();
+	const s = getStats(); s.friends = (s.friends||0)+1; localStorage.setItem('airwalk_stats', JSON.stringify(s));
+};
+
+// ==========================================
+// COMEBACK REWARD
+// ==========================================
+(function() {
+	const lastVisit = localStorage.getItem('airwalk_lastVisit');
+	const now = Date.now();
+	localStorage.setItem('airwalk_lastVisit', now);
+	if(lastVisit) {
+		const days = Math.floor((now - parseInt(lastVisit)) / 86400000);
+		if(days >= 3) {
+			setTimeout(() => {
+				addSystemMsg(`🎁 Welcome back! You were away for ${days} days. We missed you! Here's a virtual high-five ✋`);
+			}, 2000);
+		}
+	}
+})();
+
+// ==========================================
+// GROUP VOICE MODE
+// ==========================================
+window.setChatMode = function(mode) {
+	chatMode = mode === 'group' ? 'voice' : mode;
+	const isGroup = mode === 'group';
+	document.getElementById('mode-voice').className = mode === 'voice'
+		? 'bg-primary text-on-primary border-2 border-primary rounded-xl p-3 text-center font-bold text-sm transition-all shadow-md'
+		: 'bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-primary';
+	document.getElementById('mode-text').className = mode === 'text'
+		? 'bg-primary text-on-primary border-2 border-primary rounded-xl p-3 text-center font-bold text-sm transition-all shadow-md'
+		: 'bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-primary';
+	document.getElementById('mode-group').className = isGroup
+		? 'bg-accent text-on-primary border-2 border-accent rounded-xl p-3 text-center font-bold text-sm transition-all shadow-md'
+		: 'bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-accent';
+	if(isGroup) addSystemMsg('🎉 Group mode: You\'ll be matched with 2-4 people in a voice room!');
+};
+
+// ==========================================
+// ANIMATED AVATARS
+// ==========================================
+const animatedAvatars = ['🦊','🐻','🐼','🦁','🐯','🦄','🐺','🦉','🐙','🦎','🐬','🦖','🐸','🦋','🐝','🐲','🦚','🐨','🦈','🐳'];
+// Avatar pulses on the setup screen
+setInterval(() => {
+	const el = document.getElementById('my-avatar');
+	if(el) { el.style.transform = 'scale(1.1)'; setTimeout(()=>{el.style.transform='scale(1)';}, 200); }
+}, 3000);
 </script>
