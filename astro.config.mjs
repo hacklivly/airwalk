@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://airwalk.live',
+  site: 'https://airwalk.pages.dev',
   integrations: [sitemap()],
   vite: {
     plugins: [tailwindcss()],

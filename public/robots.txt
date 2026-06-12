@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /chat
 
-Sitemap: https://airwalk.live/sitemap-index.xml
+Sitemap: https://airwalk.pages.dev/sitemap-index.xml
