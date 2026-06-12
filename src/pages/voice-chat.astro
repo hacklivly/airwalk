@@ -1,0 +1,46 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Voice Chat Online — Free Voice Chat with Strangers | Airwalk" description="Free voice chat with random strangers online. No camera, no signup. Talk by voice anonymously with people worldwide on Airwalk.">
+	<header class="bg-canvas/80 backdrop-blur-xl border-b border-hairline h-14 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+		<a href="/" class="flex items-center space-x-2 text-ink"><svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg><span class="font-extrabold text-lg uppercase">Airwalk</span></a>
+		<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary font-semibold text-sm py-2 px-5 rounded-lg transition-colors">Start Voice Chat</a>
+	</header>
+	<main class="max-w-3xl mx-auto px-4 md:px-8 py-12 space-y-8">
+		<h1 class="text-3xl md:text-4xl font-extrabold text-ink">Voice Chat with Strangers Online</h1>
+		<p class="text-lg text-slate leading-relaxed">Voice chat is the most natural way to connect with strangers online. On Airwalk, you can talk to random people by voice without a camera, without registration, and without paying a single rupee. Just your voice, their voice, and a real conversation.</p>
+
+		<h2 class="text-2xl font-bold text-ink">Why Voice Chat is Better Than Video</h2>
+		<ul class="list-disc pl-6 text-slate space-y-2">
+			<li><strong>No appearance pressure</strong> — Focus on conversation, not how you look</li>
+			<li><strong>Complete privacy</strong> — Nobody can see you or your surroundings</li>
+			<li><strong>More authentic</strong> — Voice carries emotion that text can't convey</li>
+			<li><strong>Accessible</strong> — Perfect for visually impaired users</li>
+			<li><strong>Low bandwidth</strong> — Works even on slower connections</li>
+		</ul>
+
+		<h2 class="text-2xl font-bold text-ink">Voice Chat Features on Airwalk</h2>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+			<div class="bg-surface border border-hairline rounded-xl p-4"><h3 class="font-bold text-ink">🎙️ Crystal Clear Audio</h3><p class="text-sm text-slate mt-1">Peer-to-peer WebRTC for direct, low-latency voice.</p></div>
+			<div class="bg-surface border border-hairline rounded-xl p-4"><h3 class="font-bold text-ink">🌍 Country Filter</h3><p class="text-sm text-slate mt-1">Talk to people from specific countries — free.</p></div>
+			<div class="bg-surface border border-hairline rounded-xl p-4"><h3 class="font-bold text-ink">🏷️ Interest Matching</h3><p class="text-sm text-slate mt-1">Match with people who share your hobbies.</p></div>
+			<div class="bg-surface border border-hairline rounded-xl p-4"><h3 class="font-bold text-ink">🎮 Games</h3><p class="text-sm text-slate mt-1">Play games while you voice chat.</p></div>
+		</div>
+
+		<h2 class="text-2xl font-bold text-ink">How to Start a Voice Chat</h2>
+		<ol class="list-decimal pl-6 text-slate space-y-2">
+			<li>Go to the <a href="/chat" class="text-primary font-semibold hover:underline">Airwalk chat page</a></li>
+			<li>Select "Voice Chat" mode</li>
+			<li>Allow microphone access when prompted</li>
+			<li>Click "Start Matching" — you'll be connected within seconds</li>
+		</ol>
+
+		<div class="bg-primary rounded-xl p-8 text-center space-y-3">
+			<h3 class="text-2xl font-extrabold text-on-primary">Start a Voice Chat Now</h3>
+			<p class="text-on-primary/80">Free, anonymous, no signup required.</p>
+			<a href="/chat" class="inline-block bg-white text-primary font-bold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors">Talk Now — Free</a>
+		</div>
+	</main>
+	<footer class="border-t border-hairline py-8 px-4 text-center text-xs text-steel"><p>© 2025 Airwalk. <a href="/" class="text-primary hover:underline">Home</a> · <a href="/random-chat" class="text-primary hover:underline">Random Chat</a> · <a href="/privacy" class="text-primary hover:underline">Privacy</a></p></footer>
+</Layout>

@@ -1,0 +1,12 @@
+{
+  "name": "Airwalk — Voice Chat with Strangers",
+  "short_name": "Airwalk",
+  "description": "Free anonymous voice & text chat with random strangers. No camera, no signup.",
+  "start_url": "/chat",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1877f2",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}
