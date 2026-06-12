@@ -261,7 +261,7 @@ import Layout from '../layouts/Layout.astro';
 
 					<!-- Chat Panel -->
 					<div id="panel-chat" class="flex-grow flex flex-col overflow-hidden">
-						<div id="chat-messages" class="flex-grow p-4 space-y-3 overflow-y-auto text-sm min-h-[280px]">
+						<div id="chat-messages" class="flex-grow p-3 space-y-2.5 overflow-y-auto text-sm">
 							<div class="text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg">Connected! Say hello 👋</div>
 						</div>
 						<div id="typing-indicator" class="hidden px-4 py-1.5 text-xs text-steel italic flex items-center space-x-1">
@@ -663,10 +663,18 @@ function sendJoin() {
 }
 
 function onMatched(data) {
+	// Check if this person is blocked
+	const blocked = JSON.parse(localStorage.getItem('airwalk_blocked')||'[]');
+	const pi = data.peerInfo;
+	if(blocked.includes(data.peerId) || blocked.includes(pi.handle) || blocked.includes(pi.name)) {
+		// Auto-skip blocked user
+		if(ws?.readyState===1) ws.send(JSON.stringify({type:'skip'}));
+		return;
+	}
+
 	matchedPeerId = data.peerId;
 	activeRole = data.role;
 	isBotCall = !!data.isBot;
-	const pi = data.peerInfo;
 
 	document.getElementById('partner-handle').textContent = pi.name || pi.handle || 'Stranger';
 	document.getElementById('partner-avatar').textContent = pi.avatar || '🐻';
@@ -859,19 +867,34 @@ function onRemoteMsg(text) {
 	}
 }
 
+let msgCounter = 0;
 function addMyChatMsg(content, isHtml=false) {
+	const t = (typeof chatThemes !== 'undefined') ? chatThemes[currentChatTheme] : {myBg:'bg-primary',myText:'text-on-primary'};
+	const id = 'msg-' + (msgCounter++);
 	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-	d.innerHTML = `<div class="bg-primary text-on-primary py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm">${content}</div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	d.innerHTML = `<div class="relative"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
+	if(typeof resetSilenceTimer==='function') resetSilenceTimer();
 }
 function addRemoteChatMsg(content, isHtml=false) {
+	const t = (typeof chatThemes !== 'undefined') ? chatThemes[currentChatTheme] : {theirBg:'bg-surface border border-hairline',theirText:'text-ink'};
+	const id = 'msg-' + (msgCounter++);
 	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 	const handle = document.getElementById('partner-handle').textContent;
-	d.innerHTML = `<div class="bg-surface border border-hairline text-ink py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm">${content}</div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	d.innerHTML = `<div class="relative"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
+	if(typeof soundMessage==='function') soundMessage();
+	if(typeof resetSilenceTimer==='function') resetSilenceTimer();
 }
+window.react = function(msgId, emoji) {
+	document.getElementById('react-'+msgId).textContent = emoji;
+	document.querySelectorAll('.react-picker').forEach(p => p.classList.add('hidden'));
+	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:`[REACT]${emoji}`}}));
+};
 function addSystemMsg(text) {
 	const d = document.createElement('div'); d.className = 'text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg';
 	d.textContent = text; chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -1244,38 +1267,6 @@ function applyChatTheme(theme) {
 
 // Patch message functions to use theme
 const _origAddMy = addMyChatMsg;
-let msgCounter = 0;
-addMyChatMsg = function(content, isHtml) {
-	const t = chatThemes[currentChatTheme];
-	const id = 'msg-' + (msgCounter++);
-	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5 group';
-	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-	d.innerHTML = `<div class="relative"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}',true)">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
-	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
-	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
-	resetSilenceTimer();
-};
-addRemoteChatMsg = function(content, isHtml) {
-	const t = chatThemes[currentChatTheme];
-	const id = 'msg-' + (msgCounter++);
-	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5 group';
-	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-	const handle = document.getElementById('partner-handle').textContent;
-	d.innerHTML = `<div class="relative"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}',false)">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
-	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
-	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
-	soundMessage();
-	resetSilenceTimer();
-};
-
-window.react = function(msgId, emoji, isMine) {
-	document.getElementById('react-'+msgId).textContent = emoji;
-	// Hide picker
-	document.querySelectorAll('.react-picker').forEach(p => p.classList.add('hidden'));
-	// Notify partner
-	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:`[REACT]${emoji}`}}));
-};
-
 // Patch onMatched to play sound
 const _origOnMatched = onMatched;
 onMatched = function(data) {
