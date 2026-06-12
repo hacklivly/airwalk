@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+const posts = [
+	{ slug: 'voice-chat-strangers', title: 'Voice Chat with Strangers — Why It Works', desc: 'Why voice-only chat creates deeper connections than video or text.', date: 'Jun 10, 2025', tag: '🎙️' },
+	{ slug: 'text-chat-anonymous', title: 'Anonymous Text Chat — Chat Without Pressure', desc: 'How text-only mode lets you connect at your own pace.', date: 'Jun 9, 2025', tag: '💬' },
+	{ slug: 'games-while-chatting', title: '9 Games You Can Play While Chatting', desc: 'From Wordle to Truth or Dare — break the ice with in-call games.', date: 'Jun 8, 2025', tag: '🎮' },
+	{ slug: 'mystery-mode', title: 'Mystery Mode — Talk Without Knowing Who', desc: 'Partner info stays hidden for 2 minutes. Pure voice, pure connection.', date: 'Jun 7, 2025', tag: '🎭' },
+	{ slug: 'speed-dating-online', title: 'Speed Dating Online — 60 Seconds Per Match', desc: 'Meet more people faster with our speed dating feature.', date: 'Jun 6, 2025', tag: '⚡' },
+	{ slug: 'after-dark-mode', title: 'After Dark Mode — Late Night Voice Chat', desc: 'Special vibes after midnight. Deeper conversations, calmer matching.', date: 'Jun 5, 2025', tag: '🌙' },
+	{ slug: 'mood-matching', title: 'Mood Matching — Find People Who Get Your Vibe', desc: 'Select your mood and get matched with people feeling the same way.', date: 'Jun 4, 2025', tag: '😊' },
+	{ slug: 'friends-system', title: 'Never Lose a Connection — Friends & Call History', desc: 'Add friends, view history, and reconnect with people you liked.', date: 'Jun 3, 2025', tag: '👥' },
+	{ slug: 'wordle-multiplayer', title: 'Play Wordle with Strangers Online', desc: 'Competitive Wordle while voice chatting — a unique experience.', date: 'Jun 2, 2025', tag: '🟩' },
+	{ slug: 'truth-or-dare-online', title: 'Truth or Dare with Strangers — Online Edition', desc: 'The classic party game, now playable with random people worldwide.', date: 'Jun 1, 2025', tag: '🔥' },
+];
+---
+
+<Layout title="Blog | Airwalk — Voice Chat Tips & Features" description="Read about Airwalk's features: voice chat, games, mystery mode, speed dating, and more. Tips for talking to strangers online.">
+	<header class="bg-canvas/80 backdrop-blur-xl border-b border-hairline h-14 flex items-center justify-between px-4 md:px-8 sticky top-0 z-40">
+		<a href="/" class="flex items-center space-x-2 text-ink"><svg class="w-7 h-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg><span class="font-extrabold text-lg uppercase">Airwalk</span></a>
+		<a href="/chat" class="bg-primary hover:bg-primary-deep text-on-primary font-semibold text-sm py-2 px-5 rounded-lg transition-colors">Start Chatting</a>
+	</header>
+	<main class="max-w-4xl mx-auto px-4 md:px-8 py-12 space-y-8">
+		<div class="text-center space-y-2">
+			<h1 class="text-3xl md:text-4xl font-extrabold text-ink">Airwalk Blog</h1>
+			<p class="text-slate">Tips, features, and everything about talking to strangers online.</p>
+		</div>
+		<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+			{posts.map(post => (
+				<a href={`/blog/${post.slug}`} class="bg-surface border border-hairline rounded-xl p-5 space-y-2 hover:shadow-md hover:border-primary/30 transition-all block">
+					<div class="flex items-center justify-between">
+						<span class="text-2xl">{post.tag}</span>
+						<span class="text-[10px] text-steel">{post.date}</span>
+					</div>
+					<h2 class="font-bold text-ink text-base">{post.title}</h2>
+					<p class="text-xs text-slate">{post.desc}</p>
+				</a>
+			))}
+		</div>
+	</main>
+	<footer class="border-t border-hairline py-8 px-4 text-center text-xs text-steel"><p>© 2025 Airwalk. <a href="/" class="text-primary hover:underline">Home</a> · <a href="/chat" class="text-primary hover:underline">Chat</a> · <a href="/privacy" class="text-primary hover:underline">Privacy</a></p></footer>
+</Layout>
