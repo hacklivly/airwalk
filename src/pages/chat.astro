@@ -58,10 +58,9 @@ import Layout from '../layouts/Layout.astro';
 		<div class="flex-grow flex items-center justify-center p-3 md:p-8">
 
 			<!-- SCREEN 1: SETUP -->
-			<div id="setup-screen" class="w-full max-w-[520px] bg-canvas border border-hairline rounded-2xl p-4 sm:p-6 md:p-8 shadow-2xl space-y-4 sm:space-y-5 relative overflow-hidden">
+			<div id="setup-screen" class="w-full max-w-[480px] bg-canvas border border-hairline rounded-2xl p-5 sm:p-6 md:p-8 shadow-2xl space-y-5 relative overflow-hidden">
 				<!-- Decorative gradient blob -->
 				<div class="absolute -top-20 -right-20 w-48 h-48 bg-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-				<div class="absolute -bottom-16 -left-16 w-40 h-40 bg-accent/10 rounded-full blur-3xl pointer-events-none"></div>
 
 				<!-- Your anonymous identity -->
 				<div class="relative flex items-center space-x-3 bg-gradient-to-r from-primary/5 to-accent/5 border border-primary/10 rounded-xl p-3">
@@ -70,118 +69,101 @@ import Layout from '../layouts/Layout.astro';
 						<p class="font-bold text-sm text-ink" id="my-handle">CoolFox429</p>
 						<p class="text-[10px] text-steel">Your anonymous identity</p>
 					</div>
-					<button onclick="generateHandle()" class="ml-auto text-xs text-primary font-semibold hover:underline bg-primary/10 px-2.5 py-1 rounded-full">↻ New</button>
+					<button onclick="generateHandle()" class="ml-auto text-xs text-primary font-semibold hover:underline bg-primary/10 px-2.5 py-1 rounded-full">↻</button>
 				</div>
 
-				<div class="text-center space-y-1 relative">
-					<h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-ink">Start a Conversation</h1>
-					<p class="text-xs sm:text-sm text-slate">Voice or text. All filters free. No signup needed.</p>
+				<div class="text-center relative">
+					<h1 class="text-xl sm:text-2xl font-extrabold text-ink">Talk to Strangers</h1>
 				</div>
 
-				<!-- Profile Info (Optional) -->
-				<div class="space-y-2 relative">
-					<p class="text-[11px] text-steel font-medium uppercase tracking-wider">Optional — helps match you better</p>
-					<div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-						<div>
-							<input type="text" id="user-name" placeholder="Name" maxlength="20" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
-						</div>
-						<div>
-							<input type="number" id="user-age" placeholder="Age" min="13" max="99" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
-						</div>
-						<div>
-							<select id="user-gender" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline p-2 h-10 focus:ring-2 focus:ring-primary focus:outline-none">
+				<!-- Chat Mode - THE MAIN CHOICE -->
+				<div class="grid grid-cols-3 gap-2 relative">
+					<button id="mode-voice" class="bg-primary text-on-primary border-2 border-primary rounded-xl p-3 text-center font-bold text-sm transition-all shadow-md" onclick="setChatMode('voice')">
+						🎙️ Voice
+					</button>
+					<button id="mode-text" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-primary" onclick="setChatMode('text')">
+						💬 Text
+					</button>
+					<button id="mode-group" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-accent" onclick="setChatMode('group')">
+						👥 Group
+					</button>
+				</div>
+
+				<!-- Mood - simple one-line -->
+				<div class="flex flex-wrap gap-1.5 justify-center relative">
+					<button class="mood-btn bg-surface border border-hairline rounded-full px-2.5 py-1 text-[11px] font-medium transition-all hover:bg-primary-light hover:text-primary" onclick="setMood('happy')">😊</button>
+					<button class="mood-btn bg-surface border border-hairline rounded-full px-2.5 py-1 text-[11px] font-medium transition-all hover:bg-primary-light hover:text-primary" onclick="setMood('chill')">😎</button>
+					<button class="mood-btn bg-surface border border-hairline rounded-full px-2.5 py-1 text-[11px] font-medium transition-all hover:bg-primary-light hover:text-primary" onclick="setMood('bored')">😴</button>
+					<button class="mood-btn bg-surface border border-hairline rounded-full px-2.5 py-1 text-[11px] font-medium transition-all hover:bg-primary-light hover:text-primary" onclick="setMood('deep')">🧠</button>
+					<button class="mood-btn bg-surface border border-hairline rounded-full px-2.5 py-1 text-[11px] font-medium transition-all hover:bg-primary-light hover:text-primary" onclick="setMood('fun')">🎉</button>
+					<span class="text-[10px] text-steel self-center ml-1">mood</span>
+				</div>
+
+				<!-- Expandable Options -->
+				<details class="relative">
+					<summary class="text-xs text-primary font-semibold cursor-pointer text-center">⚙️ More options (filters, modes, profile)</summary>
+					<div class="space-y-4 pt-3">
+						<!-- Profile -->
+						<div class="grid grid-cols-3 gap-2">
+							<input type="text" id="user-name" placeholder="Name" maxlength="20" class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-2 h-9 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
+							<input type="number" id="user-age" placeholder="Age" min="13" max="99" class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-2 h-9 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
+							<select id="user-gender" class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline p-1.5 h-9 focus:ring-2 focus:ring-primary focus:outline-none">
 								<option value="Male">♂ Male</option>
 								<option value="Female">♀ Female</option>
 								<option value="Other">⚧ Other</option>
 							</select>
 						</div>
-					</div>
-					<!-- Status Message -->
-					<input type="text" id="user-status" placeholder="💭 Set status: Looking for deep convos..." maxlength="50" class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
-				</div>
 
-				<!-- Chat Mode Selection -->
-				<div class="grid grid-cols-3 gap-1.5 sm:gap-2 relative">
-					<button id="mode-voice" class="bg-primary text-on-primary border-2 border-primary rounded-xl p-3 text-center font-bold text-sm transition-all shadow-md hover:shadow-lg" onclick="setChatMode('voice')">
-						🎙️ Voice
-					</button>
-					<button id="mode-text" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-primary hover:shadow-md" onclick="setChatMode('text')">
-						💬 Text
-					</button>
-					<button id="mode-group" class="bg-surface text-ink border-2 border-hairline rounded-xl p-3 text-center font-bold text-sm transition-all hover:border-accent hover:shadow-md" onclick="setChatMode('group')">
-						👥 Group
-					</button>
-				</div>
+						<!-- Status -->
+						<input type="text" id="user-status" placeholder="💭 Status: Looking for deep convos..." maxlength="50" class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-3 h-9 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
 
-				<!-- Special Modes -->
-				<div class="space-y-2 relative">
-					<p class="text-[11px] text-steel font-medium uppercase tracking-wider">Special Modes</p>
-					<div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
-						<button id="mode-mystery" class="special-mode-btn bg-surface border border-hairline rounded-lg p-2 text-center text-[11px] font-semibold transition-all hover:bg-purple-50 hover:border-purple-300 hover:text-purple-600" onclick="toggleSpecialMode('mystery')">🎭 Mystery</button>
-						<button id="mode-speed" class="special-mode-btn bg-surface border border-hairline rounded-lg p-2 text-center text-[11px] font-semibold transition-all hover:bg-pink-50 hover:border-pink-300 hover:text-pink-600" onclick="toggleSpecialMode('speed')">⚡ Speed Dating</button>
-						<button id="mode-night" class="special-mode-btn bg-surface border border-hairline rounded-lg p-2 text-center text-[11px] font-semibold transition-all hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-600" onclick="toggleSpecialMode('night')">🌙 After Dark</button>
-					</div>
-				</div>
+						<!-- Special Modes -->
+						<div class="flex flex-wrap gap-1.5">
+							<button id="mode-mystery" class="special-mode-btn bg-surface border border-hairline rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition-all hover:bg-purple-50 hover:border-purple-300" onclick="toggleSpecialMode('mystery')">🎭 Mystery</button>
+							<button id="mode-speed" class="special-mode-btn bg-surface border border-hairline rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition-all hover:bg-pink-50 hover:border-pink-300" onclick="toggleSpecialMode('speed')">⚡ Speed</button>
+							<button id="mode-night" class="special-mode-btn bg-surface border border-hairline rounded-lg px-2.5 py-1.5 text-[11px] font-semibold transition-all hover:bg-indigo-50 hover:border-indigo-300" onclick="toggleSpecialMode('night')">🌙 Night</button>
+						</div>
 
-				<!-- Mood Matching -->
-				<div class="space-y-2 relative">
-					<p class="text-[11px] text-steel font-medium uppercase tracking-wider">Your Mood</p>
-					<div class="flex flex-wrap gap-1.5">
-						<button class="mood-btn bg-surface border border-hairline rounded-full px-3 py-1 text-xs font-medium transition-all hover:bg-primary-light hover:border-primary hover:text-primary" onclick="setMood('happy')">😊 Happy</button>
-						<button class="mood-btn bg-surface border border-hairline rounded-full px-3 py-1 text-xs font-medium transition-all hover:bg-primary-light hover:border-primary hover:text-primary" onclick="setMood('chill')">😎 Chill</button>
-						<button class="mood-btn bg-surface border border-hairline rounded-full px-3 py-1 text-xs font-medium transition-all hover:bg-primary-light hover:border-primary hover:text-primary" onclick="setMood('bored')">😴 Bored</button>
-						<button class="mood-btn bg-surface border border-hairline rounded-full px-3 py-1 text-xs font-medium transition-all hover:bg-primary-light hover:border-primary hover:text-primary" onclick="setMood('deep')">🧠 Deep Talk</button>
-						<button class="mood-btn bg-surface border border-hairline rounded-full px-3 py-1 text-xs font-medium transition-all hover:bg-primary-light hover:border-primary hover:text-primary" onclick="setMood('fun')">🎉 Fun</button>
-					</div>
-				</div>
-				</div>
-
-				<!-- Filters -->
-				<div class="space-y-3">
-					<div class="grid grid-cols-2 gap-3">
-						<div class="space-y-1">
-							<label class="block text-xs font-semibold text-slate uppercase tracking-wider">Language</label>
+						<!-- Filters -->
+						<div class="grid grid-cols-2 gap-2">
 							<div class="relative">
-								<input type="text" id="language-search" placeholder="Search language..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" autocomplete="off" />
+								<input type="text" id="language-search" placeholder="Language..." class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-2 h-9 focus:ring-2 focus:ring-primary focus:outline-none" autocomplete="off" />
 								<input type="hidden" id="language-filter" value="English" />
-								<div id="language-dropdown" class="hidden absolute z-20 w-full mt-1 bg-canvas border border-hairline rounded-lg shadow-lg max-h-48 overflow-y-auto"></div>
+								<div id="language-dropdown" class="hidden absolute z-20 w-full mt-1 bg-canvas border border-hairline rounded-lg shadow-lg max-h-40 overflow-y-auto"></div>
 							</div>
-						</div>
-						<div class="space-y-1">
-							<label class="block text-xs font-semibold text-slate uppercase tracking-wider">Country</label>
 							<div class="relative">
-								<input type="text" id="country-search" placeholder="Search country..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" autocomplete="off" />
+								<input type="text" id="country-search" placeholder="Country..." class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-2 h-9 focus:ring-2 focus:ring-primary focus:outline-none" autocomplete="off" />
 								<input type="hidden" id="country-filter" value="Worldwide" />
-								<div id="country-dropdown" class="hidden absolute z-20 w-full mt-1 bg-canvas border border-hairline rounded-lg shadow-lg max-h-48 overflow-y-auto"></div>
+								<div id="country-dropdown" class="hidden absolute z-20 w-full mt-1 bg-canvas border border-hairline rounded-lg shadow-lg max-h-40 overflow-y-auto"></div>
+							</div>
+						</div>
+
+						<!-- Interests -->
+						<div>
+							<input type="text" id="interest-input" placeholder="Interests: gaming, music..." class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-2 h-9 focus:ring-2 focus:ring-primary focus:outline-none" />
+							<div class="flex flex-wrap gap-1 pt-1.5">
+								<button class="bg-primary-light text-primary text-[10px] px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Gaming')">Gaming</button>
+								<button class="bg-primary-light text-primary text-[10px] px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Music')">Music</button>
+								<button class="bg-primary-light text-primary text-[10px] px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Anime')">Anime</button>
+								<button class="bg-primary-light text-primary text-[10px] px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Movies')">Movies</button>
+								<button class="bg-primary-light text-primary text-[10px] px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Tech')">Tech</button>
 							</div>
 						</div>
 					</div>
+				</details>
 
-					<!-- Interests -->
-					<div class="space-y-1">
-						<label class="block text-xs font-semibold text-slate uppercase tracking-wider">Interests</label>
-						<input type="text" id="interest-input" placeholder="gaming, music, coding..." class="w-full bg-surface text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" />
-						<div class="flex flex-wrap gap-1.5 pt-1">
-							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Gaming')">+ Gaming</button>
-							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Music')">+ Music</button>
-							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Anime')">+ Anime</button>
-							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Movies')">+ Movies</button>
-							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Tech')">+ Tech</button>
-							<button class="bg-primary-light text-primary text-[11px] font-medium px-2 py-0.5 rounded-full hover:bg-primary hover:text-on-primary transition-colors" onclick="addTag('Sports')">+ Sports</button>
-						</div>
-					</div>
-				</div>
-
+				<!-- START BUTTON -->
 				<button id="start-match-btn" class="w-full bg-gradient-to-r from-primary to-primary-deep hover:from-primary-deep hover:to-primary text-on-primary font-bold text-base py-4 rounded-xl transition-all shadow-lg hover:shadow-xl relative overflow-hidden group">
 					<span class="relative z-10">🚀 Start Matching</span>
 					<div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
 				</button>
-				<!-- Invite & Achievements -->
-				<div class="flex items-center justify-between">
-					<button onclick="shareInvite()" class="text-xs text-primary font-semibold hover:underline flex items-center space-x-1"><span>🔗</span><span>Invite a Friend</span></button>
-					<button onclick="showAchievements()" class="text-xs text-accent font-semibold hover:underline flex items-center space-x-1"><span>🏆</span><span>Achievements</span></button>
+
+				<!-- Bottom links -->
+				<div class="flex items-center justify-between text-[11px]">
+					<button onclick="shareInvite()" class="text-primary font-semibold hover:underline">🔗 Invite</button>
+					<span class="text-steel">Free forever</span>
+					<button onclick="showAchievements()" class="text-accent font-semibold hover:underline">🏆 Badges</button>
 				</div>
-				<p class="text-center text-[11px] text-steel">🔒 Anonymous • No signup • Free forever</p>
 			</div>
 
 			<!-- SCREEN 2: SEARCHING -->
