@@ -558,8 +558,13 @@ document.getElementById('cancel-match-btn').addEventListener('click', () => {
 
 function connectWS() {
 	if (ws?.readyState === WebSocket.OPEN) { sendJoin(); return; }
-	const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-	ws = new WebSocket(`${proto}//${location.hostname}:3001`);
+	// Production: connect to Cloudflare Worker signaling server
+	// Local dev: connect to localhost:3001
+	const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+	const wsUrl = isLocal
+		? `ws://${location.hostname}:3001`
+		: 'wss://airwalk-signal.airwalkhq.workers.dev';
+	ws = new WebSocket(wsUrl);
 	ws.onopen = () => { document.getElementById('online-indicator').textContent = '🟢 Online'; sendJoin(); };
 	ws.onmessage = async (e) => {
 		const msg = JSON.parse(e.data);
