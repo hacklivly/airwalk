@@ -453,11 +453,13 @@ document.getElementById('history-toggle').addEventListener('click', () => {
 
 function renderFriends() {
 	const list = document.getElementById('friends-list');
-	if (!friends.length) { list.innerHTML = '<p class="text-sm text-steel text-center py-8">No friends yet.</p>'; return; }
-	list.innerHTML = friends.map(f => `
-		<div class="flex items-center space-x-3 p-2 bg-surface border border-hairline rounded-lg">
+	if (!friends.length) { list.innerHTML = '<p class="text-sm text-steel text-center py-8">No friends yet. Add people you connect with!</p>'; return; }
+	list.innerHTML = friends.map((f, idx) => `
+		<div class="flex items-center space-x-3 p-3 bg-surface border border-hairline rounded-xl">
 			<span class="text-lg">${f.avatar}</span>
 			<div class="flex-grow"><p class="font-bold text-sm text-ink">${f.handle}</p><p class="text-[10px] text-steel">${f.country} • ${f.lang}</p></div>
+			<button onclick="reconnectTo('${f.handle}')" class="text-[10px] bg-primary text-on-primary px-2 py-1 rounded font-bold">Connect</button>
+			<button onclick="removeFriend(${idx})" class="text-[10px] text-red-500 px-1">✕</button>
 		</div>
 	`).join('');
 }
@@ -466,12 +468,28 @@ function renderHistory() {
 	const list = document.getElementById('history-list');
 	if (!callHistory.length) { list.innerHTML = '<p class="text-sm text-steel text-center py-8">No history yet.</p>'; return; }
 	list.innerHTML = callHistory.slice(-20).reverse().map(h => `
-		<div class="flex items-center space-x-3 p-2 bg-surface border border-hairline rounded-lg">
+		<div class="flex items-center space-x-3 p-3 bg-surface border border-hairline rounded-xl">
 			<span class="text-lg">${h.avatar}</span>
 			<div class="flex-grow"><p class="font-bold text-sm text-ink">${h.handle}</p><p class="text-[10px] text-steel">${h.duration} • ${h.date}</p></div>
+			<button onclick="reconnectTo('${h.handle}')" class="text-[10px] bg-primary text-on-primary px-2 py-1 rounded font-bold">Recall</button>
 		</div>
 	`).join('');
 }
+
+window.reconnectTo = function(handle) {
+	// Close panels and start matching with reconnect target
+	document.getElementById('friends-panel').classList.add('hidden');
+	document.getElementById('history-panel').classList.add('hidden');
+	addSystemMsg(`Looking for ${handle}...`);
+	// Send reconnect request to server
+	if(ws?.readyState===1) ws.send(JSON.stringify({type:'reconnect',data:{targetHandle:handle}}));
+};
+
+window.removeFriend = function(idx) {
+	friends.splice(idx, 1);
+	localStorage.setItem('airwalk_friends', JSON.stringify(friends));
+	renderFriends();
+};
 
 function addFriend() {
 	if (!matchedPeerId) return;
@@ -480,8 +498,10 @@ function addFriend() {
 	const country = document.getElementById('partner-country').textContent;
 	const lang = document.getElementById('partner-lang').textContent;
 	if (friends.find(f => f.handle === handle)) { addSystemMsg('Already in friends list!'); return; }
-	friends.push({ handle, avatar, country, lang, added: new Date().toISOString() });
+	friends.push({ handle, avatar, country, lang, peerId: matchedPeerId, added: new Date().toISOString() });
 	localStorage.setItem('airwalk_friends', JSON.stringify(friends));
+	// Notify partner
+	if(ws?.readyState===1) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:'[SYSTEM] sent you a friend request! 🤝'}}));
 	addSystemMsg(`${handle} added to friends! 🤝`);
 }
 
@@ -576,7 +596,10 @@ function connectWS() {
 			case 'chat_message': onRemoteMsg(msg.data.text); break;
 			case 'typing': msg.data.isTyping ? document.getElementById('typing-indicator').classList.remove('hidden') : document.getElementById('typing-indicator').classList.add('hidden'); break;
 			case 'game_action': onGameAction(msg.data); break;
-			case 'skipped': case 'disconnected': addSystemMsg('Partner left. Searching...'); reMatch(); break;
+			case 'mute_status': showMuteIndicator(msg.data.isMuted); break;
+			case 'skipped': addSystemMsg('Partner skipped.'); reMatch(); break;
+			case 'disconnected': startReconnectTimer(); break;
+			case 'reconnected': clearReconnectTimer(); addSystemMsg('Partner reconnected!'); break;
 		}
 	};
 	ws.onclose = () => { document.getElementById('online-indicator').textContent = '🔴 Offline'; };
@@ -666,7 +689,7 @@ function startEq() { eqInt = setInterval(()=>{eqBars.forEach(b=>{b.style.height=
 function stopEq() { if(eqInt){clearInterval(eqInt);eqInt=null;} eqBars.forEach(b=>{b.style.height='12px';}); }
 function startSkipCooldown() {
 	const btn = document.getElementById('skip-btn'); const lbl = document.getElementById('skip-btn-label');
-	btn.disabled=true; let c=5; lbl.textContent=`Skip (${c}s)`;
+	btn.disabled=true; let c=20; lbl.textContent=`Skip (${c}s)`;
 	skipInterval = setInterval(()=>{ c--; if(c>0) lbl.textContent=`Skip (${c}s)`; else{clearInterval(skipInterval);btn.disabled=false;lbl.textContent='Skip';} },1000);
 }
 
@@ -680,10 +703,87 @@ document.getElementById('mute-btn').addEventListener('click', () => {
 	if(!localStream) return; isMuted=!isMuted;
 	localStream.getAudioTracks().forEach(t=>{t.enabled=!isMuted;});
 	document.getElementById('mute-btn').textContent = isMuted ? '🔇 Unmute' : '🎙️ Mute';
+	// Notify partner about mute status
+	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'mute_status',data:{targetPeerId:matchedPeerId,isMuted}}));
 });
 document.getElementById('volume-slider').addEventListener('input', e => { document.getElementById('remote-audio').volume = e.target.value; });
-document.getElementById('report-btn').addEventListener('click', () => { if(confirm('Report user?')){if(ws?.readyState===1)ws.send(JSON.stringify({type:'skip'}));addSystemMsg('Reported.');reMatch();} });
-document.getElementById('block-btn').addEventListener('click', () => { if(confirm('Block this user?')){if(ws?.readyState===1)ws.send(JSON.stringify({type:'skip'}));addSystemMsg('Blocked. You won\'t match them again.');reMatch();} });
+document.getElementById('report-btn').addEventListener('click', () => {
+	if(!matchedPeerId) return;
+	if(confirm('Report this user for abuse? They will be blocked.')) {
+		const blocked = JSON.parse(localStorage.getItem('airwalk_blocked')||'[]');
+		const handle = document.getElementById('partner-handle').textContent;
+		if(!blocked.includes(matchedPeerId)) blocked.push(matchedPeerId);
+		if(!blocked.includes(handle)) blocked.push(handle);
+		localStorage.setItem('airwalk_blocked', JSON.stringify(blocked));
+		if(ws?.readyState===1) ws.send(JSON.stringify({type:'report',data:{targetPeerId:matchedPeerId}}));
+		addSystemMsg('⚠️ User reported and blocked.');
+		reMatch();
+	}
+});
+document.getElementById('block-btn').addEventListener('click', () => {
+	if(!matchedPeerId) return;
+	if(confirm('Block this user? You won\'t be matched with them again.')) {
+		const blocked = JSON.parse(localStorage.getItem('airwalk_blocked')||'[]');
+		const handle = document.getElementById('partner-handle').textContent;
+		if(!blocked.includes(matchedPeerId)) blocked.push(matchedPeerId);
+		if(!blocked.includes(handle)) blocked.push(handle);
+		localStorage.setItem('airwalk_blocked', JSON.stringify(blocked));
+		if(ws?.readyState===1) ws.send(JSON.stringify({type:'skip'}));
+		addSystemMsg('🚫 User blocked.');
+		reMatch();
+	}
+});
+
+// ==========================================
+// MUTE INDICATOR
+// ==========================================
+function showMuteIndicator(partnerMuted) {
+	let ind = document.getElementById('partner-mute-indicator');
+	if(!ind) {
+		ind = document.createElement('div');
+		ind.id = 'partner-mute-indicator';
+		ind.className = 'text-center text-xs font-semibold py-1.5 px-3 rounded-lg mt-2';
+		document.getElementById('partner-avatar').parentElement.parentElement.appendChild(ind);
+	}
+	if(partnerMuted) {
+		ind.className = 'text-center text-xs font-semibold py-1.5 px-3 rounded-lg mt-2 bg-red-50 text-red-500 border border-red-200';
+		ind.textContent = '🔇 Partner is muted';
+		ind.classList.remove('hidden');
+	} else {
+		ind.className = 'text-center text-xs font-semibold py-1.5 px-3 rounded-lg mt-2 bg-accent/10 text-accent border border-accent/20';
+		ind.textContent = '🎙️ Partner unmuted';
+		setTimeout(() => ind.classList.add('hidden'), 2000);
+	}
+}
+
+// ==========================================
+// 60s RECONNECT TIMER
+// ==========================================
+let reconnectTimeout = null;
+let reconnectCountdown = null;
+
+function startReconnectTimer() {
+	addSystemMsg('⏳ Partner disconnected. Waiting 60s for reconnection...');
+	let sec = 60;
+	const lbl = document.getElementById('call-status-label');
+	lbl.textContent = `Reconnecting (${sec}s)`;
+	reconnectCountdown = setInterval(() => {
+		sec--;
+		lbl.textContent = `Reconnecting (${sec}s)`;
+		if(sec <= 0) { clearInterval(reconnectCountdown); }
+	}, 1000);
+	reconnectTimeout = setTimeout(() => {
+		clearInterval(reconnectCountdown);
+		addSystemMsg('Partner did not reconnect. Finding new match...');
+		reMatch();
+	}, 60000);
+}
+
+function clearReconnectTimer() {
+	if(reconnectTimeout) { clearTimeout(reconnectTimeout); reconnectTimeout=null; }
+	if(reconnectCountdown) { clearInterval(reconnectCountdown); reconnectCountdown=null; }
+	document.getElementById('call-status-label').textContent = chatMode==='voice' ? 'Live Call' : 'Text Chat';
+}
 
 // ==========================================
 // CHAT MESSAGES
@@ -802,13 +902,13 @@ function mountGame(type, invite=false) {
 		setStatus(gameTurn==='me'?'Your turn (🔴)':"Stranger's turn (🟡)");
 	} else if(type==='wordle') {
 		document.getElementById('game-title').textContent = '🟩 Wordle';
-		const words = ['BRAVE','CRANE','FLAME','GLOBE','HOUSE','LIGHT','MUSIC','OCEAN','PLANT','SMILE','STONE','TIGER','WORLD'];
+		const words = ['BRAVE','CRANE','FLAME','GLOBE','HOUSE','LIGHT','MUSIC','OCEAN','PLANT','SMILE','STONE','TIGER','WORLD','CHAIR','DREAM','FRESH','GRAPE','HONEY','JUDGE','KNIFE','LEMON','MANGO','NERVE','PEACE','QUEEN','RIVER','SOLAR','THINK','URBAN','VOICE','WHEAT','YOUTH','BLAZE','CLOUD','EARTH','FROST','GRAIN','HEART','IMAGE','JOLLY','KNEEL','LUNAR','MAPLE','NIGHT','OLIVE','PIXEL','QUEST','RAPID','SPARK','TRACK'];
 		wordleWord = words[Math.floor(Math.random()*words.length)];
 		wordleGuesses = [];
-		board.innerHTML = `<div class="space-y-3"><div id="wordle-grid" class="space-y-1"></div><div class="flex justify-center gap-2"><input id="wordle-input" type="text" maxlength="5" class="w-32 bg-surface border border-hairline rounded-lg px-3 h-9 text-sm uppercase font-bold text-center focus:ring-2 focus:ring-primary focus:outline-none" placeholder="5 letters"/><button id="wordle-submit" class="bg-primary text-on-primary px-4 h-9 rounded-lg font-bold text-sm">Guess</button></div></div>`;
+		board.innerHTML = `<div class="space-y-4"><div id="wordle-grid" class="space-y-1.5 min-h-[180px]"></div><div class="flex justify-center gap-2"><input id="wordle-input" type="text" maxlength="5" class="w-36 bg-surface border-2 border-hairline rounded-lg px-3 h-10 text-sm uppercase font-bold text-center tracking-widest focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none" placeholder="GUESS"/><button id="wordle-submit" class="bg-primary hover:bg-primary-deep text-on-primary px-5 h-10 rounded-lg font-bold text-sm transition-colors shadow-sm">→</button></div><p class="text-[10px] text-steel text-center">🟩 = correct spot | 🟨 = wrong spot | ⬜ = not in word</p></div>`;
 		document.getElementById('wordle-submit').addEventListener('click', wordleGuess);
 		document.getElementById('wordle-input').addEventListener('keydown', e => { if(e.key==='Enter') wordleGuess(); });
-		setStatus('Guess the 5-letter word!');
+		setStatus('Guess the 5-letter word! (6 tries)');
 	} else if(type==='ludo') {
 		document.getElementById('game-title').textContent = '🎲 Ludo Race';
 		gameTurn = activeRole==='initiator' ? 'me' : 'them';
@@ -890,25 +990,41 @@ function c4Check(sym) {
 
 // --- WORDLE ---
 function wordleGuess() {
+	if(!gameActive) return;
 	const input = document.getElementById('wordle-input');
-	const guess = input.value.toUpperCase().trim();
-	if(guess.length!==5) return;
+	if(!input) return;
+	const guess = input.value.toUpperCase().trim().replace(/[^A-Z]/g,'');
+	if(guess.length!==5) { setStatus('Enter exactly 5 letters!'); return; }
 	input.value = '';
 	wordleGuesses.push(guess);
 	const grid = document.getElementById('wordle-grid');
 	const row = document.createElement('div'); row.className = 'flex justify-center gap-1';
+	
+	// Calculate colors correctly (handle duplicate letters)
+	const colors = Array(5).fill('gray');
+	const wordArr = wordleWord.split('');
+	const used = Array(5).fill(false);
+	
+	// First pass: exact matches (green)
 	for(let i=0;i<5;i++) {
-		const letter = guess[i];
-		let bg = 'bg-stone'; // gray
-		if(letter===wordleWord[i]) bg = 'bg-green-500 text-white';
-		else if(wordleWord.includes(letter)) bg = 'bg-yellow-400 text-ink';
-		else bg = 'bg-muted text-ink';
-		row.innerHTML += `<div class="w-9 h-9 ${bg} rounded font-bold text-sm flex items-center justify-center border border-hairline">${letter}</div>`;
+		if(guess[i]===wordArr[i]) { colors[i]='green'; used[i]=true; }
+	}
+	// Second pass: wrong position (yellow)
+	for(let i=0;i<5;i++) {
+		if(colors[i]==='green') continue;
+		for(let j=0;j<5;j++) {
+			if(!used[j]&&guess[i]===wordArr[j]) { colors[i]='yellow'; used[j]=true; break; }
+		}
+	}
+	
+	for(let i=0;i<5;i++) {
+		const bg = colors[i]==='green' ? 'bg-green-500 text-white' : colors[i]==='yellow' ? 'bg-yellow-400 text-black' : 'bg-slate/30 text-ink';
+		row.innerHTML += `<div class="w-10 h-10 ${bg} rounded-lg font-bold text-sm flex items-center justify-center border border-hairline shadow-sm">${guess[i]}</div>`;
 	}
 	grid.appendChild(row);
-	if(guess===wordleWord) { gameActive=false; setStatus('Correct! 🎉 The word was ' + wordleWord); }
-	else if(wordleGuesses.length>=6) { gameActive=false; setStatus('Game over! Word was: ' + wordleWord); }
-	else setStatus(`Guess ${wordleGuesses.length+1}/6`);
+	if(guess===wordleWord) { gameActive=false; setStatus('🎉 Correct! Word: ' + wordleWord); }
+	else if(wordleGuesses.length>=6) { gameActive=false; setStatus('❌ Game over! Word: ' + wordleWord); }
+	else setStatus(`Guess ${wordleGuesses.length+1}/6 — ${6-wordleGuesses.length} left`);
 	sendGameAction('wordle','guess',{guess});
 }
 

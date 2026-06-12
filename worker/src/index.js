@@ -59,6 +59,39 @@ export class SignalingRoom {
             if (t && t.ws.readyState === 1) t.ws.send(JSON.stringify({ type: 'typing', data: { senderPeerId: myId, isTyping: msg.data.isTyping } }));
             break;
           }
+          case 'mute_status': {
+            const t = this.clients.get(msg.data.targetPeerId);
+            if (t && t.ws.readyState === 1) t.ws.send(JSON.stringify({ type: 'mute_status', data: { isMuted: msg.data.isMuted } }));
+            break;
+          }
+          case 'report': {
+            // Log report and disconnect
+            if (!myId) return;
+            this.handleSkip(myId);
+            this.putInPool(myId);
+            break;
+          }
+          case 'reconnect': {
+            // Try to find the target handle in active clients
+            const targetHandle = msg.data.targetHandle;
+            for (const [cid, client] of this.clients.entries()) {
+              if (client.info.handle === targetHandle && cid !== myId) {
+                // Check if target is in waiting pool
+                if (this.waitingPool.includes(cid)) {
+                  this.waitingPool = this.waitingPool.filter(x => x !== cid && x !== myId);
+                  if (!this.sessions) this.sessions = new Map();
+                  this.sessions.set(`${myId}_${cid}`, { a: myId, b: cid });
+                  const me = this.clients.get(myId);
+                  me.ws.send(JSON.stringify({ type: 'matched', data: { role: 'initiator', peerId: cid, peerInfo: client.info } }));
+                  client.ws.send(JSON.stringify({ type: 'matched', data: { role: 'receiver', peerId: myId, peerInfo: me.info } }));
+                  return;
+                }
+              }
+            }
+            // Target not found online, just put in normal pool
+            this.putInPool(myId);
+            break;
+          }
           case 'game_action': {
             const t = this.clients.get(msg.data.targetPeerId);
             if (t && t.ws.readyState === 1) t.ws.send(JSON.stringify({ type: 'game_action', data: msg.data }));

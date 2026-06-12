@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /chat
 
 Sitemap: https://airwalk.pages.dev/sitemap-index.xml
