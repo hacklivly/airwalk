@@ -11,12 +11,16 @@ import Layout from '../layouts/Layout.astro';
 		</a>
 		<div class="flex items-center space-x-1.5 sm:space-x-2">
 			<span class="text-[10px] text-accent font-bold bg-accent/10 px-1.5 py-0.5 rounded-full hidden md:inline-block" id="online-count">● 0 online</span>
-			<button id="friends-toggle" class="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors text-sm" title="Friends">
-				👥
+			<button id="friends-toggle" class="relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors" title="Friends">
+				<svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
 				<span id="friend-badge" class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-primary text-on-primary text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
 			</button>
-			<button id="history-toggle" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors text-sm hidden sm:flex" title="Call History">📋</button>
-			<button id="chat-theme-btn" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors text-sm hidden sm:flex" title="Chat Theme">🎨</button>
+			<button id="history-toggle" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors hidden sm:flex" title="Call History">
+				<svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+			</button>
+			<button id="chat-theme-btn" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors hidden sm:flex" title="Chat Theme">
+				<svg class="w-4 h-4 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+			</button>
 			<button id="theme-toggle" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-surface border border-hairline hover:bg-cream transition-colors" aria-label="Toggle theme">
 				<svg class="w-4 h-4 text-yellow-saturated hidden dark-icon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
 				<svg class="w-4 h-4 text-slate light-icon" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/></svg>
@@ -55,7 +59,7 @@ import Layout from '../layouts/Layout.astro';
 		</div>
 
 		<!-- SCREENS CONTAINER -->
-		<div class="flex-grow flex items-center justify-center p-3 md:p-8">
+		<div class="flex-grow flex items-center justify-center p-0 sm:p-3 md:p-8">
 
 			<!-- SCREEN 1: SETUP -->
 			<div id="setup-screen" class="w-full max-w-[480px] bg-canvas border border-hairline rounded-2xl p-5 sm:p-6 md:p-8 shadow-2xl space-y-5 relative overflow-hidden">
@@ -74,6 +78,7 @@ import Layout from '../layouts/Layout.astro';
 
 				<div class="text-center relative">
 					<h1 class="text-xl sm:text-2xl font-extrabold text-ink">Talk to Strangers</h1>
+					<p class="text-xs text-steel mt-1">Voice-only random chat — no camera, no signup</p>
 				</div>
 
 				<!-- Chat Mode - THE MAIN CHOICE -->
@@ -154,15 +159,24 @@ import Layout from '../layouts/Layout.astro';
 
 				<!-- START BUTTON -->
 				<button id="start-match-btn" class="w-full bg-gradient-to-r from-primary to-primary-deep hover:from-primary-deep hover:to-primary text-on-primary font-bold text-base py-4 rounded-xl transition-all shadow-lg hover:shadow-xl relative overflow-hidden group">
-					<span class="relative z-10">🚀 Start Matching</span>
+					<span class="relative z-10 flex items-center justify-center space-x-2">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+						<span>Start Matching</span>
+					</span>
 					<div class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 skew-x-12"></div>
 				</button>
 
 				<!-- Bottom links -->
 				<div class="flex items-center justify-between text-[11px]">
-					<button onclick="shareInvite()" class="text-primary font-semibold hover:underline">🔗 Invite</button>
+					<button onclick="shareInvite()" class="text-primary font-semibold hover:underline flex items-center space-x-1">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+						<span>Invite</span>
+					</button>
 					<span class="text-steel">Free forever</span>
-					<button onclick="showAchievements()" class="text-accent font-semibold hover:underline">🏆 Badges</button>
+					<button onclick="showAchievements()" class="text-accent font-semibold hover:underline flex items-center space-x-1">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+						<span>Badges</span>
+					</button>
 				</div>
 			</div>
 
@@ -178,14 +192,17 @@ import Layout from '../layouts/Layout.astro';
 					<div class="relative w-14 h-14 bg-primary rounded-full flex items-center justify-center text-on-primary text-xl shadow-lg animate-pulse" id="search-icon">🎙️</div>
 				</div>
 				<div id="search-details" class="bg-surface rounded-lg border border-hairline p-3 w-full text-xs text-slate text-left"></div>
-				<button id="cancel-match-btn" class="bg-surface border border-hairline hover:bg-cream text-ink text-sm font-semibold py-2.5 px-6 rounded-lg transition-colors">Cancel</button>
+				<button id="cancel-match-btn" class="bg-surface border border-hairline hover:bg-cream text-ink text-sm font-semibold py-2.5 px-6 rounded-lg transition-colors flex items-center space-x-1.5">
+					<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+					<span>Cancel</span>
+				</button>
 			</div>
 
 			<!-- SCREEN 3: ACTIVE CALL/CHAT -->
-			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-2xl shadow-2xl overflow-hidden flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4.5rem)] md:h-[600px] md:max-h-none md:min-h-[540px]">
+			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] md:h-[600px] md:max-h-none md:min-h-[540px]">
 
 				<!-- Left Panel: Voice/Info -->
-				<div class="md:col-span-7 p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto max-h-[40%] md:max-h-none flex-shrink-0 md:flex-shrink">
+				<div class="md:col-span-7 p-3 sm:p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto max-h-[35%] md:max-h-none flex-shrink-0 md:flex-shrink">
 					<div class="space-y-4">
 						<!-- Status Bar -->
 						<div class="flex items-center justify-between">
@@ -284,15 +301,19 @@ import Layout from '../layouts/Layout.astro';
 				<div class="md:col-span-5 flex flex-col flex-grow md:h-auto border-t md:border-t-0 border-hairline overflow-hidden">
 					<!-- Tabs -->
 					<div class="bg-canvas border-b border-hairline flex">
-						<button id="tab-chat-btn" class="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none" onclick="switchTab('chat')">💬 Chat</button>
-						<button id="tab-games-btn" class="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none relative" onclick="switchTab('games')">
-							🎮 Games
+						<button id="tab-chat-btn" class="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none flex items-center justify-center space-x-1" onclick="switchTab('chat')">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+							<span class="hidden sm:inline">Chat</span>
+						</button>
+						<button id="tab-games-btn" class="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none relative flex items-center justify-center space-x-1" onclick="switchTab('games')">
+							<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+							<span class="hidden sm:inline">Games</span>
 							<span id="game-dot" class="hidden absolute top-2 right-[28%] w-2 h-2 bg-accent rounded-full animate-ping"></span>
 						</button>
 					</div>
 
 					<!-- Chat Panel -->
-					<div id="panel-chat" class="flex-grow flex flex-col overflow-hidden">
+					<div id="panel-chat" class="flex-grow flex flex-col overflow-hidden relative">
 						<div id="chat-messages" class="flex-grow p-3 space-y-2.5 overflow-y-auto text-sm">
 							<div class="text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg">Connected! Say hello 👋</div>
 						</div>
@@ -300,11 +321,17 @@ import Layout from '../layouts/Layout.astro';
 							<span>Stranger is typing</span>
 							<span class="flex space-x-0.5"><span class="w-1.5 h-1.5 bg-steel rounded-full animate-bounce" style="animation-delay:0s"></span><span class="w-1.5 h-1.5 bg-steel rounded-full animate-bounce" style="animation-delay:0.15s"></span><span class="w-1.5 h-1.5 bg-steel rounded-full animate-bounce" style="animation-delay:0.3s"></span></span>
 						</div>
-						<div class="p-3 bg-surface border-t border-hairline flex items-center space-x-2">
-							<button id="image-btn" class="w-9 h-9 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream text-sm transition-colors" title="Send Image">📷</button>
-							<button id="gif-btn" class="w-9 h-9 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream text-sm font-bold transition-colors" title="Send GIF">GIF</button>
-							<input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow bg-canvas text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" />
-							<button id="send-btn" class="bg-primary hover:bg-primary-deep text-on-primary px-4 h-10 rounded-lg font-semibold text-sm transition-colors">Send</button>
+						<div class="p-2 sm:p-3 bg-surface border-t border-hairline flex items-center space-x-1.5 sm:space-x-2">
+							<button id="image-btn" class="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream transition-colors" title="Send Image">
+								<svg class="w-5 h-5 text-slate" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+							</button>
+							<button id="gif-btn" class="w-9 h-9 flex-shrink-0 flex items-center justify-center rounded-lg bg-canvas border border-hairline hover:bg-cream transition-colors" title="Send GIF">
+								<svg class="w-5 h-5 text-slate" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4V2m5 2V2m5 2V2M4 7h16M4 11h16M4 15h8m-8 4h6M4 7v13a2 2 0 002 2h12a2 2 0 002-2V7"/><text x="7" y="17" font-size="7" font-weight="bold" fill="currentColor" stroke="none">GIF</text></svg>
+							</button>
+							<input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow min-w-0 bg-canvas text-ink text-sm rounded-lg border border-hairline px-3 h-10 focus:ring-2 focus:ring-primary focus:outline-none" />
+							<button id="send-btn" class="w-10 h-10 flex-shrink-0 bg-primary hover:bg-primary-deep text-on-primary rounded-lg flex items-center justify-center transition-colors" title="Send">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 2l18 10-18 10 3-10zm0 0h8"/></svg>
+							</button>
 						</div>
 						<input type="file" id="image-input" accept="image/*" class="hidden" />
 					</div>
@@ -356,9 +383,9 @@ import Layout from '../layouts/Layout.astro';
 						<!-- Active Game Area -->
 						<div id="game-area" class="hidden space-y-3">
 							<div class="flex items-center justify-between">
-								<button class="text-xs text-primary font-medium" onclick="exitGame()">← Back</button>
+								<button class="text-xs text-primary font-medium flex items-center" onclick="exitGame()"><svg class="w-4 h-4 mr-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg></button>
 								<span id="game-title" class="font-bold text-sm text-ink"></span>
-								<button class="text-xs text-primary font-medium" onclick="resetGame()">Reset</button>
+								<button class="text-xs text-primary font-medium" onclick="resetGame()"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5M4 9a8 8 0 0114-4m2 11a8 8 0 01-14 4"/></svg></button>
 							</div>
 							<div id="game-status" class="bg-primary-light text-primary text-center text-xs font-semibold py-2 rounded-lg border border-primary/20">Loading...</div>
 							<div id="game-board"></div>
@@ -547,7 +574,6 @@ function renderHistory() {
 }
 
 window.reconnectTo = async function(handle) {
-	// Close panels and start matching with reconnect target
 	document.getElementById('friends-panel').classList.add('hidden');
 	document.getElementById('history-panel').classList.add('hidden');
 	
@@ -557,15 +583,18 @@ window.reconnectTo = async function(handle) {
 	setupScreen.classList.add('hidden');
 	callScreen.classList.add('hidden');
 	matchingScreen.classList.remove('hidden');
-	document.getElementById('search-mode-label').textContent = `Recalling ${handle}...`;
+	document.getElementById('search-mode-label').textContent = `Calling ${handle}...`;
 	document.getElementById('search-icon').textContent = '📞';
-	document.getElementById('search-details').innerHTML = `Attempting to reconnect with <strong>${handle}</strong>...`;
+	document.getElementById('search-details').innerHTML = `<p class="text-center text-ink">Ringing <strong>${handle}</strong>...</p>`;
 
-	window.reconnectTarget = handle;
-
+	// Ensure WS is connected, then send reconnect
 	if (ws?.readyState === WebSocket.OPEN) {
-		sendReconnect(handle);
+		sendJoin(); // Register ourselves first
+		setTimeout(() => {
+			ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: handle } }));
+		}, 200);
 	} else {
+		window.reconnectTarget = handle;
 		connectWS();
 	}
 };
@@ -581,13 +610,10 @@ window.sendReconnect = function(handle) {
 	const gender = document.getElementById('user-gender').value;
 	const status = document.getElementById('user-status')?.value?.trim() || '';
 
-	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle: myHandle, avatar, chatMode, name, age, gender, status, reconnectTarget: handle } }));
-	
+	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle: myHandle, avatar, chatMode, name, age, gender, status } }));
 	setTimeout(() => {
-		if (ws?.readyState === WebSocket.OPEN) {
-			ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: handle } }));
-		}
-	}, 100);
+		ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: handle } }));
+	}, 200);
 };
 
 window.removeFriend = function(idx) {
@@ -691,6 +717,7 @@ function connectWS() {
 		}
 		return;
 	}
+	if (ws?.readyState === WebSocket.CONNECTING) return;
 	// Production: connect to Cloudflare Worker signaling server
 	// Local dev: connect to localhost:3001
 	const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -719,11 +746,19 @@ function connectWS() {
 			case 'game_action': onGameAction(msg.data); break;
 			case 'mute_status': showMuteIndicator(msg.data.isMuted); break;
 			case 'skipped': addSystemMsg('Partner skipped.'); reMatch(); break;
-			case 'disconnected': addSystemMsg('Partner disconnected. Finding new match...'); reMatch(); break;
+			case 'disconnected': addSystemMsg('Partner left. Finding new match...'); reMatch(); break;
 			case 'reconnected': clearReconnectTimer(); addSystemMsg('Partner reconnected!'); break;
+			case 'incoming_call': showIncomingCall(msg.data); break;
+			case 'call_rejected': onCallRejected(msg.data); break;
 		}
 	};
-	ws.onclose = () => { document.getElementById('online-indicator').textContent = '🔴 Offline'; };
+	ws.onclose = () => {
+		document.getElementById('online-indicator').textContent = '🔴 Offline';
+		// Auto-reconnect if we were matching
+		if (!matchingScreen.classList.contains('hidden')) {
+			setTimeout(() => connectWS(), 2000);
+		}
+	};
 }
 
 function sendJoin() {
@@ -819,8 +854,8 @@ function startEq() { eqInt = setInterval(()=>{eqBars.forEach(b=>{b.style.height=
 function stopEq() { if(eqInt){clearInterval(eqInt);eqInt=null;} eqBars.forEach(b=>{b.style.height='12px';}); }
 function startSkipCooldown() {
 	const btn = document.getElementById('skip-btn'); const lbl = document.getElementById('skip-btn-label');
-	btn.disabled=true; let c=20; lbl.textContent=`Skip (${c}s)`;
-	skipInterval = setInterval(()=>{ c--; if(c>0) lbl.textContent=`Skip (${c}s)`; else{clearInterval(skipInterval);btn.disabled=false;lbl.textContent='Skip';} },1000);
+	btn.disabled=true; let c=5; lbl.textContent=`${c}s`;
+	skipInterval = setInterval(()=>{ c--; if(c>0) lbl.textContent=`${c}s`; else{clearInterval(skipInterval);btn.disabled=false;lbl.textContent='';} },1000);
 }
 
 function getCallDuration() { return document.getElementById('call-timer').textContent; }
@@ -844,7 +879,117 @@ function cleanup() {
 		muteOff.classList.add('hidden');
 	}
 }
-function reMatch() { const dur = getCallDuration(); if(dur!=='00:00') saveHistory(dur); cleanup(); callScreen.classList.add('hidden'); matchingScreen.classList.remove('hidden'); sendJoin(); }
+function reMatch() { const dur = getCallDuration(); if(dur!=='00:00') saveHistory(dur); cleanup(); callScreen.classList.add('hidden'); matchingScreen.classList.remove('hidden'); connectWS(); }
+
+let lastPartnerHandle = null;
+let lastPartnerAvatar = null;
+
+function onPartnerDisconnected() {
+	// Save last partner info for recall
+	lastPartnerHandle = document.getElementById('partner-handle').textContent;
+	lastPartnerAvatar = document.getElementById('partner-avatar').textContent;
+	const dur = getCallDuration();
+	if(dur!=='00:00') saveHistory(dur);
+	cleanup();
+	callScreen.classList.add('hidden');
+	matchingScreen.classList.remove('hidden');
+
+	// Show recall UI in matching screen
+	document.getElementById('search-mode-label').textContent = 'Partner disconnected';
+	document.getElementById('search-icon').textContent = '😢';
+	document.getElementById('search-details').innerHTML = `
+		<div class="flex items-center justify-between">
+			<span class="text-ink font-medium">${lastPartnerAvatar} ${lastPartnerHandle} left</span>
+			<button id="recall-btn" class="bg-primary text-on-primary text-xs font-bold px-3 py-1.5 rounded-lg flex items-center space-x-1" onclick="recallLast()">
+				<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h4l3-7 4 14 3-7h4"/></svg>
+				<span>Recall</span>
+			</button>
+		</div>
+		<p class="text-[10px] text-steel mt-1">Finding new match in 10s or tap Recall to reconnect...</p>
+	`;
+
+	// Auto-find new match after 10s unless user taps recall
+	window._autoMatchTimer = setTimeout(() => {
+		connectWS();
+	}, 10000);
+}
+
+window.recallLast = function() {
+	if(window._autoMatchTimer) { clearTimeout(window._autoMatchTimer); window._autoMatchTimer = null; }
+	if(lastPartnerHandle) {
+		reconnectTo(lastPartnerHandle);
+	}
+};
+
+// ==========================================
+// INCOMING CALL UI
+// ==========================================
+let incomingCallTimeout = null;
+
+function showIncomingCall(data) {
+	const { callerId, callerName, callerAvatar } = data;
+	// Remove any existing call modal
+	const existing = document.getElementById('incoming-call-modal');
+	if(existing) existing.remove();
+
+	const modal = document.createElement('div');
+	modal.id = 'incoming-call-modal';
+	modal.className = 'fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm';
+	modal.innerHTML = `
+		<div class="bg-canvas rounded-2xl p-6 w-[300px] text-center space-y-4 shadow-2xl border border-hairline animate-pulse">
+			<div class="w-16 h-16 mx-auto bg-primary/15 rounded-full flex items-center justify-center text-3xl">${callerAvatar || '📞'}</div>
+			<div>
+				<p class="font-bold text-lg text-ink">${callerName}</p>
+				<p class="text-sm text-steel">is calling you...</p>
+			</div>
+			<div class="flex justify-center gap-4 pt-2">
+				<button onclick="rejectIncomingCall('${callerId}')" class="w-14 h-14 rounded-full bg-red-500 hover:bg-red-600 text-white flex items-center justify-center shadow-lg transition-colors">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+				</button>
+				<button onclick="acceptIncomingCall('${callerId}')" class="w-14 h-14 rounded-full bg-green-500 hover:bg-green-600 text-white flex items-center justify-center shadow-lg transition-colors animate-bounce">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+				</button>
+			</div>
+		</div>
+	`;
+	document.body.appendChild(modal);
+
+	// Play ringtone
+	if(typeof playTone==='function') {
+		let ring = 0;
+		incomingCallTimeout = setInterval(() => {
+			playTone(600, 0.15); setTimeout(()=>playTone(800, 0.15), 200);
+			ring++;
+			if(ring > 15) { clearInterval(incomingCallTimeout); rejectIncomingCall(callerId); }
+		}, 1500);
+	}
+}
+
+window.acceptIncomingCall = function(callerId) {
+	if(incomingCallTimeout) { clearInterval(incomingCallTimeout); incomingCallTimeout = null; }
+	const modal = document.getElementById('incoming-call-modal');
+	if(modal) modal.remove();
+
+	if(ws?.readyState === WebSocket.OPEN) {
+		ws.send(JSON.stringify({ type: 'accept_call', data: { callerId } }));
+	}
+};
+
+window.rejectIncomingCall = function(callerId) {
+	if(incomingCallTimeout) { clearInterval(incomingCallTimeout); incomingCallTimeout = null; }
+	const modal = document.getElementById('incoming-call-modal');
+	if(modal) modal.remove();
+
+	if(ws?.readyState === WebSocket.OPEN) {
+		ws.send(JSON.stringify({ type: 'reject_call', data: { callerId } }));
+	}
+};
+
+function onCallRejected(data) {
+	addSystemMsg(data.reason === 'offline' ? `${data.targetHandle} is offline.` : 'Call declined. Finding new match...');
+	// Start normal matching
+	if(ws?.readyState === WebSocket.OPEN) sendJoin();
+}
 
 window.stopConnecting = function() {
 	if (ws?.readyState === WebSocket.OPEN) {
@@ -854,6 +999,7 @@ window.stopConnecting = function() {
 	}
 	cleanup();
 	callScreen.classList.add('hidden');
+	matchingScreen.classList.add('hidden');
 	setupScreen.classList.remove('hidden');
 };
 
@@ -997,7 +1143,7 @@ function addMyChatMsg(content, isHtml=false) {
 	const id = 'msg-' + (msgCounter++);
 	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-	d.innerHTML = `<div class="relative max-w-[80%]"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md break-words text-[13px] leading-relaxed shadow-sm cursor-pointer w-full" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	d.innerHTML = `<div class="relative max-w-[80%]"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md wrap-break-word text-[13px] leading-relaxed shadow-sm cursor-pointer inline-block" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
 	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	if(typeof resetSilenceTimer==='function') resetSilenceTimer();
@@ -1008,7 +1154,7 @@ function addRemoteChatMsg(content, isHtml=false) {
 	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 	const handle = document.getElementById('partner-handle').textContent;
-	d.innerHTML = `<div class="relative max-w-[80%]"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md break-words text-[13px] leading-relaxed shadow-sm cursor-pointer w-full" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	d.innerHTML = `<div class="relative max-w-[80%]"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md wrap-break-word text-[13px] leading-relaxed shadow-sm cursor-pointer inline-block" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
 	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	if(typeof soundMessage==='function') soundMessage();
@@ -1048,12 +1194,12 @@ function botReply(delay) {
 window.switchTab = function(tab) {
 	const tc = document.getElementById('tab-chat-btn'), tg = document.getElementById('tab-games-btn');
 	if(tab==='chat') {
-		tc.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none";
-		tg.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none relative";
+		tc.className="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none flex items-center justify-center space-x-1";
+		tg.className="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none relative flex items-center justify-center space-x-1";
 		document.getElementById('panel-chat').classList.remove('hidden'); document.getElementById('panel-games').classList.add('hidden');
 	} else {
-		tg.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none relative";
-		tc.className="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none";
+		tg.className="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none relative flex items-center justify-center space-x-1";
+		tc.className="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none flex items-center justify-center space-x-1";
 		document.getElementById('panel-games').classList.remove('hidden'); document.getElementById('panel-chat').classList.add('hidden');
 		document.getElementById('game-dot').classList.add('hidden');
 	}
@@ -1433,11 +1579,6 @@ function applyVoiceFx() {
 }
 
 // ==========================================
-// VIBE CHECK (after call ends, rate 1-5)
-// ==========================================
-// Rating conversation disabled per requirements. reMatch connects directly to new matches.
-
-// ==========================================
 // GIF SHARING (Tenor search)
 // ==========================================
 document.getElementById('gif-btn').addEventListener('click', () => {
@@ -1509,7 +1650,7 @@ window.shareInvite = function() {
 // ==========================================
 // ACHIEVEMENTS SYSTEM
 // ==========================================
-function getStats() { return JSON.parse(localStorage.getItem('airwalk_stats')||'{"chats":0,"friends":0,"games":0,"totalRatings":0,"totalStars":0}'); }
+function getStats() { return JSON.parse(localStorage.getItem('airwalk_stats')||'{"chats":0,"friends":0,"games":0}'); }
 function checkAchievements() {
 	const s = getStats();
 	const badges = [];
@@ -1521,7 +1662,6 @@ function checkAchievements() {
 	if(s.friends>=10) badges.push({icon:'👥',name:'Popular',desc:'10 friends'});
 	if(s.games>=5) badges.push({icon:'🎮',name:'Gamer',desc:'Played 5 games'});
 	if(s.games>=20) badges.push({icon:'🏆',name:'Champion',desc:'Played 20 games'});
-	if(s.totalRatings>=5) badges.push({icon:'⭐',name:'Rated',desc:'Rated 5 conversations'});
 	localStorage.setItem('airwalk_badges', JSON.stringify(badges));
 	return badges;
 }

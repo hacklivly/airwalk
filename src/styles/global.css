@@ -2,42 +2,42 @@
 @source "../**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}";
 
 @theme {
-  /* Mistral AI Brand Colors */
-  --color-primary: #fa520f;
-  --color-primary-deep: #cc3a05;
-  --color-primary-light: #fff8e0;
+  /* AirTalk Purple - Clean & Trustworthy */
+  --color-primary: #6c63ff;
+  --color-primary-deep: #5a52d5;
+  --color-primary-light: #f0eeff;
   --color-on-primary: #ffffff;
-  --color-accent: #ffa110;
-  --color-accent-deep: #ff8105;
+  --color-accent: #00c9a7;
+  --color-accent-deep: #00b396;
 
-  /* Warm neutrals */
-  --color-cream: #fff8e0;
-  --color-cream-light: #fffaeb;
-  --color-cream-deeper: #fff0c2;
-  --color-beige-deep: #e6d5a8;
+  /* Cool neutrals */
+  --color-cream: #f0eeff;
+  --color-cream-light: #f7f6ff;
+  --color-cream-deeper: #e4e1ff;
+  --color-beige-deep: #c9c4f0;
 
   /* Text */
-  --color-ink: #1f1f1f;
-  --color-ink-tint: #3d3d3d;
-  --color-charcoal: #2c2c2c;
-  --color-slate: #4a4a4a;
-  --color-steel: #6a6a6a;
-  --color-stone: #8a8a8a;
-  --color-muted: #a8a8a8;
-  --color-hairline: #e5e5e5;
-  --color-hairline-soft: #ededed;
-  --color-hairline-strong: #c7c7c7;
+  --color-ink: #1a1a2e;
+  --color-ink-tint: #2d2d44;
+  --color-charcoal: #1a1a2e;
+  --color-slate: #4a4a6a;
+  --color-steel: #6b6b8a;
+  --color-stone: #9090a8;
+  --color-muted: #b8b8cc;
+  --color-hairline: #e8e8f0;
+  --color-hairline-soft: #f2f2f8;
+  --color-hairline-strong: #d4d4e0;
 
   /* Surfaces */
   --color-canvas: #ffffff;
-  --color-surface: #fafafa;
-  --color-surface-cream: #fff8e0;
-  --color-surface-cream-soft: #fffaeb;
-  --color-surface-code: #1c1c1e;
-  --color-footer-cream: #fff8e0;
+  --color-surface: #f8f8fc;
+  --color-surface-cream: #f0eeff;
+  --color-surface-cream-soft: #f7f6ff;
+  --color-surface-code: #1a1a2e;
+  --color-footer-cream: #f0eeff;
   --color-on-dark: #ffffff;
-  --color-on-dark-muted: #a8a8a8;
-  --color-on-cream: #1f1f1f;
+  --color-on-dark-muted: #b8b8cc;
+  --color-on-cream: #1a1a2e;
 
   /* Game colors */
   --color-sunshine-300: #ffd06a;
@@ -72,47 +72,47 @@ body {
 
 /* Dark theme overrides */
 .dark {
-  --color-primary: #fa520f;
-  --color-primary-deep: #cc3a05;
-  --color-primary-light: #2c1a12;
+  --color-primary: #8b83ff;
+  --color-primary-deep: #6c63ff;
+  --color-primary-light: #2a2845;
   --color-on-primary: #ffffff;
-  --color-accent: #ffa110;
+  --color-accent: #00c9a7;
 
-  --color-cream: #2c2c2c;
-  --color-cream-light: #1f1f1f;
-  --color-cream-deeper: #3d3d3d;
-  --color-beige-deep: #3d3d3d;
+  --color-cream: #1e1e30;
+  --color-cream-light: #16162a;
+  --color-cream-deeper: #2a2a42;
+  --color-beige-deep: #2a2a42;
 
-  --color-ink: #ededed;
-  --color-ink-tint: #a8a8a8;
-  --color-charcoal: #ededed;
-  --color-slate: #a8a8a8;
-  --color-steel: #8a8a8a;
-  --color-stone: #4a4a4a;
-  --color-muted: #2c2c2c;
-  --color-hairline: #2c2c2c;
-  --color-hairline-soft: #1f1f1f;
-  --color-hairline-strong: #3d3d3d;
+  --color-ink: #e8e8f0;
+  --color-ink-tint: #b8b8cc;
+  --color-charcoal: #e8e8f0;
+  --color-slate: #b8b8cc;
+  --color-steel: #9090a8;
+  --color-stone: #5a5a72;
+  --color-muted: #3a3a52;
+  --color-hairline: #2e2e44;
+  --color-hairline-soft: #1e1e30;
+  --color-hairline-strong: #4a4a62;
 
-  --color-canvas: #121212;
-  --color-surface: #1c1c1e;
-  --color-surface-cream: #1c1c1e;
-  --color-surface-cream-soft: #1f1f1f;
-  --color-surface-code: #1c1c1e;
-  --color-footer-cream: #1c1c1e;
-  --color-on-dark: #ededed;
-  --color-on-dark-muted: #8a8d91;
-  --color-on-cream: #ededed;
+  --color-canvas: #0f0f1a;
+  --color-surface: #1a1a2e;
+  --color-surface-cream: #1a1a2e;
+  --color-surface-cream-soft: #16162a;
+  --color-surface-code: #1a1a2e;
+  --color-footer-cream: #1a1a2e;
+  --color-on-dark: #e8e8f0;
+  --color-on-dark-muted: #9090a8;
+  --color-on-cream: #e8e8f0;
 }
 
 /* Custom utilities */
 @utility sunset-stripe {
   background: linear-gradient(
     90deg,
-    #fa520f 0%,
-    #ffa110 30%,
-    #ffd900 65%,
-    #fff8e0 100%
+    #6c63ff 0%,
+    #8b83ff 30%,
+    #00c9a7 65%,
+    #f0eeff 100%
   );
   background-size: 200% 100%;
   animation: shimmer 4s linear infinite;

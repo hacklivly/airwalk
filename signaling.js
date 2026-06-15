@@ -275,7 +275,7 @@ wss.on('connection', (socket) => {
 
           console.log(`🔄 Client ${myClientId} requested recall/reconnect to handle: ${targetHandle}`);
 
-          // Find the target client B
+          // Find the target client
           let targetClientId = null;
           let targetClient = null;
           for (const [id, client] of clients.entries()) {
@@ -288,73 +288,108 @@ wss.on('connection', (socket) => {
 
           const myClient = clients.get(myClientId);
 
-          if (targetClient && waitingPool.includes(targetClientId)) {
-            // Target is online and waiting! Pair them immediately.
-            console.log(`🎯 Target peer ${targetHandle} (${targetClientId}) is available in waiting pool. Pairing!`);
+          if (targetClient && targetClient.socket.readyState === WebSocket.OPEN) {
+            // Target is online! Send them an incoming call notification
+            console.log(`📞 Sending incoming_call to ${targetHandle} (${targetClientId}) from ${myClientId}`);
             
-            // Remove both from waiting pool
-            waitingPool = waitingPool.filter(id => id !== myClientId && id !== targetClientId);
-
-            // Create Session
-            const sessionId = `session_${myClientId}_${targetClientId}`;
-            activeSessions.set(sessionId, { peerAId: myClientId, peerBId: targetClientId });
-
-            // Send matched to initiator (A)
-            if (myClient && myClient.socket.readyState === WebSocket.OPEN) {
-              myClient.socket.send(JSON.stringify({
-                type: 'matched',
-                data: {
-                  role: 'initiator',
-                  peerId: targetClientId,
-                  peerInfo: {
-                    name: targetClient.info.name,
-                    handle: targetClient.info.handle,
-                    avatar: targetClient.info.avatar,
-                    gender: targetClient.info.gender,
-                    age: targetClient.info.age,
-                    country: targetClient.info.country,
-                    language: targetClient.info.language,
-                    tags: targetClient.info.tags
-                  }
-                }
-              }));
-            }
-
-            // Send matched to receiver (B)
-            if (targetClient && targetClient.socket.readyState === WebSocket.OPEN) {
-              targetClient.socket.send(JSON.stringify({
-                type: 'matched',
-                data: {
-                  role: 'receiver',
-                  peerId: myClientId,
-                  peerInfo: {
-                    name: myClient.info.name,
-                    handle: myClient.info.handle,
-                    avatar: myClient.info.avatar,
-                    gender: myClient.info.gender,
-                    age: myClient.info.age,
-                    country: myClient.info.country,
-                    language: myClient.info.language,
-                    tags: myClient.info.tags
-                  }
-                }
-              }));
-            }
-
-          } else {
-            // Target is not available
-            console.log(`❌ Target peer ${targetHandle} is not available (offline or busy).`);
-            socket.send(JSON.stringify({
-              type: 'chat_message',
+            targetClient.socket.send(JSON.stringify({
+              type: 'incoming_call',
               data: {
-                senderPeerId: 'system',
-                text: `[SYSTEM] Could not connect: ${targetHandle} is offline or busy.`
+                callerId: myClientId,
+                callerName: myClient.info.name || myClient.info.handle,
+                callerAvatar: myClient.info.avatar
               }
             }));
+
+            // Keep caller waiting (don't put in pool yet)
+            waitingPool = waitingPool.filter(id => id !== myClientId);
             
-            // Put client in waiting pool so they start normal matching
+          } else {
+            // Target is offline
+            console.log(`❌ Target peer ${targetHandle} is offline.`);
+            socket.send(JSON.stringify({
+              type: 'call_rejected',
+              data: { reason: 'offline', targetHandle }
+            }));
+            // Put client in waiting pool for normal matching
             putInWaitingPool(myClientId);
           }
+          break;
+        }
+
+        case 'accept_call': {
+          const { callerId } = message.data;
+          if (!myClientId) return;
+
+          const callerClient = clients.get(callerId);
+          const myClient = clients.get(myClientId);
+
+          if (callerClient && callerClient.socket.readyState === WebSocket.OPEN && myClient) {
+            // Remove both from waiting pool
+            waitingPool = waitingPool.filter(id => id !== myClientId && id !== callerId);
+
+            // Create Session
+            const sessionId = `session_${callerId}_${myClientId}`;
+            activeSessions.set(sessionId, { peerAId: callerId, peerBId: myClientId });
+
+            console.log(`✅ Call accepted: ${callerId} <==> ${myClientId}`);
+
+            // Notify caller (initiator)
+            callerClient.socket.send(JSON.stringify({
+              type: 'matched',
+              data: {
+                role: 'initiator',
+                peerId: myClientId,
+                peerInfo: {
+                  name: myClient.info.name,
+                  handle: myClient.info.handle,
+                  avatar: myClient.info.avatar,
+                  gender: myClient.info.gender,
+                  age: myClient.info.age,
+                  country: myClient.info.country,
+                  language: myClient.info.language,
+                  tags: myClient.info.tags
+                }
+              }
+            }));
+
+            // Notify receiver
+            myClient.socket.send(JSON.stringify({
+              type: 'matched',
+              data: {
+                role: 'receiver',
+                peerId: callerId,
+                peerInfo: {
+                  name: callerClient.info.name,
+                  handle: callerClient.info.handle,
+                  avatar: callerClient.info.avatar,
+                  gender: callerClient.info.gender,
+                  age: callerClient.info.age,
+                  country: callerClient.info.country,
+                  language: callerClient.info.language,
+                  tags: callerClient.info.tags
+                }
+              }
+            }));
+          }
+          break;
+        }
+
+        case 'reject_call': {
+          const { callerId } = message.data;
+          if (!myClientId) return;
+
+          const callerClient = clients.get(callerId);
+          if (callerClient && callerClient.socket.readyState === WebSocket.OPEN) {
+            callerClient.socket.send(JSON.stringify({
+              type: 'call_rejected',
+              data: { reason: 'declined', targetHandle: '' }
+            }));
+            // Put caller back in pool
+            putInWaitingPool(callerId);
+          }
+          // Put rejector back in pool too
+          putInWaitingPool(myClientId);
           break;
         }
 
