@@ -182,10 +182,10 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 
 			<!-- SCREEN 3: ACTIVE CALL/CHAT -->
-			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-2xl shadow-2xl overflow-hidden grid grid-cols-1 md:grid-cols-12 max-h-[90vh] md:max-h-none md:min-h-[540px]">
+			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-2xl shadow-2xl overflow-hidden flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4.5rem)] md:h-[600px] md:max-h-none md:min-h-[540px]">
 
 				<!-- Left Panel: Voice/Info -->
-				<div class="md:col-span-7 p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto">
+				<div class="md:col-span-7 p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto max-h-[40%] md:max-h-none flex-shrink-0 md:flex-shrink">
 					<div class="space-y-4">
 						<!-- Status Bar -->
 						<div class="flex items-center justify-between">
@@ -213,7 +213,7 @@ import Layout from '../layouts/Layout.astro';
 					</div>
 
 					<!-- Equalizer (Voice mode only) -->
-					<div id="eq-section" class="my-6 flex items-center justify-center h-24 space-x-1">
+					<div id="eq-section" class="hidden sm:flex my-6 items-center justify-center h-24 space-x-1">
 						<div class="w-1.5 h-12 bg-primary rounded-full animate-pulse eq-bar"></div>
 						<div class="w-1.5 h-18 bg-primary/70 rounded-full animate-pulse-slow eq-bar"></div>
 						<div class="w-1.5 h-22 bg-primary rounded-full animate-pulse eq-bar"></div>
@@ -233,23 +233,55 @@ import Layout from '../layouts/Layout.astro';
 					<!-- Controls -->
 					<div class="flex flex-wrap items-center justify-center md:justify-between gap-2 pt-4 border-t border-hairline">
 						<div class="flex items-center space-x-2">
-							<button id="mute-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink px-3 py-2 rounded-lg text-sm font-medium transition-colors">🎙️ Mute</button>
-							<button id="voice-fx-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink px-3 py-2 rounded-lg text-sm font-medium transition-colors" title="Voice Effects">🎛️ FX</button>
-							<input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8" class="w-16 accent-primary hidden sm:block" />
+							<button id="mute-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Mute Microphone">
+								<svg id="mute-icon-on" class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+									<path stroke-linecap="round" stroke-linejoin="round" d="M19 10v1a7 7 0 0 1-14 0v-1M12 19v4m-4 0h8"/>
+								</svg>
+								<svg id="mute-icon-off" class="w-5 h-5 text-red-500 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 5.07 2.12M12 19v4m-4 0h8M3 3l18 18M9 9v3a3 3 0 0 0 .37 1.45M19 10v1a6.93 6.93 0 0 1-.94 3.47m-2.15-2.15A4 4 0 0 0 15 12"/>
+								</svg>
+							</button>
+							<button id="voice-fx-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Voice Effects">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m-6 8v-2m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m12-2v-2m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4M6 12V4m12 8V4m-6 16v-6"/>
+								</svg>
+							</button>
+							<input type="range" id="volume-slider" min="0" max="1" stroke-width="2" step="0.1" value="0.8" class="w-16 accent-primary hidden sm:block" />
 						</div>
-						<div class="flex items-center flex-wrap justify-center gap-2">
-							<button id="add-friend-btn" class="text-xs bg-accent/10 hover:bg-accent hover:text-on-primary text-accent border border-accent/20 px-2.5 py-2 rounded-lg font-medium transition-colors">➕ Friend</button>
-							<button id="block-btn" class="text-xs hover:bg-red-50 text-red-500 border border-red-200 px-2.5 py-2 rounded-lg font-medium transition-colors">🚫</button>
-							<button id="report-btn" class="text-xs hover:bg-red-50 text-red-500 border border-red-200 px-2.5 py-2 rounded-lg font-medium transition-colors">⚠️</button>
-							<button id="skip-btn" class="bg-primary hover:bg-primary-deep text-on-primary px-5 py-2 rounded-lg font-bold transition-all shadow-sm disabled:bg-muted disabled:text-steel disabled:cursor-not-allowed">
-								<span id="skip-btn-label">Skip (5s)</span>
+						<div class="flex items-center flex-wrap justify-center gap-1.5">
+							<button id="add-friend-btn" class="bg-canvas border border-hairline hover:bg-cream text-accent p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Add Friend">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM2 20a7 7 0 0110 0v1H2v-1z"/>
+								</svg>
+							</button>
+							<button id="block-btn" class="bg-canvas border border-hairline hover:bg-red-50 text-red-500 p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Block User">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+								</svg>
+							</button>
+							<button id="report-btn" class="bg-canvas border border-hairline hover:bg-red-50 text-red-500 p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Report Abuse">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+								</svg>
+							</button>
+							<button id="stop-btn" class="bg-red-600 hover:bg-red-700 text-white p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Stop Connecting" onclick="stopConnecting()">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c-1.5-3-4.5-5-7.5-5s-6 2-7.5 5c-.5 1-.3 2.2.6 2.8l1.5 1c.8.5 1.8.4 2.4-.3l1.2-1.2a1 1 0 0 1 1.4 0l1.2 1.2c.6.7 1.6.8 2.4.3l1.5-1c.9-.6 1.1-1.8.6-2.8z" />
+								</svg>
+							</button>
+							<button id="skip-btn" class="bg-primary hover:bg-primary-deep text-on-primary p-2.5 rounded-lg font-bold transition-all shadow-sm disabled:bg-muted disabled:text-steel disabled:cursor-not-allowed flex items-center justify-center space-x-1" title="Skip to Next Match">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+								</svg>
+								<span id="skip-btn-label" class="text-xs font-bold leading-none hidden sm:inline">Skip (5s)</span>
 							</button>
 						</div>
 					</div>
 				</div>
 
 				<!-- Right Panel: Chat + Games -->
-				<div class="md:col-span-5 flex flex-col h-[350px] sm:h-[400px] md:h-auto border-t md:border-t-0 border-hairline">
+				<div class="md:col-span-5 flex flex-col flex-grow md:h-auto border-t md:border-t-0 border-hairline overflow-hidden">
 					<!-- Tabs -->
 					<div class="bg-canvas border-b border-hairline flex">
 						<button id="tab-chat-btn" class="flex-1 text-center py-3 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none" onclick="switchTab('chat')">💬 Chat</button>
@@ -514,13 +546,48 @@ function renderHistory() {
 	`).join('');
 }
 
-window.reconnectTo = function(handle) {
+window.reconnectTo = async function(handle) {
 	// Close panels and start matching with reconnect target
 	document.getElementById('friends-panel').classList.add('hidden');
 	document.getElementById('history-panel').classList.add('hidden');
-	addSystemMsg(`Looking for ${handle}...`);
-	// Send reconnect request to server
-	if(ws?.readyState===1) ws.send(JSON.stringify({type:'reconnect',data:{targetHandle:handle}}));
+	
+	const ok = await initAudio();
+	if (!ok) return;
+
+	setupScreen.classList.add('hidden');
+	callScreen.classList.add('hidden');
+	matchingScreen.classList.remove('hidden');
+	document.getElementById('search-mode-label').textContent = `Recalling ${handle}...`;
+	document.getElementById('search-icon').textContent = '📞';
+	document.getElementById('search-details').innerHTML = `Attempting to reconnect with <strong>${handle}</strong>...`;
+
+	window.reconnectTarget = handle;
+
+	if (ws?.readyState === WebSocket.OPEN) {
+		sendReconnect(handle);
+	} else {
+		connectWS();
+	}
+};
+
+window.sendReconnect = function(handle) {
+	const lang = document.getElementById('language-filter').value;
+	const country = document.getElementById('country-filter').value;
+	const tags = document.getElementById('interest-input').value.split(',').map(t=>t.trim()).filter(Boolean);
+	const myHandle = localStorage.getItem('airwalk_handle');
+	const avatar = localStorage.getItem('airwalk_avatar');
+	const name = document.getElementById('user-name').value.trim() || myHandle;
+	const age = parseInt(document.getElementById('user-age').value) || 18;
+	const gender = document.getElementById('user-gender').value;
+	const status = document.getElementById('user-status')?.value?.trim() || '';
+
+	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle: myHandle, avatar, chatMode, name, age, gender, status, reconnectTarget: handle } }));
+	
+	setTimeout(() => {
+		if (ws?.readyState === WebSocket.OPEN) {
+			ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: handle } }));
+		}
+	}, 100);
 };
 
 window.removeFriend = function(idx) {
@@ -615,7 +682,15 @@ document.getElementById('cancel-match-btn').addEventListener('click', () => {
 });
 
 function connectWS() {
-	if (ws?.readyState === WebSocket.OPEN) { sendJoin(); return; }
+	if (ws?.readyState === WebSocket.OPEN) {
+		if (window.reconnectTarget) {
+			sendReconnect(window.reconnectTarget);
+			window.reconnectTarget = null;
+		} else {
+			sendJoin();
+		}
+		return;
+	}
 	// Production: connect to Cloudflare Worker signaling server
 	// Local dev: connect to localhost:3001
 	const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
@@ -623,7 +698,15 @@ function connectWS() {
 		? `ws://${location.hostname}:3001`
 		: 'wss://airwalk-signal.airwalkhq.workers.dev';
 	ws = new WebSocket(wsUrl);
-	ws.onopen = () => { document.getElementById('online-indicator').textContent = '🟢 Online'; sendJoin(); };
+	ws.onopen = () => {
+		document.getElementById('online-indicator').textContent = '🟢 Online';
+		if (window.reconnectTarget) {
+			sendReconnect(window.reconnectTarget);
+			window.reconnectTarget = null;
+		} else {
+			sendJoin();
+		}
+	};
 	ws.onmessage = async (e) => {
 		const msg = JSON.parse(e.data);
 		switch(msg.type) {
@@ -636,7 +719,7 @@ function connectWS() {
 			case 'game_action': onGameAction(msg.data); break;
 			case 'mute_status': showMuteIndicator(msg.data.isMuted); break;
 			case 'skipped': addSystemMsg('Partner skipped.'); reMatch(); break;
-			case 'disconnected': startReconnectTimer(); break;
+			case 'disconnected': addSystemMsg('Partner disconnected. Finding new match...'); reMatch(); break;
 			case 'reconnected': clearReconnectTimer(); addSystemMsg('Partner reconnected!'); break;
 		}
 	};
@@ -741,15 +824,55 @@ function startSkipCooldown() {
 }
 
 function getCallDuration() { return document.getElementById('call-timer').textContent; }
-function cleanup() { stopTimer(); stopEq(); if(pc){pc.close();pc=null;} document.getElementById('remote-audio').srcObject=null; if(botTimeout)clearTimeout(botTimeout); matchedPeerId=null;activeRole=null;isBotCall=false;botSeq=0;exitGame(); }
+function cleanup() {
+	stopTimer();
+	stopEq();
+	if(pc){pc.close();pc=null;}
+	document.getElementById('remote-audio').srcObject=null;
+	if(botTimeout)clearTimeout(botTimeout);
+	matchedPeerId=null;
+	activeRole=null;
+	isBotCall=false;
+	botSeq=0;
+	exitGame();
+	
+	isMuted = false;
+	const muteOn = document.getElementById('mute-icon-on');
+	const muteOff = document.getElementById('mute-icon-off');
+	if (muteOn && muteOff) {
+		muteOn.classList.remove('hidden');
+		muteOff.classList.add('hidden');
+	}
+}
 function reMatch() { const dur = getCallDuration(); if(dur!=='00:00') saveHistory(dur); cleanup(); callScreen.classList.add('hidden'); matchingScreen.classList.remove('hidden'); sendJoin(); }
+
+window.stopConnecting = function() {
+	if (ws?.readyState === WebSocket.OPEN) {
+		ws.send(JSON.stringify({ type: 'skip' }));
+		ws.close();
+		ws = null;
+	}
+	cleanup();
+	callScreen.classList.add('hidden');
+	setupScreen.classList.remove('hidden');
+};
 
 // Controls
 document.getElementById('skip-btn').addEventListener('click', () => { if(ws?.readyState===1) ws.send(JSON.stringify({type:'skip'})); addSystemMsg('Skipped. Searching...'); reMatch(); });
 document.getElementById('mute-btn').addEventListener('click', () => {
 	if(!localStream) return; isMuted=!isMuted;
 	localStream.getAudioTracks().forEach(t=>{t.enabled=!isMuted;});
-	document.getElementById('mute-btn').textContent = isMuted ? '🔇 Unmute' : '🎙️ Mute';
+	
+	const muteOn = document.getElementById('mute-icon-on');
+	const muteOff = document.getElementById('mute-icon-off');
+	if (isMuted) {
+		muteOn.classList.add('hidden');
+		muteOff.classList.remove('hidden');
+	} else {
+		muteOn.classList.remove('hidden');
+		muteOff.classList.add('hidden');
+	}
+
 	// Notify partner about mute status
 	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'mute_status',data:{targetPeerId:matchedPeerId,isMuted}}));
 });
@@ -861,7 +984,8 @@ function onRemoteMsg(text) {
 	}
 	if(text.startsWith('[IMG]') && text.endsWith('[/IMG]')) {
 		const src = text.slice(5, -6);
-		addRemoteChatMsg(`<img src="${src}" class="max-w-[200px] rounded-lg border border-hairline" alt="Image"/>`, true);
+		const safeSrc = src.replace(/["]/g, '&quot;');
+		addRemoteChatMsg(`<img src="${safeSrc}" class="max-w-[200px] rounded-lg border border-hairline" alt="Image"/>`, true);
 	} else {
 		addRemoteChatMsg(escapeHTML(text));
 	}
@@ -873,7 +997,7 @@ function addMyChatMsg(content, isHtml=false) {
 	const id = 'msg-' + (msgCounter++);
 	const d = document.createElement('div'); d.className = 'flex flex-col items-end space-y-0.5';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-	d.innerHTML = `<div class="relative"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
+	d.innerHTML = `<div class="relative max-w-[80%]"><div class="${t.myBg} ${t.myText} py-2.5 px-4 rounded-2xl rounded-br-md break-words text-[13px] leading-relaxed shadow-sm cursor-pointer w-full" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 left-0 text-sm"></div><div class="react-picker hidden absolute -top-8 left-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">You · ${time}</span>`;
 	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	if(typeof resetSilenceTimer==='function') resetSilenceTimer();
@@ -884,7 +1008,7 @@ function addRemoteChatMsg(content, isHtml=false) {
 	const d = document.createElement('div'); d.className = 'flex flex-col items-start space-y-0.5';
 	const time = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 	const handle = document.getElementById('partner-handle').textContent;
-	d.innerHTML = `<div class="relative"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md max-w-[80%] break-words text-[13px] leading-relaxed shadow-sm cursor-pointer" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
+	d.innerHTML = `<div class="relative max-w-[80%]"><div class="${t.theirBg} ${t.theirText} py-2.5 px-4 rounded-2xl rounded-bl-md break-words text-[13px] leading-relaxed shadow-sm cursor-pointer w-full" data-msgid="${id}">${content}</div><div id="react-${id}" class="absolute -bottom-3 right-0 text-sm"></div><div class="react-picker hidden absolute -top-8 right-0 flex bg-canvas border border-hairline rounded-full shadow-lg px-1 py-0.5 space-x-0.5 z-10">${['👍','❤️','😂','😮','😢'].map(e=>`<button class="hover:scale-125 transition-transform text-base px-0.5" onclick="react('${id}','${e}')">${e}</button>`).join('')}</div></div><span class="text-[10px] text-stone px-1">${handle} · ${time}</span>`;
 	d.querySelector(`[data-msgid="${id}"]`).addEventListener('dblclick', () => d.querySelector('.react-picker').classList.toggle('hidden'));
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	if(typeof soundMessage==='function') soundMessage();
@@ -1311,56 +1435,7 @@ function applyVoiceFx() {
 // ==========================================
 // VIBE CHECK (after call ends, rate 1-5)
 // ==========================================
-let showVibeCheck = false;
-
-// Override reMatch to show vibe check first
-const _origReMatch = reMatch;
-reMatch = function() {
-	const dur = getCallDuration();
-	if(dur !== '00:00' && !isBotCall) {
-		showVibeCheckUI();
-		return;
-	}
-	_origReMatch();
-};
-
-function showVibeCheckUI() {
-	const dur = getCallDuration();
-	saveHistory(dur);
-	cleanup();
-	callScreen.classList.add('hidden');
-	
-	const vibe = document.createElement('div');
-	vibe.id = 'vibe-screen';
-	vibe.className = 'w-full max-w-[400px] bg-canvas border border-hairline rounded-2xl p-8 shadow-2xl text-center space-y-5';
-	vibe.innerHTML = `
-		<h2 class="text-xl font-extrabold text-ink">⭐ Rate this conversation</h2>
-		<p class="text-sm text-slate">How was your vibe with this person?</p>
-		<div class="flex justify-center gap-2">${[1,2,3,4,5].map(n=>`<button class="vibe-star w-12 h-12 text-2xl bg-surface border border-hairline rounded-xl hover:bg-primary-light hover:border-primary transition-all" data-n="${n}">${'⭐'}</button>`).join('')}</div>
-		<button onclick="skipVibe()" class="text-xs text-steel hover:text-primary">Skip</button>
-	`;
-	document.querySelector('.flex-grow.flex.items-center').appendChild(vibe);
-	vibe.querySelectorAll('.vibe-star').forEach(btn => {
-		btn.addEventListener('click', () => {
-			const rating = +btn.dataset.n;
-			// Save rating in achievements
-			const stats = JSON.parse(localStorage.getItem('airwalk_stats')||'{}');
-			stats.totalRatings = (stats.totalRatings||0) + 1;
-			stats.totalStars = (stats.totalStars||0) + rating;
-			localStorage.setItem('airwalk_stats', JSON.stringify(stats));
-			checkAchievements();
-			vibe.remove();
-			matchingScreen.classList.remove('hidden');
-			sendJoin();
-		});
-	});
-}
-window.skipVibe = function() {
-	const vibe = document.getElementById('vibe-screen');
-	if(vibe) vibe.remove();
-	matchingScreen.classList.remove('hidden');
-	sendJoin();
-};
+// Rating conversation disabled per requirements. reMatch connects directly to new matches.
 
 // ==========================================
 // GIF SHARING (Tenor search)
@@ -1410,7 +1485,8 @@ async function searchGifs(query) {
 }
 
 window.sendGif = function(url) {
-	const imgHtml = `<img src="${url}" class="max-w-[180px] rounded-lg" alt="GIF"/>`;
+	const safeUrl = url.replace(/["]/g, '&quot;');
+	const imgHtml = `<img src="${safeUrl}" class="max-w-[180px] rounded-lg" alt="GIF"/>`;
 	addMyChatMsg(imgHtml, true);
 	if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:`[IMG]${url}[/IMG]`}}));
 	const panel = document.getElementById('gif-panel');

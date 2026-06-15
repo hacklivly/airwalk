@@ -26,7 +26,11 @@ export class SignalingRoom {
           case 'join': {
             myId = msg.data.id;
             this.clients.set(myId, { ws, info: { ...msg.data, joinedAt: Date.now() } });
-            this.addToPool(myId);
+            if (msg.data.reconnectTarget) {
+              // Hold matchmaking to allow reconnect handshake
+            } else {
+              this.addToPool(myId);
+            }
             break;
           }
           case 'skip': {

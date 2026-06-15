@@ -239,7 +239,7 @@ wss.on('connection', (socket) => {
       
       switch (message.type) {
         case 'join': {
-          const { id, gender, country, language, tags, name, age, handle, avatar, chatMode } = message.data;
+          const { id, gender, country, language, tags, name, age, handle, avatar, chatMode, reconnectTarget } = message.data;
           myClientId = id;
 
           // Save socket and parameters
@@ -261,7 +261,100 @@ wss.on('connection', (socket) => {
           });
 
           console.log(`👤 Peer ${id} registered. Name: ${name}, Age: ${age}, Language: ${language}`);
-          putInWaitingPool(id);
+          if (reconnectTarget) {
+            console.log(`👤 Peer ${id} registered with reconnect target: ${reconnectTarget}. Holding matchmaking.`);
+          } else {
+            putInWaitingPool(id);
+          }
+          break;
+        }
+
+        case 'reconnect': {
+          const { targetHandle } = message.data;
+          if (!myClientId) return;
+
+          console.log(`🔄 Client ${myClientId} requested recall/reconnect to handle: ${targetHandle}`);
+
+          // Find the target client B
+          let targetClientId = null;
+          let targetClient = null;
+          for (const [id, client] of clients.entries()) {
+            if (id !== myClientId && (client.info.handle === targetHandle || client.info.name === targetHandle)) {
+              targetClientId = id;
+              targetClient = client;
+              break;
+            }
+          }
+
+          const myClient = clients.get(myClientId);
+
+          if (targetClient && waitingPool.includes(targetClientId)) {
+            // Target is online and waiting! Pair them immediately.
+            console.log(`🎯 Target peer ${targetHandle} (${targetClientId}) is available in waiting pool. Pairing!`);
+            
+            // Remove both from waiting pool
+            waitingPool = waitingPool.filter(id => id !== myClientId && id !== targetClientId);
+
+            // Create Session
+            const sessionId = `session_${myClientId}_${targetClientId}`;
+            activeSessions.set(sessionId, { peerAId: myClientId, peerBId: targetClientId });
+
+            // Send matched to initiator (A)
+            if (myClient && myClient.socket.readyState === WebSocket.OPEN) {
+              myClient.socket.send(JSON.stringify({
+                type: 'matched',
+                data: {
+                  role: 'initiator',
+                  peerId: targetClientId,
+                  peerInfo: {
+                    name: targetClient.info.name,
+                    handle: targetClient.info.handle,
+                    avatar: targetClient.info.avatar,
+                    gender: targetClient.info.gender,
+                    age: targetClient.info.age,
+                    country: targetClient.info.country,
+                    language: targetClient.info.language,
+                    tags: targetClient.info.tags
+                  }
+                }
+              }));
+            }
+
+            // Send matched to receiver (B)
+            if (targetClient && targetClient.socket.readyState === WebSocket.OPEN) {
+              targetClient.socket.send(JSON.stringify({
+                type: 'matched',
+                data: {
+                  role: 'receiver',
+                  peerId: myClientId,
+                  peerInfo: {
+                    name: myClient.info.name,
+                    handle: myClient.info.handle,
+                    avatar: myClient.info.avatar,
+                    gender: myClient.info.gender,
+                    age: myClient.info.age,
+                    country: myClient.info.country,
+                    language: myClient.info.language,
+                    tags: myClient.info.tags
+                  }
+                }
+              }));
+            }
+
+          } else {
+            // Target is not available
+            console.log(`❌ Target peer ${targetHandle} is not available (offline or busy).`);
+            socket.send(JSON.stringify({
+              type: 'chat_message',
+              data: {
+                senderPeerId: 'system',
+                text: `[SYSTEM] Could not connect: ${targetHandle} is offline or busy.`
+              }
+            }));
+            
+            // Put client in waiting pool so they start normal matching
+            putInWaitingPool(myClientId);
+          }
           break;
         }
 
