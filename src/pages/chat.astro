@@ -118,6 +118,17 @@ import Layout from '../layouts/Layout.astro';
 								<option value="Other">⚧ Other</option>
 							</select>
 						</div>
+						<!-- Looking For gender filter -->
+						<select id="looking-for" class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-3 h-9 focus:ring-2 focus:ring-primary focus:outline-none">
+							<option value="Any">Looking for: Anyone</option>
+							<option value="Male">Looking for: Male</option>
+							<option value="Female">Looking for: Female</option>
+						</select>
+						<!-- Room Code -->
+						<div class="flex gap-2">
+							<input type="text" id="room-code-input" placeholder="Room code (optional)" maxlength="8" class="flex-grow bg-surface text-ink text-xs rounded-lg border border-hairline px-3 h-9 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone uppercase" />
+							<button onclick="createRoom()" class="bg-accent text-on-primary text-xs font-bold px-3 h-9 rounded-lg">Create</button>
+						</div>
 
 						<!-- Status -->
 						<input type="text" id="user-status" placeholder="💭 Status: Looking for deep convos..." maxlength="50" class="w-full bg-surface text-ink text-xs rounded-lg border border-hairline px-3 h-9 focus:ring-2 focus:ring-primary focus:outline-none placeholder:text-stone" />
@@ -199,11 +210,11 @@ import Layout from '../layouts/Layout.astro';
 			</div>
 
 			<!-- SCREEN 3: ACTIVE CALL/CHAT -->
-			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] md:h-[600px] md:max-h-none md:min-h-[540px]">
+			<div id="call-screen" class="hidden w-full max-w-[1000px] bg-canvas border border-hairline rounded-none sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:grid md:grid-cols-12 h-[calc(100vh-4rem)] sm:h-[calc(100vh-5rem)] md:h-[600px] md:max-h-none md:min-h-[540px] relative">
 
 				<!-- Left Panel: Voice/Info -->
-				<div class="md:col-span-7 p-3 sm:p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto max-h-[35%] md:max-h-none flex-shrink-0 md:flex-shrink">
-					<div class="space-y-4">
+				<div class="md:col-span-7 p-3 sm:p-4 md:p-5 flex flex-col justify-between md:border-r border-hairline bg-gradient-to-b from-surface/80 to-canvas overflow-y-auto flex-grow md:flex-shrink">
+					<div class="space-y-3 sm:space-y-4">
 						<!-- Status Bar -->
 						<div class="flex items-center justify-between">
 							<span class="inline-flex items-center space-x-1.5 bg-accent/10 border border-accent/20 text-accent px-3 py-1 rounded-full text-xs font-semibold">
@@ -214,7 +225,7 @@ import Layout from '../layouts/Layout.astro';
 						</div>
 
 						<!-- Partner Info Card -->
-						<div class="bg-canvas border border-hairline rounded-xl p-4 flex items-center space-x-4 shadow-sm hover:shadow-md transition-shadow">
+						<div class="bg-canvas border border-hairline rounded-xl p-3 sm:p-4 flex items-center space-x-4 shadow-sm hover:shadow-md transition-shadow">
 							<div id="partner-avatar" class="w-11 h-11 bg-primary/10 text-primary flex items-center justify-center rounded-full text-lg font-bold">🐻</div>
 							<div class="space-y-1 flex-grow">
 								<div class="flex items-center justify-between">
@@ -229,8 +240,17 @@ import Layout from '../layouts/Layout.astro';
 						</div>
 					</div>
 
+					<!-- Active Friend Request Banner -->
+					<div id="active-friend-request" class="hidden bg-green-50 border border-green-200 rounded-xl p-3 flex items-center justify-between">
+						<span class="text-sm font-medium text-green-800">🤝 Friend request from partner!</span>
+						<div class="flex gap-2">
+							<button id="banner-accept-btn" class="text-xs bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold transition-colors">Accept</button>
+							<button id="banner-ignore-btn" class="text-xs border border-hairline hover:bg-surface text-slate px-3 py-1.5 rounded-lg font-medium transition-colors">Ignore</button>
+						</div>
+					</div>
+
 					<!-- Equalizer (Voice mode only) -->
-					<div id="eq-section" class="hidden sm:flex my-6 items-center justify-center h-24 space-x-1">
+					<div id="eq-section" class="hidden sm:flex my-3 md:my-6 items-center justify-center h-24 space-x-1">
 						<div class="w-1.5 h-12 bg-primary rounded-full animate-pulse eq-bar"></div>
 						<div class="w-1.5 h-18 bg-primary/70 rounded-full animate-pulse-slow eq-bar"></div>
 						<div class="w-1.5 h-22 bg-primary rounded-full animate-pulse eq-bar"></div>
@@ -242,15 +262,22 @@ import Layout from '../layouts/Layout.astro';
 					</div>
 
 					<!-- Text-only mode message -->
-					<div id="text-mode-info" class="hidden my-6 text-center text-sm text-slate py-8">
+					<div id="text-mode-info" class="hidden my-3 md:my-6 text-center text-sm text-slate py-4 md:py-8">
 						<p class="text-3xl mb-2">💬</p>
 						<p>Text-only mode — use the chat panel →</p>
 					</div>
 
 					<!-- Controls -->
-					<div class="flex flex-wrap items-center justify-center md:justify-between gap-2 pt-4 border-t border-hairline">
-						<div class="flex items-center space-x-2">
-							<button id="mute-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Mute Microphone">
+					<div class="space-y-2 pt-3 md:pt-4 border-t border-hairline">
+						<!-- Primary Row -->
+						<div class="flex items-center justify-center gap-2 sm:gap-3">
+							<button id="stop-btn" class="bg-red-600 hover:bg-red-700 text-white h-10 sm:h-11 px-3 sm:px-5 rounded-xl text-sm font-bold transition-colors flex items-center justify-center space-x-1.5" title="Stop Connecting" onclick="stopConnecting()">
+								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c-1.5-3-4.5-5-7.5-5s-6 2-7.5 5c-.5 1-.3 2.2.6 2.8l1.5 1c.8.5 1.8.4 2.4-.3l1.2-1.2a1 1 0 0 1 1.4 0l1.2 1.2c.6.7 1.6.8 2.4.3l1.5-1c.9-.6 1.1-1.8.6-2.8z" />
+								</svg>
+								<span class="hidden sm:inline">Stop</span>
+							</button>
+							<button id="mute-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink w-10 h-10 sm:w-12 sm:h-11 rounded-xl text-sm font-medium transition-colors flex items-center justify-center" title="Mute Microphone">
 								<svg id="mute-icon-on" class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
 									<path stroke-linecap="round" stroke-linejoin="round" d="M19 10v1a7 7 0 0 1-14 0v-1M12 19v4m-4 0h8"/>
@@ -259,46 +286,59 @@ import Layout from '../layouts/Layout.astro';
 									<path stroke-linecap="round" stroke-linejoin="round" d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 5.07 2.12M12 19v4m-4 0h8M3 3l18 18M9 9v3a3 3 0 0 0 .37 1.45M19 10v1a6.93 6.93 0 0 1-.94 3.47m-2.15-2.15A4 4 0 0 0 15 12"/>
 								</svg>
 							</button>
-							<button id="voice-fx-btn" class="bg-canvas border border-hairline hover:bg-cream text-ink p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Voice Effects">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m-6 8v-2m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m12-2v-2m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4M6 12V4m12 8V4m-6 16v-6"/>
-								</svg>
-							</button>
-							<input type="range" id="volume-slider" min="0" max="1" stroke-width="2" step="0.1" value="0.8" class="w-16 accent-primary hidden sm:block" />
-						</div>
-						<div class="flex items-center flex-wrap justify-center gap-1.5">
-							<button id="add-friend-btn" class="bg-canvas border border-hairline hover:bg-cream text-accent p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Add Friend">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM2 20a7 7 0 0110 0v1H2v-1z"/>
-								</svg>
-							</button>
-							<button id="block-btn" class="bg-canvas border border-hairline hover:bg-red-50 text-red-500 p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Block User">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
-								</svg>
-							</button>
-							<button id="report-btn" class="bg-canvas border border-hairline hover:bg-red-50 text-red-500 p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Report Abuse">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-								</svg>
-							</button>
-							<button id="stop-btn" class="bg-red-600 hover:bg-red-700 text-white p-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center" title="Stop Connecting" onclick="stopConnecting()">
-								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c-1.5-3-4.5-5-7.5-5s-6 2-7.5 5c-.5 1-.3 2.2.6 2.8l1.5 1c.8.5 1.8.4 2.4-.3l1.2-1.2a1 1 0 0 1 1.4 0l1.2 1.2c.6.7 1.6.8 2.4.3l1.5-1c.9-.6 1.1-1.8.6-2.8z" />
-								</svg>
-							</button>
-							<button id="skip-btn" class="bg-primary hover:bg-primary-deep text-on-primary p-2.5 rounded-lg font-bold transition-all shadow-sm disabled:bg-muted disabled:text-steel disabled:cursor-not-allowed flex items-center justify-center space-x-1" title="Skip to Next Match">
+							<button id="skip-btn" class="bg-primary hover:bg-primary-deep text-on-primary h-10 sm:h-11 px-3 sm:px-5 rounded-xl font-bold transition-all shadow-sm disabled:bg-muted disabled:text-steel disabled:cursor-not-allowed flex items-center justify-center space-x-1.5" title="Skip to Next Match">
 								<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
 								</svg>
 								<span id="skip-btn-label" class="text-xs font-bold leading-none hidden sm:inline">Skip (5s)</span>
 							</button>
 						</div>
+						<!-- Secondary Toolbar -->
+						<div class="flex flex-wrap items-center justify-center gap-1 bg-surface/50 border border-hairline rounded-xl p-1 sm:p-1.5">
+							<button id="add-friend-btn" class="hover:bg-cream text-accent p-2 rounded-lg transition-colors flex items-center justify-center" title="Add Friend">
+								<svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM2 20a7 7 0 0110 0v1H2v-1z"/>
+								</svg>
+							</button>
+							<button id="voice-fx-btn" class="hover:bg-cream text-ink p-2 rounded-lg transition-colors flex items-center justify-center" title="Voice Effects">
+								<svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m-6 8v-2m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4m12-2v-2m0 2a2 2 0 1 0 0 4m0-4a2 2 0 1 1 0 4M6 12V4m12 8V4m-6 16v-6"/>
+								</svg>
+							</button>
+							<span class="w-px h-5 bg-hairline mx-1"></span>
+							<button id="karma-up-btn" class="hover:bg-green-50 text-green-600 p-2 rounded-lg transition-colors flex items-center justify-center text-sm" title="Good vibes 👍" onclick="voteKarma('upvote')">👍</button>
+							<button id="karma-down-btn" class="hover:bg-red-50 text-red-500 p-2 rounded-lg transition-colors flex items-center justify-center text-sm" title="Bad vibes 👎" onclick="voteKarma('downvote')">👎</button>
+							<span class="w-px h-5 bg-hairline mx-1"></span>
+							<button id="block-btn" class="hover:bg-red-50 text-red-500 p-2 rounded-lg transition-colors flex items-center justify-center" title="Block User">
+								<svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
+								</svg>
+							</button>
+							<button id="report-btn" class="hover:bg-red-50 text-red-500 p-2 rounded-lg transition-colors flex items-center justify-center" title="Report Abuse">
+								<svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+								</svg>
+							</button>
+							<input type="range" id="volume-slider" min="0" max="1" step="0.1" value="0.8" class="w-14 accent-primary hidden sm:block ml-1" />
+						</div>
 					</div>
 				</div>
 
+				<!-- Mobile Chat Toggle Button -->
+				<button id="mobile-chat-btn" class="md:hidden fixed bottom-6 right-6 z-50 bg-primary hover:bg-primary-deep text-on-primary w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all" onclick="toggleMobileChat()">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+					<span id="mobile-chat-badge" class="hidden absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">!</span>
+				</button>
+
 				<!-- Right Panel: Chat + Games -->
-				<div class="md:col-span-5 flex flex-col flex-grow md:h-auto border-t md:border-t-0 border-hairline overflow-hidden">
+				<div id="chat-panel" class="hidden md:flex md:col-span-5 flex-col md:h-auto border-t md:border-t-0 border-hairline overflow-hidden fixed md:static inset-0 z-40 md:z-auto bg-canvas md:bg-transparent">
+					<!-- Mobile Chat Header -->
+					<div class="md:hidden flex items-center justify-between p-3 border-b border-hairline bg-surface">
+						<span class="font-bold text-sm text-ink">Chat</span>
+						<button onclick="toggleMobileChat()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-cream transition-colors">
+							<svg class="w-5 h-5 text-ink" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+						</button>
+					</div>
 					<!-- Tabs -->
 					<div class="bg-canvas border-b border-hairline flex">
 						<button id="tab-chat-btn" class="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-primary border-b-2 border-primary focus:outline-none flex items-center justify-center space-x-1" onclick="switchTab('chat')">
@@ -396,6 +436,67 @@ import Layout from '../layouts/Layout.astro';
 		</div>
 
 		<audio id="remote-audio" autoplay class="hidden"></audio>
+
+		<!-- Bottom Nav (logged-in users only) -->
+		<nav id="bottom-nav" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-canvas border-t border-hairline">
+			<div class="max-w-md mx-auto flex items-center justify-around py-2">
+				<button id="nav-home" class="flex flex-col items-center space-y-0.5 text-primary" onclick="showPanel('home')">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+					<span class="text-[10px] font-medium">Home</span>
+				</button>
+				<button id="nav-people" class="flex flex-col items-center space-y-0.5 text-slate" onclick="showPanel('people')">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+					<span class="text-[10px] font-medium">Chat</span>
+				</button>
+				<button id="nav-friends" class="flex flex-col items-center space-y-0.5 text-slate" onclick="showPanel('friends-panel')">
+					<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+					<span class="text-[10px] font-medium">Friends</span>
+				</button>
+			</div>
+		</nav>
+
+		<!-- People Online Panel -->
+		<div id="panel-people" class="hidden fixed inset-0 z-40 bg-canvas overflow-y-auto pt-4 pb-16">
+			<div class="max-w-md mx-auto p-4 space-y-4">
+				<div class="flex items-center justify-between">
+					<h2 class="text-lg font-bold text-ink">People Online</h2>
+					<button onclick="showPanel('home')" class="text-slate hover:text-ink">✕</button>
+				</div>
+				<div id="people-list" class="space-y-2">
+					<p class="text-sm text-slate text-center py-8">Loading online users...</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- Friends Panel -->
+		<div id="panel-friends-panel" class="hidden fixed inset-0 z-40 bg-canvas overflow-y-auto pt-4 pb-16">
+			<div class="max-w-md mx-auto p-4 space-y-4">
+				<div class="flex items-center justify-between">
+					<h2 class="text-lg font-bold text-ink">My Friends</h2>
+					<button onclick="showPanel('home')" class="text-slate hover:text-ink">✕</button>
+				</div>
+				<div id="my-friends-list" class="space-y-2">
+					<p class="text-sm text-slate text-center py-8">No friends yet. Add friends from chat!</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- DM Chat Panel -->
+		<div id="panel-dm" class="hidden fixed inset-0 z-40 bg-canvas flex flex-col">
+			<div class="flex items-center space-x-3 p-4 border-b border-hairline">
+				<button onclick="closeDM()" class="text-slate hover:text-ink">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+				</button>
+				<span id="dm-partner-name" class="font-bold text-ink">User</span>
+			</div>
+			<div id="dm-messages" class="flex-grow overflow-y-auto p-4 space-y-2"></div>
+			<div class="p-3 border-t border-hairline flex items-center space-x-2">
+				<input type="text" id="dm-input" placeholder="Type a message..." class="flex-grow h-10 px-3 border border-hairline rounded-lg text-sm focus:ring-2 focus:ring-primary focus:outline-none" />
+				<button id="dm-send-btn" class="w-10 h-10 bg-primary hover:bg-primary-deep text-on-primary rounded-lg flex items-center justify-center">
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3 2l18 10-18 10 3-10zm0 0h8"/></svg>
+				</button>
+			</div>
+		</div>
 	</main>
 	<div class="h-1.5 w-full sunset-stripe"></div>
 </Layout>
@@ -491,15 +592,16 @@ let pc = null;
 let myClientId = 'p_' + Math.random().toString(36).substr(2, 9);
 let matchedPeerId = null;
 let activeRole = null;
-let isBotCall = false;
 let isMuted = false;
 let callTimerInterval = null;
 let skipInterval = null;
 let typingTimer = null;
-let botTimeout = null;
-let botSeq = 0;
 let friends = JSON.parse(localStorage.getItem('airwalk_friends') || '[]');
 let callHistory = JSON.parse(localStorage.getItem('airwalk_history') || '[]');
+let currentPartnerHandle = null;
+let currentPartnerName = null;
+let outgoingCallTimeout = null;
+const onlineFriends = new Set();
 
 // Game state
 let currentGame = null;
@@ -511,7 +613,13 @@ let c4Board = Array(6).fill(null).map(() => Array(7).fill(''));
 let wordleWord = '', wordleGuesses = [];
 let ludoPos = { me: 0, them: 0 };
 
-const iceConfig = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+const iceConfig = { iceServers: [
+	{ urls: 'stun:stun.l.google.com:19302' },
+	{ urls: 'stun:stun.cloudflare.com:3478' },
+	{ urls: 'turn:a.relay.metered.ca:80', username: 'e8dd65b92cee1deb3bf3e906', credential: '7+kVH2T/Qp/JcUfM' },
+	{ urls: 'turn:a.relay.metered.ca:80?transport=tcp', username: 'e8dd65b92cee1deb3bf3e906', credential: '7+kVH2T/Qp/JcUfM' },
+	{ urls: 'turns:a.relay.metered.ca:443', username: 'e8dd65b92cee1deb3bf3e906', credential: '7+kVH2T/Qp/JcUfM' }
+] };
 
 // DOM refs
 const setupScreen = document.getElementById('setup-screen');
@@ -524,16 +632,6 @@ const eqBars = document.querySelectorAll('.eq-bar');
 // ==========================================
 // CHAT MODE
 // ==========================================
-window.setChatMode = function(mode) {
-	chatMode = mode;
-	document.getElementById('mode-voice').className = mode === 'voice'
-		? 'bg-primary text-on-primary border-2 border-primary rounded-lg p-3 text-center font-bold text-sm transition-all'
-		: 'bg-surface text-ink border-2 border-hairline rounded-lg p-3 text-center font-bold text-sm transition-all hover:border-primary';
-	document.getElementById('mode-text').className = mode === 'text'
-		? 'bg-primary text-on-primary border-2 border-primary rounded-lg p-3 text-center font-bold text-sm transition-all'
-		: 'bg-surface text-ink border-2 border-hairline rounded-lg p-3 text-center font-bold text-sm transition-all hover:border-primary';
-};
-
 // ==========================================
 // FRIENDS & HISTORY
 // ==========================================
@@ -551,15 +649,95 @@ document.getElementById('history-toggle').addEventListener('click', () => {
 function renderFriends() {
 	const list = document.getElementById('friends-list');
 	if (!friends.length) { list.innerHTML = '<p class="text-sm text-steel text-center py-8">No friends yet. Add people you connect with!</p>'; return; }
-	list.innerHTML = friends.map((f, idx) => `
-		<div class="flex items-center space-x-3 p-3 bg-surface border border-hairline rounded-xl">
-			<span class="text-lg">${f.avatar}</span>
-			<div class="flex-grow"><p class="font-bold text-sm text-ink">${f.handle}</p><p class="text-[10px] text-steel">${f.country} • ${f.lang}</p></div>
-			<button onclick="reconnectTo('${f.handle}')" class="text-[10px] bg-primary text-on-primary px-2 py-1 rounded font-bold">Connect</button>
+	list.innerHTML = friends.map((f, idx) => {
+		const online = onlineFriends.has(f.handle);
+		const dot = online ? '<span class="w-2.5 h-2.5 bg-green-500 rounded-full absolute -bottom-0.5 -right-0.5 border border-canvas"></span>' : '';
+		const status = f.confirmed === false ? '<span class="text-[9px] text-yellow-600 bg-yellow-100 px-1 rounded">pending</span>' : '';
+		return `<div class="flex items-center space-x-3 p-3 bg-surface border border-hairline rounded-xl">
+			<span class="text-lg relative">${f.avatar}${dot}</span>
+			<div class="flex-grow"><p class="font-bold text-sm text-ink">${f.name || f.handle} ${status}</p><p class="text-[10px] text-steel">@${f.handle}${f.country ? ' • ' + f.country : ''}</p></div>
+			${f.confirmed !== false ? `<button data-recall-handle="${encodeURIComponent(f.handle)}" class="friend-call-btn text-[10px] bg-primary text-on-primary px-2 py-1 rounded font-bold">Connect</button>` : ''}
+			<button data-ping-handle="${encodeURIComponent(f.handle)}" class="friend-ping-btn text-[10px] bg-accent/20 text-accent px-2 py-1 rounded font-bold" title="Schedule ping">🔔</button>
 			<button onclick="removeFriend(${idx})" class="text-[10px] text-red-500 px-1">✕</button>
-		</div>
-	`).join('');
+		</div>`;
+	}).join('');
 }
+
+document.getElementById('friends-list').addEventListener('click', (e) => {
+	const btn = e.target.closest('.friend-call-btn');
+	if (btn) { reconnectTo(decodeURIComponent(btn.dataset.recallHandle)); return; }
+	const pingBtn = e.target.closest('.friend-ping-btn');
+	if (pingBtn) {
+		const handle = decodeURIComponent(pingBtn.dataset.pingHandle);
+		if (ws?.readyState === 1) ws.send(JSON.stringify({ type: 'schedule_ping', data: { targetHandle: handle } }));
+	}
+});
+
+function showFriendRequestNotification(data) {
+	const existing = friends.find(f => f.handle === data.handle);
+	if (existing) return;
+	addSystemMsg(`🤝 ${data.name} (@${data.handle}) sent you a friend request!`);
+	if (document.hidden && Notification.permission === 'granted') new Notification('Airwalk', { body: `${data.name} wants to be friends!`, icon: '/favicon.ico' });
+
+	// Show inline banner if request is from current partner
+	if (data.handle === currentPartnerHandle) {
+		const banner = document.getElementById('active-friend-request');
+		banner.classList.remove('hidden');
+		document.getElementById('banner-accept-btn').onclick = () => {
+			acceptFriendReq(data.handle, data.name, data.avatar || '🐻');
+			banner.classList.add('hidden');
+		};
+		document.getElementById('banner-ignore-btn').onclick = () => {
+			rejectFriendReq(data.handle, null);
+			banner.classList.add('hidden');
+		};
+		return;
+	}
+
+	// Show accept/reject in friends panel
+	const list = document.getElementById('friends-list');
+	const reqEl = document.createElement('div');
+	reqEl.className = 'flex items-center space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-xl';
+	reqEl.innerHTML = `<span class="text-lg">${data.avatar || '🐻'}</span>
+		<div class="flex-grow"><p class="font-bold text-sm text-ink">${data.name}</p><p class="text-[10px] text-steel">@${data.handle} wants to be friends</p></div>
+		<button class="text-[10px] bg-green-500 text-white px-2 py-1 rounded font-bold" onclick="acceptFriendReq('${data.handle}','${data.name}','${data.avatar || '🐻'}')">Accept</button>
+		<button class="text-[10px] bg-red-500 text-white px-2 py-1 rounded font-bold" onclick="rejectFriendReq('${data.handle}',this)">Reject</button>`;
+	list.prepend(reqEl);
+}
+
+window.acceptFriendReq = function(handle, name, avatar) {
+	if (ws?.readyState === 1) ws.send(JSON.stringify({ type: 'accept_friend', data: { handle } }));
+	if (!friends.find(f => f.handle === handle)) {
+		friends.push({ handle, name, avatar, added: new Date().toISOString(), confirmed: true });
+		localStorage.setItem('airwalk_friends', JSON.stringify(friends));
+	}
+	addSystemMsg(`✅ You are now friends with ${name}!`);
+	renderFriends();
+	syncFriendsToFirestore();
+};
+
+window.rejectFriendReq = function(handle, btn) {
+	if (ws?.readyState === 1) ws.send(JSON.stringify({ type: 'reject_friend', data: { handle } }));
+	btn.closest('.flex').remove();
+};
+
+window.createRoom = function() {
+	if (ws?.readyState === 1) ws.send(JSON.stringify({ type: 'create_room', data: {} }));
+	else { connectWS({ listenOnly: true }); setTimeout(() => { if (ws?.readyState === 1) ws.send(JSON.stringify({ type: 'create_room', data: {} })); }, 1000); }
+};
+
+function syncBlockList() {
+	const blocked = JSON.parse(localStorage.getItem('airwalk_blocked') || '[]');
+	if (blocked.length && ws?.readyState === 1) ws.send(JSON.stringify({ type: 'sync_blocklist', data: { blocked } }));
+}
+
+window.voteKarma = function(action) {
+	if (!currentPartnerHandle) return;
+	const base = (location.hostname === 'localhost' || location.hostname === '127.0.0.1') ? '' : 'https://airwalk-signal.airwalkhq.workers.dev';
+	fetch(`${base}/api/karma`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ handle: currentPartnerHandle, action }) })
+		.then(r => r.json()).then(k => { addSystemMsg(action === 'upvote' ? '👍 Good vibes sent!' : '👎 Feedback recorded.'); })
+		.catch(() => {});
+};
 
 function renderHistory() {
 	const list = document.getElementById('history-list');
@@ -567,16 +745,24 @@ function renderHistory() {
 	list.innerHTML = callHistory.slice(-20).reverse().map(h => `
 		<div class="flex items-center space-x-3 p-3 bg-surface border border-hairline rounded-xl">
 			<span class="text-lg">${h.avatar}</span>
-			<div class="flex-grow"><p class="font-bold text-sm text-ink">${h.handle}</p><p class="text-[10px] text-steel">${h.duration} • ${h.date}</p></div>
-			<button onclick="reconnectTo('${h.handle}')" class="text-[10px] bg-primary text-on-primary px-2 py-1 rounded font-bold">Recall</button>
+			<div class="flex-grow"><p class="font-bold text-sm text-ink">${h.name || h.handle}</p><p class="text-[10px] text-steel">${h.duration} • ${h.date}</p></div>
+			<button data-recall-handle="${encodeURIComponent(h.handle)}" class="history-recall-btn text-[10px] bg-primary text-on-primary px-2 py-1 rounded font-bold">Recall</button>
 		</div>
 	`).join('');
 }
 
+document.getElementById('history-list').addEventListener('click', (e) => {
+	const btn = e.target.closest('.history-recall-btn');
+	if (!btn) return;
+	reconnectTo(decodeURIComponent(btn.dataset.recallHandle));
+});
+
 window.reconnectTo = async function(handle) {
+	if (!handle) return;
 	document.getElementById('friends-panel').classList.add('hidden');
 	document.getElementById('history-panel').classList.add('hidden');
-	
+	if (window._autoMatchTimer) { clearTimeout(window._autoMatchTimer); window._autoMatchTimer = null; }
+
 	const ok = await initAudio();
 	if (!ok) return;
 
@@ -587,34 +773,30 @@ window.reconnectTo = async function(handle) {
 	document.getElementById('search-icon').textContent = '📞';
 	document.getElementById('search-details').innerHTML = `<p class="text-center text-ink">Ringing <strong>${handle}</strong>...</p>`;
 
-	// Ensure WS is connected, then send reconnect
 	if (ws?.readyState === WebSocket.OPEN) {
-		sendJoin(); // Register ourselves first
-		setTimeout(() => {
-			ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: handle } }));
-		}, 200);
+		sendJoin({ recallTarget: handle });
 	} else {
-		window.reconnectTarget = handle;
-		connectWS();
+		connectWS({ recallTarget: handle });
 	}
 };
 
-window.sendReconnect = function(handle) {
-	const lang = document.getElementById('language-filter').value;
-	const country = document.getElementById('country-filter').value;
-	const tags = document.getElementById('interest-input').value.split(',').map(t=>t.trim()).filter(Boolean);
-	const myHandle = localStorage.getItem('airwalk_handle');
-	const avatar = localStorage.getItem('airwalk_avatar');
-	const name = document.getElementById('user-name').value.trim() || myHandle;
-	const age = parseInt(document.getElementById('user-age').value) || 18;
-	const gender = document.getElementById('user-gender').value;
-	const status = document.getElementById('user-status')?.value?.trim() || '';
-
-	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle: myHandle, avatar, chatMode, name, age, gender, status } }));
-	setTimeout(() => {
-		ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: handle } }));
-	}, 200);
+window.cancelOutgoingCall = function() {
+	if (outgoingCallTimeout) { clearTimeout(outgoingCallTimeout); outgoingCallTimeout = null; }
+	if (ws?.readyState === WebSocket.OPEN) {
+		ws.send(JSON.stringify({ type: 'leave_pool' }));
+		sendJoin({ listenOnly: true });
+	}
+	cleanup();
+	matchingScreen.classList.add('hidden');
+	setupScreen.classList.remove('hidden');
 };
+
+function startOutgoingCallTimeout(handle) {
+	if (outgoingCallTimeout) clearTimeout(outgoingCallTimeout);
+	outgoingCallTimeout = setTimeout(() => {
+		onCallRejected({ reason: 'offline', targetHandle: handle });
+	}, 22000);
+}
 
 window.removeFriend = function(idx) {
 	friends.splice(idx, 1);
@@ -623,24 +805,51 @@ window.removeFriend = function(idx) {
 };
 
 function addFriend() {
-	if (!matchedPeerId) return;
-	const handle = document.getElementById('partner-handle').textContent;
+	if (!matchedPeerId || !currentPartnerHandle) return;
+	const handle = currentPartnerHandle;
+	const name = currentPartnerName || handle;
 	const avatar = document.getElementById('partner-avatar').textContent;
-	const country = document.getElementById('partner-country').textContent;
+	const country = document.getElementById('partner-country').textContent.replace('🌍 ', '');
 	const lang = document.getElementById('partner-lang').textContent;
 	if (friends.find(f => f.handle === handle)) { addSystemMsg('Already in friends list!'); return; }
-	friends.push({ handle, avatar, country, lang, peerId: matchedPeerId, added: new Date().toISOString() });
+	friends.push({ handle, name, avatar, country, lang, peerId: matchedPeerId, added: new Date().toISOString(), confirmed: false });
 	localStorage.setItem('airwalk_friends', JSON.stringify(friends));
-	// Notify partner
-	if(ws?.readyState===1) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:'[SYSTEM] sent you a friend request! 🤝'}}));
-	addSystemMsg(`${handle} added to friends! 🤝`);
+	if(ws?.readyState===1) ws.send(JSON.stringify({type:'friend_request',data:{targetHandle:handle}}));
+	addSystemMsg(`Friend request sent to ${name} (@${handle})! They need to accept. 🤝`);
+	renderFriends();
+	syncFriendsToFirestore();
 }
 
 function saveHistory(duration) {
-	const handle = document.getElementById('partner-handle').textContent;
+	const handle = currentPartnerHandle || document.getElementById('partner-handle').textContent;
+	const name = currentPartnerName || handle;
 	const avatar = document.getElementById('partner-avatar').textContent;
-	callHistory.push({ handle, avatar, duration, date: new Date().toLocaleString() });
+	if (!handle || handle === '???') return;
+	callHistory.push({ handle, name, avatar, duration, date: new Date().toLocaleString() });
 	localStorage.setItem('airwalk_history', JSON.stringify(callHistory.slice(-50)));
+	// Save to Firestore if logged in
+	try {
+		const user = window._firebaseUser?.();
+		const fdb = window._firebaseDb?.();
+		if (user && fdb) {
+			import('firebase/firestore').then(({ doc, updateDoc, arrayUnion }) => {
+				updateDoc(doc(fdb, 'users', user.uid), { connectionHistory: arrayUnion({ handle, name, avatar, duration, date: new Date().toISOString(), mode: selectedMode || 'voice' }) });
+			});
+		}
+	} catch(e) {}
+}
+
+function syncFriendsToFirestore() {
+	try {
+		const user = window._firebaseUser?.();
+		const fdb = window._firebaseDb?.();
+		if (user && fdb) {
+			const handles = friends.filter(f => f.confirmed).map(f => f.handle);
+			import('firebase/firestore').then(({ doc, updateDoc }) => {
+				updateDoc(doc(fdb, 'users', user.uid), { friends: handles });
+			});
+		}
+	} catch(e) {}
 }
 
 document.getElementById('add-friend-btn').addEventListener('click', addFriend);
@@ -689,79 +898,203 @@ function showAlert(msg) { document.getElementById('alert-message').textContent =
 document.getElementById('start-match-btn').addEventListener('click', async () => {
 	const ok = await initAudio();
 	if (!ok) return;
-	setupScreen.classList.add('hidden');
-	matchingScreen.classList.remove('hidden');
-	document.getElementById('search-mode-label').textContent = chatMode === 'voice' ? 'Voice Chat' : 'Text Only';
-	document.getElementById('search-icon').textContent = chatMode === 'voice' ? '🎙️' : '💬';
-	const lang = document.getElementById('language-filter').value;
-	const country = document.getElementById('country-filter').value;
-	const tags = document.getElementById('interest-input').value;
-	document.getElementById('search-details').innerHTML = `<strong>Filters:</strong> ${lang} • ${country}${tags ? ' • ' + tags : ''}`;
-	connectWS();
+	const roomCode = document.getElementById('room-code-input')?.value?.trim().toUpperCase();
+	if (roomCode) {
+		// Room code flow: join the room directly
+		setupScreen.classList.add('hidden');
+		callScreen.classList.remove('hidden');
+		document.getElementById('partner-handle').textContent = `Room: ${roomCode}`;
+		document.getElementById('partner-avatar').textContent = '🏠';
+		document.getElementById('partner-country').textContent = '🌍 Private Room';
+		document.getElementById('partner-lang').textContent = `Up to 4 people`;
+		document.getElementById('partner-tags').innerHTML = `<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">Code: ${roomCode}</span>`;
+		document.getElementById('call-status-label').textContent = 'Room';
+		chatMessages.innerHTML = '<div class="text-center text-xs text-slate italic bg-surface py-1.5 px-3 rounded-lg">Joining room... Share this link: ' + location.origin + '/chat?room=' + roomCode + '</div>';
+		startTimer();
+		if (chatMode === 'voice') { document.getElementById('eq-section').classList.remove('hidden'); startEq(); }
+		connectWS({ forMatchmaking: true });
+	} else {
+		// Normal matchmaking flow
+		setupScreen.classList.add('hidden');
+		matchingScreen.classList.remove('hidden');
+		document.getElementById('search-mode-label').textContent = chatMode === 'voice' ? 'Voice Chat' : 'Text Only';
+		document.getElementById('search-icon').textContent = chatMode === 'voice' ? '🎙️' : '💬';
+		const lang = document.getElementById('language-filter').value;
+		const country = document.getElementById('country-filter').value;
+		const tags = document.getElementById('interest-input').value;
+		document.getElementById('search-details').innerHTML = `<strong>Filters:</strong> ${lang} • ${country}${tags ? ' • ' + tags : ''}`;
+		connectWS({ forMatchmaking: true });
+	}
 });
 
 document.getElementById('cancel-match-btn').addEventListener('click', () => {
-	if (ws?.readyState === WebSocket.OPEN) ws.close();
+	if (ws?.readyState === WebSocket.OPEN) {
+		ws.send(JSON.stringify({ type: 'leave_pool' }));
+		sendJoin({ listenOnly: true });
+	}
 	cleanup();
 	matchingScreen.classList.add('hidden');
 	setupScreen.classList.remove('hidden');
 });
 
-function connectWS() {
+function handleWsReady(opts = {}) {
+	if (opts.recallTarget) {
+		sendJoin({ recallTarget: opts.recallTarget });
+	} else if (opts.forMatchmaking) {
+		sendJoin();
+	} else {
+		sendJoin({ listenOnly: true });
+	}
+}
+
+function ensurePresence() {
 	if (ws?.readyState === WebSocket.OPEN) {
-		if (window.reconnectTarget) {
-			sendReconnect(window.reconnectTarget);
-			window.reconnectTarget = null;
-		} else {
-			sendJoin();
-		}
+		sendJoin({ listenOnly: true });
 		return;
 	}
 	if (ws?.readyState === WebSocket.CONNECTING) return;
-	// Production: connect to Cloudflare Worker signaling server
-	// Local dev: connect to localhost:3001
+	connectWS({ listenOnly: true });
+}
+
+function connectWS(opts = {}) {
+	if (ws?.readyState === WebSocket.OPEN) {
+		handleWsReady(opts);
+		return;
+	}
+	if (ws?.readyState === WebSocket.CONNECTING) return;
 	const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
 	const wsUrl = isLocal
 		? `ws://${location.hostname}:3001`
 		: 'wss://airwalk-signal.airwalkhq.workers.dev';
+	const connectOpts = opts;
 	ws = new WebSocket(wsUrl);
 	ws.onopen = () => {
 		document.getElementById('online-indicator').textContent = '🟢 Online';
-		if (window.reconnectTarget) {
-			sendReconnect(window.reconnectTarget);
-			window.reconnectTarget = null;
-		} else {
-			sendJoin();
-		}
+		handleWsReady(connectOpts);
+		syncBlockList();
+		if (Notification.permission === 'default') Notification.requestPermission();
+		// Register service worker for background notifications
+		if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 	};
 	ws.onmessage = async (e) => {
 		const msg = JSON.parse(e.data);
 		switch(msg.type) {
-			case 'matched': onMatched(msg.data); break;
-			case 'offer': await onOffer(msg.data); break;
-			case 'answer': if(pc) await pc.setRemoteDescription(new RTCSessionDescription(msg.data)); break;
-			case 'candidate': if(pc) await pc.addIceCandidate(new RTCIceCandidate(msg.data)); break;
+			case 'matched':
+				if (outgoingCallTimeout) { clearTimeout(outgoingCallTimeout); outgoingCallTimeout = null; }
+				onMatched(msg.data);
+				break;
+			case 'offer': {
+				if (groupPeers.has(msg.senderPeerId)) {
+					await groupOnOffer(msg.senderPeerId, msg.data);
+				} else {
+					await onOffer(msg.data);
+				}
+				break;
+			}
+			case 'answer': {
+				if (groupPeers.has(msg.senderPeerId)) {
+					await groupOnAnswer(msg.senderPeerId, msg.data);
+				} else if(pc) {
+					await pc.setRemoteDescription(new RTCSessionDescription(msg.data));
+				}
+				break;
+			}
+			case 'candidate': {
+				if (groupPeers.has(msg.senderPeerId)) {
+					await groupOnCandidate(msg.senderPeerId, msg.data);
+				} else if(pc) {
+					await pc.addIceCandidate(new RTCIceCandidate(msg.data));
+				}
+				break;
+			}
 			case 'chat_message': onRemoteMsg(msg.data.text); break;
 			case 'typing': msg.data.isTyping ? document.getElementById('typing-indicator').classList.remove('hidden') : document.getElementById('typing-indicator').classList.add('hidden'); break;
 			case 'game_action': onGameAction(msg.data); break;
 			case 'mute_status': showMuteIndicator(msg.data.isMuted); break;
 			case 'skipped': addSystemMsg('Partner skipped.'); reMatch(); break;
-			case 'disconnected': addSystemMsg('Partner left. Finding new match...'); reMatch(); break;
+			case 'stopped': addSystemMsg('Partner disconnected.'); reMatch(); break;
+			case 'disconnected': onPartnerDisconnected(); break;
 			case 'reconnected': clearReconnectTimer(); addSystemMsg('Partner reconnected!'); break;
 			case 'incoming_call': showIncomingCall(msg.data); break;
 			case 'call_rejected': onCallRejected(msg.data); break;
+			case 'friend_online': {
+				if (msg.data.online) onlineFriends.add(msg.data.handle); else onlineFriends.delete(msg.data.handle);
+				renderFriends();
+				break;
+			}
+			case 'friends_online_list': {
+				(msg.data.handles || []).forEach(h => onlineFriends.add(h));
+				renderFriends();
+				break;
+			}
+			case 'incoming_friend_request': {
+				showFriendRequestNotification(msg.data);
+				break;
+			}
+			case 'pending_friend_requests': {
+				(msg.data.requests || []).forEach(r => showFriendRequestNotification(r));
+				break;
+			}
+			case 'friend_confirmed': {
+				const f = friends.find(fr => fr.handle === msg.data.handle);
+				if (f) { f.confirmed = true; localStorage.setItem('airwalk_friends', JSON.stringify(friends)); }
+				addSystemMsg(`✅ ${msg.data.handle} accepted your friend request!`);
+				renderFriends();
+				break;
+			}
+			case 'scheduled_pings': {
+				(msg.data.pings || []).forEach(p => { addSystemMsg(`🔔 ${p.fromName} (@${p.fromHandle}) wants you to call them!`); });
+				break;
+			}
+			case 'call_me_ping': {
+				addSystemMsg(`🔔 ${msg.data.name} (@${msg.data.handle}) is asking you to call!`);
+				if (document.hidden && Notification.permission === 'granted') new Notification('Airwalk', { body: `${msg.data.name} wants you to call!`, icon: '/favicon.ico' });
+				break;
+			}
+			case 'ping_scheduled': { addSystemMsg(`📤 Ping sent to @${msg.data.targetHandle}`); break; }
+			case 'report_ack': { addSystemMsg(`✅ ${msg.data.message}`); break; }
+			case 'blocklist_synced': break;
+			case 'room_created': {
+				addSystemMsg(`🏠 Room created! Code: ${msg.data.code} — Share this link: ${location.origin}/chat?room=${msg.data.code}`);
+				break;
+			}
+			case 'room_joined': {
+				addSystemMsg(`🏠 Joined room ${msg.data.code} with ${msg.data.members.length} other(s)`);
+				msg.data.members.forEach(m => {
+					addSystemMsg(`  👤 ${m.name} (@${m.handle})`);
+					// Start group voice with each existing member
+					if (localStream) groupCreatePeer(m.peerId, true);
+				});
+				break;
+			}
+			case 'room_member_joined': {
+				addSystemMsg(`👋 ${msg.data.name} joined the room`);
+				// Start group voice connection with this new peer
+				if (localStream) groupCreatePeer(msg.data.peerId, true);
+				break;
+			}
+			case 'room_member_left': {
+				addSystemMsg(`👋 ${msg.data.handle} left the room`);
+				groupRemovePeer(msg.data.peerId);
+				break;
+			}
+			case 'room_error': { addSystemMsg(`❌ ${msg.data.message}`); break; }
 		}
 	};
 	ws.onclose = () => {
 		document.getElementById('online-indicator').textContent = '🔴 Offline';
-		// Auto-reconnect if we were matching
-		if (!matchingScreen.classList.contains('hidden')) {
-			setTimeout(() => connectWS(), 2000);
+		if (!matchingScreen.classList.contains('hidden') && outgoingCallTimeout) {
+			setTimeout(() => connectWS({ recallTarget: document.getElementById('search-details')?.dataset?.recallHandle }), 2000);
+		} else if (!matchingScreen.classList.contains('hidden')) {
+			setTimeout(() => connectWS({ forMatchmaking: true }), 2000);
+		} else {
+			setTimeout(() => ensurePresence(), 2000);
 		}
 	};
 }
 
-function sendJoin() {
+function buildJoinData(opts = {}) {
+	const { listenOnly = false, recallTarget = null } = opts;
 	const lang = document.getElementById('language-filter').value;
 	const country = document.getElementById('country-filter').value;
 	const tags = document.getElementById('interest-input').value.split(',').map(t=>t.trim()).filter(Boolean);
@@ -770,14 +1103,31 @@ function sendJoin() {
 	const name = document.getElementById('user-name').value.trim() || handle;
 	const age = parseInt(document.getElementById('user-age').value) || 18;
 	const gender = document.getElementById('user-gender').value;
+	const lookingFor = document.getElementById('looking-for')?.value || 'Any';
 	const status = document.getElementById('user-status')?.value?.trim() || '';
-	localStorage.setItem('airwalk_name', name);
-	localStorage.setItem('airwalk_age', age);
-	localStorage.setItem('airwalk_gender', gender);
+	const roomCode = document.getElementById('room-code-input')?.value?.trim().toUpperCase() || '';
+	const data = { id: myClientId, language: lang, country, tags, handle, avatar, chatMode, name, age, gender, lookingFor, status };
+	if (roomCode) data.roomCode = roomCode;
+	if (listenOnly) data.listenOnly = true;
+	if (recallTarget) data.reconnectTarget = recallTarget;
+	return data;
+}
+
+function sendJoin(opts = {}) {
+	if (ws?.readyState !== WebSocket.OPEN) return;
+	const lang = document.getElementById('language-filter').value;
+	const country = document.getElementById('country-filter').value;
+	localStorage.setItem('airwalk_name', document.getElementById('user-name').value.trim() || localStorage.getItem('airwalk_handle'));
+	localStorage.setItem('airwalk_age', document.getElementById('user-age').value);
+	localStorage.setItem('airwalk_gender', document.getElementById('user-gender').value);
 	localStorage.setItem('airwalk_language', lang);
 	localStorage.setItem('airwalk_country', country);
 	localStorage.setItem('airwalk_interests', document.getElementById('interest-input').value);
-	ws.send(JSON.stringify({ type: 'join', data: { id: myClientId, language: lang, country, tags, handle, avatar, chatMode, name, age, gender, status } }));
+	ws.send(JSON.stringify({ type: 'join', data: buildJoinData(opts) }));
+	if (opts.recallTarget) {
+		ws.send(JSON.stringify({ type: 'reconnect', data: { targetHandle: opts.recallTarget } }));
+		startOutgoingCallTimeout(opts.recallTarget);
+	}
 }
 
 function onMatched(data) {
@@ -792,14 +1142,15 @@ function onMatched(data) {
 
 	matchedPeerId = data.peerId;
 	activeRole = data.role;
-	isBotCall = !!data.isBot;
+	currentPartnerHandle = pi.handle || pi.name || 'Stranger';
+	currentPartnerName = pi.name || pi.handle || 'Stranger';
 
-	document.getElementById('partner-handle').textContent = pi.name || pi.handle || 'Stranger';
+	document.getElementById('partner-handle').textContent = currentPartnerName;
 	document.getElementById('partner-avatar').textContent = pi.avatar || '🐻';
 	document.getElementById('partner-country').textContent = `🌍 ${pi.country}`;
 	const genderIcon = pi.gender === 'Female' ? '♀' : pi.gender === 'Male' ? '♂' : '⚧';
 	document.getElementById('partner-lang').textContent = `${genderIcon} ${pi.gender || '--'} • ${pi.age || '--'}yo • ${pi.language}`;
-	document.getElementById('partner-tags').innerHTML = (pi.tags||[]).map(t => `<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">#${t}</span>`).join('');
+	document.getElementById('partner-tags').innerHTML = (pi.tags||[]).map(t => `<span class="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">#${t}</span>`).join('') + (pi.trustScore !== undefined ? `<span class="text-[10px] px-2 py-0.5 rounded-full font-bold ${pi.trustScore >= 70 ? 'bg-green-100 text-green-700' : pi.trustScore >= 40 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}">⭐ ${pi.trustScore}</span>` : '');
 
 	// Show/hide voice UI
 	if (chatMode === 'voice') {
@@ -809,7 +1160,11 @@ function onMatched(data) {
 		document.getElementById('call-status-label').textContent = 'Live Call';
 	} else {
 		document.getElementById('eq-section').classList.add('hidden');
-		document.getElementById('text-mode-info').classList.remove('hidden');
+		if (window.innerWidth >= 768) {
+			document.getElementById('text-mode-info').classList.remove('hidden');
+		} else {
+			document.getElementById('text-mode-info').classList.add('hidden');
+		}
 		document.getElementById('mute-btn').classList.add('hidden');
 		document.getElementById('call-status-label').textContent = 'Text Chat';
 	}
@@ -822,8 +1177,15 @@ function onMatched(data) {
 	startTimer();
 	startSkipCooldown();
 	if (chatMode === 'voice') startEq();
-	if (isBotCall) startBot();
-	else if (chatMode === 'voice') startWebRTC();
+	if (chatMode === 'voice') startWebRTC();
+
+	// Initiate E2E key exchange for text encryption
+	e2eEnabled = false; sharedSecret = null;
+	e2eInit().then(pubKey => {
+		if (ws?.readyState === 1 && matchedPeerId) {
+			ws.send(JSON.stringify({ type: 'chat_message', data: { targetPeerId: matchedPeerId, text: '[E2E_PUB]' + pubKey } }));
+		}
+	});
 }
 
 // WebRTC
@@ -835,7 +1197,6 @@ async function startWebRTC() {
 	if(activeRole==='initiator') { const o = await pc.createOffer(); await pc.setLocalDescription(o); ws.send(JSON.stringify({type:'offer',targetPeerId:matchedPeerId,data:o})); }
 }
 async function onOffer(offer) {
-	if(isBotCall) return;
 	pc = new RTCPeerConnection(iceConfig);
 	pc.onicecandidate = e => { if(e.candidate && ws?.readyState===1) ws.send(JSON.stringify({type:'candidate',targetPeerId:matchedPeerId,data:e.candidate})); };
 	pc.ontrack = e => { document.getElementById('remote-audio').srcObject = e.streams[0]; };
@@ -843,6 +1204,60 @@ async function onOffer(offer) {
 	await pc.setRemoteDescription(new RTCSessionDescription(offer));
 	const a = await pc.createAnswer(); await pc.setLocalDescription(a);
 	ws.send(JSON.stringify({type:'answer',targetPeerId:matchedPeerId,data:a}));
+}
+
+// ==========================================
+// GROUP VOICE — Multi-peer WebRTC Mesh
+// ==========================================
+const groupPeers = new Map(); // peerId => { pc, audioEl }
+
+function groupCreatePeer(peerId, initiator) {
+	const peerPc = new RTCPeerConnection(iceConfig);
+	const audioEl = document.createElement('audio');
+	audioEl.autoplay = true;
+	audioEl.id = `group-audio-${peerId}`;
+	document.body.appendChild(audioEl);
+
+	peerPc.onicecandidate = e => {
+		if (e.candidate && ws?.readyState === 1) ws.send(JSON.stringify({ type: 'candidate', targetPeerId: peerId, data: e.candidate }));
+	};
+	peerPc.ontrack = e => { audioEl.srcObject = e.streams[0]; };
+	if (localStream) localStream.getTracks().forEach(t => peerPc.addTrack(t, localStream));
+
+	groupPeers.set(peerId, { pc: peerPc, audioEl });
+
+	if (initiator) {
+		peerPc.createOffer().then(o => { peerPc.setLocalDescription(o); ws.send(JSON.stringify({ type: 'offer', targetPeerId: peerId, data: o })); });
+	}
+	return peerPc;
+}
+
+async function groupOnOffer(peerId, offer) {
+	let peer = groupPeers.get(peerId);
+	if (!peer) { const peerPc = groupCreatePeer(peerId, false); peer = groupPeers.get(peerId); }
+	await peer.pc.setRemoteDescription(new RTCSessionDescription(offer));
+	const ans = await peer.pc.createAnswer();
+	await peer.pc.setLocalDescription(ans);
+	ws.send(JSON.stringify({ type: 'answer', targetPeerId: peerId, data: ans }));
+}
+
+async function groupOnAnswer(peerId, answer) {
+	const peer = groupPeers.get(peerId);
+	if (peer) await peer.pc.setRemoteDescription(new RTCSessionDescription(answer));
+}
+
+async function groupOnCandidate(peerId, candidate) {
+	const peer = groupPeers.get(peerId);
+	if (peer) await peer.pc.addIceCandidate(new RTCIceCandidate(candidate));
+}
+
+function groupRemovePeer(peerId) {
+	const peer = groupPeers.get(peerId);
+	if (peer) { peer.pc.close(); peer.audioEl.remove(); groupPeers.delete(peerId); }
+}
+
+function groupCleanup() {
+	for (const [pid] of groupPeers) groupRemovePeer(pid);
 }
 
 // Timer & EQ
@@ -863,12 +1278,16 @@ function cleanup() {
 	stopTimer();
 	stopEq();
 	if(pc){pc.close();pc=null;}
+	groupCleanup();
+	if(localStream){localStream.getTracks().forEach(t=>t.stop());localStream=null;}
 	document.getElementById('remote-audio').srcObject=null;
-	if(botTimeout)clearTimeout(botTimeout);
+	document.getElementById('active-friend-request').classList.add('hidden');
+	const cp = document.getElementById('chat-panel');
+	if (cp) { cp.classList.add('hidden'); cp.classList.remove('flex'); }
+	const mcb = document.getElementById('mobile-chat-btn');
+	if (mcb) mcb.classList.remove('hidden');
 	matchedPeerId=null;
 	activeRole=null;
-	isBotCall=false;
-	botSeq=0;
 	exitGame();
 	
 	isMuted = false;
@@ -879,14 +1298,13 @@ function cleanup() {
 		muteOff.classList.add('hidden');
 	}
 }
-function reMatch() { const dur = getCallDuration(); if(dur!=='00:00') saveHistory(dur); cleanup(); callScreen.classList.add('hidden'); matchingScreen.classList.remove('hidden'); connectWS(); }
+function reMatch() { const dur = getCallDuration(); if(dur!=='00:00') saveHistory(dur); cleanup(); callScreen.classList.add('hidden'); matchingScreen.classList.remove('hidden'); connectWS({ forMatchmaking: true }); }
 
 let lastPartnerHandle = null;
 let lastPartnerAvatar = null;
 
 function onPartnerDisconnected() {
-	// Save last partner info for recall
-	lastPartnerHandle = document.getElementById('partner-handle').textContent;
+	lastPartnerHandle = currentPartnerHandle;
 	lastPartnerAvatar = document.getElementById('partner-avatar').textContent;
 	const dur = getCallDuration();
 	if(dur!=='00:00') saveHistory(dur);
@@ -910,7 +1328,7 @@ function onPartnerDisconnected() {
 
 	// Auto-find new match after 10s unless user taps recall
 	window._autoMatchTimer = setTimeout(() => {
-		connectWS();
+		connectWS({ forMatchmaking: true });
 	}, 10000);
 }
 
@@ -954,6 +1372,20 @@ function showIncomingCall(data) {
 	`;
 	document.body.appendChild(modal);
 
+	// Background push notification via service worker
+	if (document.hidden && navigator.serviceWorker?.controller) {
+		navigator.serviceWorker.controller.postMessage({
+			type: 'SHOW_NOTIFICATION',
+			title: '📞 Incoming Call',
+			body: `${callerName} is calling you on Airwalk!`,
+			icon: '/favicon.ico',
+			tag: 'airwalk-incoming-call',
+			data: { url: '/chat' }
+		});
+	} else if (document.hidden && Notification.permission === 'granted') {
+		new Notification('📞 Incoming Call', { body: `${callerName} is calling you!`, icon: '/favicon.ico', tag: 'airwalk-call' });
+	}
+
 	// Play ringtone
 	if(typeof playTone==='function') {
 		let ring = 0;
@@ -965,10 +1397,20 @@ function showIncomingCall(data) {
 	}
 }
 
-window.acceptIncomingCall = function(callerId) {
+window.acceptIncomingCall = async function(callerId) {
 	if(incomingCallTimeout) { clearInterval(incomingCallTimeout); incomingCallTimeout = null; }
 	const modal = document.getElementById('incoming-call-modal');
 	if(modal) modal.remove();
+
+	const ok = await initAudio();
+	if (!ok) {
+		rejectIncomingCall(callerId);
+		return;
+	}
+
+	setupScreen.classList.add('hidden');
+	callScreen.classList.add('hidden');
+	matchingScreen.classList.remove('hidden');
 
 	if(ws?.readyState === WebSocket.OPEN) {
 		ws.send(JSON.stringify({ type: 'accept_call', data: { callerId } }));
@@ -986,21 +1428,36 @@ window.rejectIncomingCall = function(callerId) {
 };
 
 function onCallRejected(data) {
-	addSystemMsg(data.reason === 'offline' ? `${data.targetHandle} is offline.` : 'Call declined. Finding new match...');
-	// Start normal matching
-	if(ws?.readyState === WebSocket.OPEN) sendJoin();
+	if (outgoingCallTimeout) { clearTimeout(outgoingCallTimeout); outgoingCallTimeout = null; }
+	const label = data.targetHandle || 'Friend';
+	const msg = data.reason === 'offline'
+		? `${label} is offline. They need to have the chat page open.`
+		: data.reason === 'busy'
+		? `${label} is in another call.`
+		: 'Call declined.';
+	document.getElementById('search-mode-label').textContent = 'Call failed';
+	document.getElementById('search-icon').textContent = '📵';
+	document.getElementById('search-details').innerHTML = `
+		<p class="text-center text-ink mb-3">${msg}</p>
+		<div class="flex justify-center gap-2 flex-wrap">
+			<button onclick="connectWS({forMatchmaking:true})" class="text-xs bg-primary text-on-primary px-3 py-1.5 rounded-lg font-bold">Find random match</button>
+			<button onclick="cancelOutgoingCall()" class="text-xs bg-surface border border-hairline px-3 py-1.5 rounded-lg font-bold">Back</button>
+		</div>`;
+	if (ws?.readyState === WebSocket.OPEN) sendJoin({ listenOnly: true });
 }
 
 window.stopConnecting = function() {
+	if (outgoingCallTimeout) { clearTimeout(outgoingCallTimeout); outgoingCallTimeout = null; }
 	if (ws?.readyState === WebSocket.OPEN) {
-		ws.send(JSON.stringify({ type: 'skip' }));
-		ws.close();
-		ws = null;
+		if (matchedPeerId) ws.send(JSON.stringify({ type: 'stop' }));
+		ws.send(JSON.stringify({ type: 'leave_pool' }));
 	}
-	cleanup();
+	// Close WS to prevent any auto-reconnection
+	if (ws) { const old = ws; ws = null; old.onclose = null; old.close(); }
 	callScreen.classList.add('hidden');
 	matchingScreen.classList.add('hidden');
 	setupScreen.classList.remove('hidden');
+	try { cleanup(); } catch(e) {}
 };
 
 // Controls
@@ -1031,7 +1488,7 @@ document.getElementById('report-btn').addEventListener('click', () => {
 		if(!blocked.includes(matchedPeerId)) blocked.push(matchedPeerId);
 		if(!blocked.includes(handle)) blocked.push(handle);
 		localStorage.setItem('airwalk_blocked', JSON.stringify(blocked));
-		if(ws?.readyState===1) ws.send(JSON.stringify({type:'report',data:{targetPeerId:matchedPeerId}}));
+		if(ws?.readyState===1) ws.send(JSON.stringify({type:'report',data:{targetPeerId:matchedPeerId, handle: document.getElementById('partner-handle').textContent, reason:'abuse'}}));
 		addSystemMsg('⚠️ User reported and blocked.');
 		reMatch();
 	}
@@ -1044,6 +1501,7 @@ document.getElementById('block-btn').addEventListener('click', () => {
 		if(!blocked.includes(matchedPeerId)) blocked.push(matchedPeerId);
 		if(!blocked.includes(handle)) blocked.push(handle);
 		localStorage.setItem('airwalk_blocked', JSON.stringify(blocked));
+		syncBlockList();
 		if(ws?.readyState===1) ws.send(JSON.stringify({type:'skip'}));
 		addSystemMsg('🚫 User blocked.');
 		reMatch();
@@ -1104,23 +1562,76 @@ function clearReconnectTimer() {
 // ==========================================
 // CHAT MESSAGES
 // ==========================================
+// ==========================================
+// E2E ENCRYPTED TEXT (Web Crypto ECDH)
+// ==========================================
+let e2eEnabled = false;
+let myKeyPair = null;
+let sharedSecret = null;
+
+async function e2eInit() {
+	myKeyPair = await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, ['deriveKey']);
+	const pubRaw = await crypto.subtle.exportKey('raw', myKeyPair.publicKey);
+	return btoa(String.fromCharCode(...new Uint8Array(pubRaw)));
+}
+
+async function e2eDeriveKey(peerPubB64) {
+	const raw = Uint8Array.from(atob(peerPubB64), c => c.charCodeAt(0));
+	const peerPub = await crypto.subtle.importKey('raw', raw, { name: 'ECDH', namedCurve: 'P-256' }, false, []);
+	sharedSecret = await crypto.subtle.deriveKey({ name: 'ECDH', public: peerPub }, myKeyPair.privateKey, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+	e2eEnabled = true;
+}
+
+async function e2eEncrypt(plaintext) {
+	if (!sharedSecret) return plaintext;
+	const iv = crypto.getRandomValues(new Uint8Array(12));
+	const enc = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, sharedSecret, new TextEncoder().encode(plaintext));
+	return '[E2E]' + btoa(String.fromCharCode(...iv, ...new Uint8Array(enc)));
+}
+
+async function e2eDecrypt(cipherB64) {
+	if (!sharedSecret) return cipherB64;
+	const data = Uint8Array.from(atob(cipherB64), c => c.charCodeAt(0));
+	const iv = data.slice(0, 12);
+	const ct = data.slice(12);
+	const dec = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, sharedSecret, ct);
+	return new TextDecoder().decode(dec);
+}
+
 function sendChat() {
 	const text = chatInput.value.trim(); if(!text) return;
 	addMyChatMsg(escapeHTML(text));
 	chatInput.value = '';
-	if(isBotCall) { if(botTimeout)clearTimeout(botTimeout); botReply(1500); }
-	else if(ws?.readyState===1&&matchedPeerId) ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text}}));
+	if(ws?.readyState===1&&matchedPeerId) {
+		if (e2eEnabled) {
+			e2eEncrypt(text).then(enc => ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text:enc}})));
+		} else {
+			ws.send(JSON.stringify({type:'chat_message',data:{targetPeerId:matchedPeerId,text}}));
+		}
+	}
 }
 document.getElementById('send-btn').addEventListener('click', sendChat);
 chatInput.addEventListener('keydown', e => { if(e.key==='Enter') sendChat(); });
 chatInput.addEventListener('input', () => {
-	if(!matchedPeerId||isBotCall) return;
+	if(!matchedPeerId) return;
 	if(ws?.readyState===1) ws.send(JSON.stringify({type:'typing',data:{targetPeerId:matchedPeerId,isTyping:true}}));
 	if(typingTimer) clearTimeout(typingTimer);
 	typingTimer = setTimeout(()=>{if(ws?.readyState===1&&matchedPeerId)ws.send(JSON.stringify({type:'typing',data:{targetPeerId:matchedPeerId,isTyping:false}}));},2000);
 });
 
 function onRemoteMsg(text) {
+	// Handle E2E key exchange
+	if (text.startsWith('[E2E_PUB]')) {
+		e2eDeriveKey(text.slice(9)).then(() => addSystemMsg('🔒 End-to-end encryption active'));
+		return;
+	}
+	// Handle E2E encrypted message
+	if (text.startsWith('[E2E]')) {
+		e2eDecrypt(text.slice(5)).then(plain => {
+			addRemoteChatMsg(escapeHTML(plain));
+		}).catch(() => addRemoteChatMsg('<em class="text-red-500">🔒 Decryption failed</em>', true));
+		return;
+	}
 	if(text.startsWith('[REACT]')) {
 		// Show reaction on last sent message
 		const emoji = text.slice(7);
@@ -1159,6 +1670,12 @@ function addRemoteChatMsg(content, isHtml=false) {
 	chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
 	if(typeof soundMessage==='function') soundMessage();
 	if(typeof resetSilenceTimer==='function') resetSilenceTimer();
+	// Show badge on mobile chat button if panel is hidden
+	const chatPanel = document.getElementById('chat-panel');
+	if (chatPanel && (chatPanel.classList.contains('hidden') || !chatPanel.classList.contains('flex'))) {
+		const badge = document.getElementById('mobile-chat-badge');
+		if (badge) badge.classList.remove('hidden');
+	}
 }
 window.react = function(msgId, emoji) {
 	document.getElementById('react-'+msgId).textContent = emoji;
@@ -1174,20 +1691,6 @@ function escapeHTML(s) { return s.replace(/[&<>'"]/g, c=>({'&':'&amp;','<':'&lt;
 // ==========================================
 // BOT
 // ==========================================
-function startBot() { botSeq=0; botReply(2500); }
-function botReply(delay) {
-	botTimeout = setTimeout(()=>{
-		document.getElementById('typing-indicator').classList.remove('hidden');
-		botTimeout = setTimeout(()=>{
-			document.getElementById('typing-indicator').classList.add('hidden');
-			botSeq++;
-			const msgs = ["Hey! How's it going? 👋","What brings you to Airwalk today?","I love that everything here is free — no coins needed!","Try out the games tab! We can play while chatting.","Feel free to skip when you want. It unlocks after 5 seconds."];
-			addRemoteChatMsg(escapeHTML(msgs[Math.min(botSeq-1, msgs.length-1)]));
-			if(botSeq<5) botReply(5000+Math.random()*3000);
-		}, 1200);
-	}, delay);
-}
-
 // ==========================================
 // TABS
 // ==========================================
@@ -1202,6 +1705,21 @@ window.switchTab = function(tab) {
 		tc.className="flex-1 text-center py-2.5 text-xs font-bold uppercase tracking-wider text-slate hover:text-primary focus:outline-none flex items-center justify-center space-x-1";
 		document.getElementById('panel-games').classList.remove('hidden'); document.getElementById('panel-chat').classList.add('hidden');
 		document.getElementById('game-dot').classList.add('hidden');
+	}
+};
+
+window.toggleMobileChat = function() {
+	const panel = document.getElementById('chat-panel');
+	const btn = document.getElementById('mobile-chat-btn');
+	if (panel.classList.contains('hidden') || !panel.classList.contains('flex')) {
+		panel.classList.remove('hidden');
+		panel.classList.add('flex');
+		btn.classList.add('hidden');
+		document.getElementById('mobile-chat-badge').classList.add('hidden');
+	} else {
+		panel.classList.add('hidden');
+		panel.classList.remove('flex');
+		btn.classList.remove('hidden');
 	}
 };
 
@@ -1271,7 +1789,7 @@ function tttMove(i) {
 	sendGameAction('tictactoe','move',{i});
 	const w = tttCheck();
 	if(w) { gameActive=false; setStatus(w==='draw'?'Draw!':'You win! 🎉'); }
-	else { gameTurn='them'; setStatus("Stranger's turn"); if(isBotCall) botGameMove(); }
+	else { gameTurn='them'; setStatus("Stranger's turn"); }
 }
 function renderTTT() {
 	document.querySelectorAll('.ttt-cell').forEach((c,idx) => {
@@ -1315,7 +1833,7 @@ function c4Drop(col) {
 	renderC4();
 	sendGameAction('connect4','move',{col});
 	if(c4Check('R')) { gameActive=false; setStatus('You win! 🎉'); }
-	else { gameTurn='them'; setStatus("Stranger's turn (🟡)"); if(isBotCall) botGameMove(); }
+	else { gameTurn='them'; setStatus("Stranger's turn (🟡)"); }
 }
 function c4Check(sym) {
 	for(let r=0;r<6;r++) for(let c=0;c<7;c++) {
@@ -1377,7 +1895,7 @@ function ludoRoll() {
 	document.getElementById('ludo-t-me').style.left = `${Math.min(88,(ludoPos.me/16)*88)}%`;
 	sendGameAction('ludo','roll',{roll,pos:ludoPos.me});
 	if(ludoPos.me>=16) { gameActive=false; setStatus('You won! 🏆'); document.getElementById('ludo-roll').disabled=true; }
-	else { gameTurn='them'; setStatus('Stranger rolling...'); document.getElementById('ludo-roll').disabled=true; if(isBotCall) botGameMove(); }
+	else { gameTurn='them'; setStatus('Stranger rolling...'); document.getElementById('ludo-roll').disabled=true; }
 }
 
 // --- GAME COMMS ---
@@ -1404,26 +1922,6 @@ function onGameAction(data) {
 	}
 }
 
-// Bot game moves
-function botGameMove() {
-	if(!isBotCall||!gameActive||gameTurn!=='them') return;
-	setStatus('Stranger thinking...');
-	setTimeout(()=>{
-		if(!gameActive||gameTurn!=='them') return;
-		if(currentGame==='tictactoe') {
-			const avail=tttBoard.map((v,i)=>v===''?i:-1).filter(i=>i!==-1);
-			if(avail.length) { const i=avail[Math.floor(Math.random()*avail.length)]; tttBoard[i]='O'; renderTTT(); const w=tttCheck(); if(w){gameActive=false;setStatus(w==='draw'?'Draw!':'Stranger wins!');}else{gameTurn='me';setStatus('Your turn');} }
-		} else if(currentGame==='connect4') {
-			const cols=[];for(let c=0;c<7;c++){if(!c4Board[0][c])cols.push(c);}
-			if(cols.length){const col=cols[Math.floor(Math.random()*cols.length)];for(let r=5;r>=0;r--){if(!c4Board[r][col]){c4Board[r][col]='Y';break;}}renderC4();if(c4Check('Y')){gameActive=false;setStatus('Stranger wins!');}else{gameTurn='me';setStatus('Your turn (🔴)');}}
-		} else if(currentGame==='ludo') {
-			const roll=Math.floor(Math.random()*6)+1;ludoPos.them=Math.min(16,ludoPos.them+roll);
-			document.getElementById('ludo-them').textContent=ludoPos.them;document.getElementById('ludo-t-them').style.left=`${Math.min(88,(ludoPos.them/16)*88)}%`;document.getElementById('ludo-dice').textContent=roll;
-			if(ludoPos.them>=16){gameActive=false;setStatus('Stranger won!');}else{gameTurn='me';setStatus('Roll the dice!');document.getElementById('ludo-roll').disabled=false;}
-		}
-	}, 1000+Math.random()*800);
-}
-
 // Load saved preferences
 window.addEventListener('load', () => {
 	if(localStorage.getItem('airwalk_language')) { document.getElementById('language-filter').value = localStorage.getItem('airwalk_language'); document.getElementById('language-search').value = localStorage.getItem('airwalk_language'); }
@@ -1433,6 +1931,14 @@ window.addEventListener('load', () => {
 	if(localStorage.getItem('airwalk_age')) document.getElementById('user-age').value = localStorage.getItem('airwalk_age');
 	if(localStorage.getItem('airwalk_gender')) document.getElementById('user-gender').value = localStorage.getItem('airwalk_gender');
 	applyChatTheme(localStorage.getItem('airwalk_chatTheme') || 'default');
+	ensurePresence();
+	// Handle ?room= URL parameter
+	const urlRoom = new URLSearchParams(location.search).get('room');
+	if (urlRoom) {
+		document.getElementById('room-code-input').value = urlRoom;
+		// Auto-start joining the room
+		setTimeout(() => document.getElementById('start-match-btn').click(), 500);
+	}
 });
 
 // ==========================================
@@ -1610,7 +2116,8 @@ async function searchGifs(query) {
 	const results = document.getElementById('gif-results');
 	results.innerHTML = '<p class="col-span-3 text-center text-xs text-steel py-2">Loading...</p>';
 	try {
-		const res = await fetch(`https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query)}&key=AIzaSyAyimkuYQYF_FXVALexPuGQctUNzD126b0&limit=9&media_filter=tinygif`);
+		const gifProxyBase = location.hostname === 'localhost' || location.hostname === '127.0.0.1' ? '' : 'https://airwalk-signal.airwalkhq.workers.dev';
+		const res = await fetch(`${gifProxyBase}/api/gif?q=${encodeURIComponent(query)}`);
 		const data = await res.json();
 		if(data.results&&data.results.length) {
 			results.innerHTML = data.results.map(g => {
@@ -1937,4 +2444,142 @@ setInterval(() => {
 	const el = document.getElementById('my-avatar');
 	if(el) { el.style.transform = 'scale(1.1)'; setTimeout(()=>{el.style.transform='scale(1)';}, 200); }
 }, 3000);
+</script>
+
+<script type="module">
+import { auth, db } from '../firebase.js';
+import { onAuthStateChanged } from 'firebase/auth';
+import { collection, query, where, orderBy, onSnapshot, addDoc, doc, getDoc, getDocs, updateDoc, serverTimestamp, Timestamp } from 'firebase/firestore';
+
+let currentUser = null;
+let currentUserData = null;
+let dmUnsubscribe = null;
+let dmTargetUid = null;
+
+onAuthStateChanged(auth, async (user) => {
+	currentUser = user;
+	if (user) {
+		const snap = await getDoc(doc(db, 'users', user.uid));
+		currentUserData = snap.exists() ? snap.data() : null;
+		document.getElementById('bottom-nav').classList.remove('hidden');
+		document.querySelector('main').style.paddingBottom = '60px';
+		await updateDoc(doc(db, 'users', user.uid), { lastSeen: serverTimestamp() });
+	} else {
+		document.getElementById('bottom-nav').classList.add('hidden');
+		document.querySelector('main').style.paddingBottom = '0';
+	}
+});
+
+window.showPanel = function(panel) {
+	document.getElementById('panel-people').classList.add('hidden');
+	document.getElementById('panel-friends-panel').classList.add('hidden');
+	document.getElementById('panel-dm').classList.add('hidden');
+	const navBtns = ['nav-home', 'nav-people', 'nav-friends'];
+	navBtns.forEach(id => { document.getElementById(id).classList.remove('text-primary'); document.getElementById(id).classList.add('text-slate'); });
+
+	if (panel === 'home') {
+		document.getElementById('nav-home').classList.add('text-primary');
+		document.getElementById('nav-home').classList.remove('text-slate');
+	} else if (panel === 'people') {
+		document.getElementById('panel-people').classList.remove('hidden');
+		document.getElementById('nav-people').classList.add('text-primary');
+		document.getElementById('nav-people').classList.remove('text-slate');
+		loadPeopleOnline();
+	} else if (panel === 'friends-panel') {
+		document.getElementById('panel-friends-panel').classList.remove('hidden');
+		document.getElementById('nav-friends').classList.add('text-primary');
+		document.getElementById('nav-friends').classList.remove('text-slate');
+		loadMyFriends();
+	}
+};
+
+async function loadPeopleOnline() {
+	if (!currentUser) return;
+	const fiveMinAgo = Timestamp.fromDate(new Date(Date.now() - 5 * 60 * 1000));
+	const q = query(collection(db, 'users'), where('lastSeen', '>=', fiveMinAgo));
+	const snap = await getDocs(q);
+	const list = document.getElementById('people-list');
+	list.innerHTML = '';
+	snap.forEach(d => {
+		if (d.id === currentUser.uid) return;
+		const u = d.data();
+		const el = document.createElement('div');
+		el.className = 'flex items-center justify-between p-3 bg-surface border border-hairline rounded-xl';
+		el.innerHTML = `<div class="flex items-center space-x-3"><span class="text-xl">${u.avatar || '🐻'}</span><div><p class="font-bold text-sm text-ink">${u.username}</p><p class="text-[10px] text-steel">Online</p></div></div><button class="text-xs bg-primary text-on-primary px-3 py-1.5 rounded-lg font-bold" data-uid="${d.id}" data-name="${u.username}">Message</button>`;
+		el.querySelector('button').addEventListener('click', () => openDM(d.id, u.username));
+		list.appendChild(el);
+	});
+	if (!list.children.length) list.innerHTML = '<p class="text-sm text-slate text-center py-8">No one else online right now.</p>';
+}
+
+async function loadMyFriends() {
+	if (!currentUser || !currentUserData) return;
+	const friendUids = currentUserData.friends || [];
+	const list = document.getElementById('my-friends-list');
+	list.innerHTML = '';
+	if (!friendUids.length) { list.innerHTML = '<p class="text-sm text-slate text-center py-8">No friends yet.</p>'; return; }
+	for (const uid of friendUids) {
+		const snap = await getDoc(doc(db, 'users', uid));
+		if (!snap.exists()) continue;
+		const u = snap.data();
+		const el = document.createElement('div');
+		el.className = 'flex items-center justify-between p-3 bg-surface border border-hairline rounded-xl';
+		el.innerHTML = `<div class="flex items-center space-x-3"><span class="text-xl">${u.avatar || '🐻'}</span><div><p class="font-bold text-sm text-ink">${u.username}</p></div></div><button class="text-xs bg-primary text-on-primary px-3 py-1.5 rounded-lg font-bold">Message</button>`;
+		el.querySelector('button').addEventListener('click', () => openDM(uid, u.username));
+		list.appendChild(el);
+	}
+}
+
+function openDM(uid, name) {
+	dmTargetUid = uid;
+	document.getElementById('dm-partner-name').textContent = name;
+	document.getElementById('dm-messages').innerHTML = '';
+	document.getElementById('panel-people').classList.add('hidden');
+	document.getElementById('panel-friends-panel').classList.add('hidden');
+	document.getElementById('panel-dm').classList.remove('hidden');
+
+	if (dmUnsubscribe) dmUnsubscribe();
+	const chatId = [currentUser.uid, uid].sort().join('_');
+	const q = query(collection(db, 'chats', chatId, 'messages'), orderBy('timestamp', 'asc'));
+	dmUnsubscribe = onSnapshot(q, (snap) => {
+		const container = document.getElementById('dm-messages');
+		container.innerHTML = '';
+		snap.forEach(d => {
+			const m = d.data();
+			const isMine = m.from === currentUser.uid;
+			const div = document.createElement('div');
+			div.className = `flex ${isMine ? 'justify-end' : 'justify-start'}`;
+			div.innerHTML = `<div class="${isMine ? 'bg-primary text-on-primary' : 'bg-surface border border-hairline text-ink'} px-3 py-2 rounded-xl text-sm max-w-[75%]">${m.text}</div>`;
+			container.appendChild(div);
+		});
+		container.scrollTop = container.scrollHeight;
+	});
+}
+
+window.closeDM = function() {
+	if (dmUnsubscribe) { dmUnsubscribe(); dmUnsubscribe = null; }
+	document.getElementById('panel-dm').classList.add('hidden');
+	dmTargetUid = null;
+};
+
+document.getElementById('dm-send-btn').addEventListener('click', sendDM);
+document.getElementById('dm-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendDM(); });
+
+async function sendDM() {
+	const input = document.getElementById('dm-input');
+	const text = input.value.trim();
+	if (!text || !dmTargetUid || !currentUser) return;
+	input.value = '';
+	const chatId = [currentUser.uid, dmTargetUid].sort().join('_');
+	await addDoc(collection(db, 'chats', chatId, 'messages'), {
+		from: currentUser.uid,
+		to: dmTargetUid,
+		text,
+		timestamp: serverTimestamp()
+	});
+}
+
+// Expose for connection history saving
+window._firebaseUser = () => currentUser;
+window._firebaseDb = () => db;
 </script>
