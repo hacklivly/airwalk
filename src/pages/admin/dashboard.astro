@@ -1,0 +1,91 @@
+---
+export const prerender = false;
+import Layout from '../../layouts/Layout.astro';
+
+const session = Astro.cookies.get('admin_session');
+if (!session || session.value !== 'authenticated') {
+  return Astro.redirect('/admin/login');
+}
+
+const runtime = Astro.locals.runtime;
+const db = runtime.env.DB;
+
+let message = '';
+let error = '';
+
+if (Astro.request.method === 'POST') {
+  const data = await Astro.request.formData();
+  const title = data.get('title') as string;
+  const content = data.get('content') as string;
+  const description = data.get('description') as string || '';
+  const featured_image = data.get('featured_image') as string || '';
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+
+  try {
+    await db.prepare('INSERT INTO blogs (title, slug, content, description, featured_image) VALUES (?, ?, ?, ?, ?)')
+      .bind(title, slug, content, description, featured_image)
+      .run();
+    message = `Post published! View at /blog/${slug}`;
+  } catch (e: any) {
+    error = e.message?.includes('UNIQUE') ? 'A post with that slug already exists.' : 'Error publishing post.';
+  }
+}
+
+// Fetch existing posts
+const posts = await db.prepare('SELECT id, title, slug, created_at FROM blogs ORDER BY created_at DESC').all();
+---
+
+<Layout title="Admin Dashboard | Airwalk" noindex={true}>
+  <div class="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <div class="flex items-center justify-between">
+      <h1 class="text-2xl font-extrabold text-ink">Blog Dashboard</h1>
+      <a href="/" class="text-sm text-primary hover:underline">← Back to site</a>
+    </div>
+
+    {message && <div class="bg-green-50 border border-green-200 text-green-800 rounded-lg px-4 py-3 text-sm font-medium">{message}</div>}
+    {error && <div class="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm font-medium">{error}</div>}
+
+    <form method="POST" class="bg-surface border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-lg font-bold text-ink">Create New Post</h2>
+
+      <div>
+        <label class="text-sm font-semibold text-ink block mb-1">Title</label>
+        <input type="text" name="title" required class="w-full bg-canvas border border-hairline rounded-lg px-4 h-11 text-ink focus:ring-2 focus:ring-primary focus:outline-none" placeholder="How to use voice chat..." />
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-ink block mb-1">Description (SEO)</label>
+        <input type="text" name="description" maxlength="160" class="w-full bg-canvas border border-hairline rounded-lg px-4 h-11 text-ink focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Short description for search results..." />
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-ink block mb-1">Featured Image URL</label>
+        <input type="url" name="featured_image" class="w-full bg-canvas border border-hairline rounded-lg px-4 h-11 text-ink focus:ring-2 focus:ring-primary focus:outline-none" placeholder="https://..." />
+      </div>
+
+      <div>
+        <label class="text-sm font-semibold text-ink block mb-1">Content (HTML)</label>
+        <textarea name="content" required rows="12" class="w-full bg-canvas border border-hairline rounded-lg px-4 py-3 text-ink font-mono text-sm focus:ring-2 focus:ring-primary focus:outline-none" placeholder="<h2>Introduction</h2><p>Write your blog content here...</p>"></textarea>
+      </div>
+
+      <button type="submit" class="bg-primary hover:bg-primary-deep text-on-primary font-bold py-3 px-8 rounded-lg transition-colors">Publish Post</button>
+    </form>
+
+    {posts.results.length > 0 && (
+      <div class="bg-surface border border-hairline rounded-2xl p-6 space-y-3">
+        <h2 class="text-lg font-bold text-ink">Published Posts ({posts.results.length})</h2>
+        <div class="space-y-2">
+          {posts.results.map((post: any) => (
+            <div class="flex items-center justify-between bg-canvas border border-hairline rounded-lg px-4 py-3">
+              <div>
+                <a href={`/blog/${post.slug}`} class="font-semibold text-ink hover:text-primary">{post.title}</a>
+                <p class="text-xs text-steel">{new Date(post.created_at).toLocaleDateString()}</p>
+              </div>
+              <a href={`/blog/${post.slug}`} class="text-xs text-primary font-medium">View →</a>
+            </div>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+</Layout>

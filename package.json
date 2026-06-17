@@ -14,9 +14,11 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/cloudflare": "^13.7.0",
     "@astrojs/sitemap": "^3.7.3",
     "@tailwindcss/vite": "^4.3.0",
     "astro": "^6.4.6",
+    "firebase": "^10.12.2",
     "tailwindcss": "^4.3.0",
     "ws": "^8.21.0"
   }

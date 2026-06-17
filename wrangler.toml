@@ -1,0 +1,7 @@
+name = "airwalk"
+compatibility_date = "2024-12-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "airwalk-blog"
+database_id = "b4acb92e-7734-4d10-8aa3-4bed58433d18"
