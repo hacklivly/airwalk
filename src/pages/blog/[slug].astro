@@ -1,10 +1,10 @@
 ---
 export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
+import { env } from 'cloudflare:workers';
 
 const { slug } = Astro.params;
-const runtime = Astro.locals.runtime;
-const db = runtime.env.DB;
+const db = env.DB;
 
 const result = await db.prepare('SELECT * FROM blogs WHERE slug = ?').bind(slug).first();
 

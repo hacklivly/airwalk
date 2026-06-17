@@ -1,14 +1,14 @@
 ---
 export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
+import { env } from 'cloudflare:workers';
 
 const session = Astro.cookies.get('admin_session');
 if (!session || session.value !== 'authenticated') {
   return Astro.redirect('/admin/login');
 }
 
-const runtime = Astro.locals.runtime;
-const db = runtime.env.DB;
+const db = env.DB;
 
 let message = '';
 let error = '';

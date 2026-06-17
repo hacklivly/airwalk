@@ -1,9 +1,10 @@
 ---
 export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
+import { env } from 'cloudflare:workers';
 
-const ADMIN_USER = import.meta.env.ADMIN_USERNAME || 'harsh';
-const ADMIN_PASS = import.meta.env.ADMIN_PASSWORD || 'harshverma@09';
+const ADMIN_USER = env.ADMIN_USERNAME || 'harsh';
+const ADMIN_PASS = env.ADMIN_PASSWORD || 'harshverma@09';
 
 let error = '';
 
